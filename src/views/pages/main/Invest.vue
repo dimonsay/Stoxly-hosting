@@ -1,9 +1,9 @@
 <template>
     <div class="invest-wrapper">
         <div class="container">
-            <h2 class="block-title">Invest in 3 Simple Steps</h2>
+            <h2 class="block-title">Invest in 3 Easy Steps</h2>
             <div class="block-description">
-                Getting started with Stoxly is quick and easy. Begin your investment journey today.
+                Starting your investment journey has never been simpler. Take control of your future today.
             </div>
             <div class="flex justify-around steps-wrapper">
                 <div class="steps-item step-register">
@@ -15,8 +15,7 @@
                         </div>
                     </div>
                     <div class="step-description">
-                        Create your free account in minutes. All you need is an email address and phone number to get
-                        started.
+                        Create your free account in minutes—just an email and phone number needed.
                     </div>
                 </div>
                 <div class="steps-item step-deposit">
@@ -28,8 +27,7 @@
                         </div>
                     </div>
                     <div class="step-description">
-                        Fund your account using multiple payment methods including credit cards, bank transfers, and
-                        e-wallets.
+                        Add funds easily using credit cards or bank transfers.
                     </div>
                 </div>
                 <div class="steps-item step-invest">
@@ -41,13 +39,13 @@
                         </div>
                     </div>
                     <div class="step-description invest">
-                        Browse thousands of investment options and build your portfolio with just a few clicks.
+                        Choose from thousands of opportunities and build your portfolio with a few clicks.
                     </div>
                 </div>
 
             </div>
             <div class="invest-btn">
-                Become a part of Stoxly
+                Become an Investor
             </div>
         </div>
     </div>

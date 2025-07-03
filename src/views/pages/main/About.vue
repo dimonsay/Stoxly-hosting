@@ -5,7 +5,7 @@
             <div class="flex justify-around">
                 <div class="about-info">
                     <div class="block-title left">
-                        About Stoxly
+                        About Us
                     </div>
                     <div class="block-description left">
                         Stoxly was founded in 2021 with a clear mission: to make global investment opportunities

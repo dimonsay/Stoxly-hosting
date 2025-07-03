@@ -6,10 +6,12 @@
                 <div class="footer-content flex justify-between">
                     <div class="contacts-wrapper">
                         <div class="contacts-title footer-title">Stoxly</div>
-                        <div class="contacts-description">Making global investments<br />
-                            accessible to everyone through
-                            <br /> our
-                            secure and intuitive platform.
+                         
+
+                        <div class="contacts-description">Bringing global investing<br />
+                            within everyone’s reach — secure,
+                            <br />
+                            simple, and made for you.
                         </div>
                         <div class="contacts-email-wrapper flex center">
                             <div class="contacts-icon">

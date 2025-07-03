@@ -79,42 +79,42 @@ const stocks = reactive([
 
 const tiles = reactive([
     {
-        name: 'Stocks', description: 'Trade shares of public companies across global markets', data: [
+        name: 'Stocks', description: 'Buy and sell shares of top public companies from markets around the world.', data: [
             { name: 'Apple', symbol: 'AAPL' },
             { name: 'Microsoft', symbol: 'MSFT' },
             { name: 'Tesla', symbol: 'TSLA' }
         ]
     },
     {
-        name: 'ETFs', description: 'Access diversified portfolios through exchange-traded funds', data: [
+        name: 'ETFs', description: 'Invest in diversified portfolios with easy-to-trade exchangetraded funds.', data: [
             { name: 'Apple', symbol: 'AAPL' },
             { name: 'Microsoft', symbol: 'MSFT' },
             { name: 'Tesla', symbol: 'TSLA' }
         ]
     },
     {
-        name: 'Cryptocurrencies', description: 'Invest in digital assets and blockchain technologies', data: [
+        name: 'Cryptocurrencies', description: 'Buy and sell popular digital assets built on blockchain technolog.', data: [
             { name: 'Apple', symbol: 'AAPL' },
             { name: 'Microsoft', symbol: 'MSFT' },
             { name: 'Tesla', symbol: 'TSLA' }
         ]
     },
     {
-        name: 'Commodities', description: 'Trade raw materials and natural resources', data: [
+        name: 'Commodities', description: 'Trade essential raw materials like gold, oil, and more.', data: [
             { name: 'Apple', symbol: 'AAPL' },
             { name: 'Microsoft', symbol: 'MSFT' },
             { name: 'Tesla', symbol: 'TSLA' }
         ]
     },
     {
-        name: 'Forex', description: 'Exchange world currencies on the foreign exchange market', data: [
+        name: 'Forex', description: 'Exchange global currencies on the world’s largest financial market.', data: [
             { name: 'Apple', symbol: 'AAPL' },
             { name: 'Microsoft', symbol: 'MSFT' },
             { name: 'Tesla', symbol: 'TSLA' }
         ]
     },
     {
-        name: 'Bonds', description: 'Invest in debt securities issued by governments and corporations', data: [
+        name: 'Bonds', description: 'Invest in stable debt securities from governments and companies.', data: [
             { name: 'Apple', symbol: 'AAPL' },
             { name: 'Microsoft', symbol: 'MSFT' },
             { name: 'Tesla', symbol: 'TSLA' }

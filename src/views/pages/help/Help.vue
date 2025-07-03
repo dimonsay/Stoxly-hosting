@@ -1,7 +1,7 @@
 <template>
     <div class="help-wrapper">
         <div class="container">
-            <div class="tiles-wrapper">
+            <!-- <div class="tiles-wrapper">
                 <div class="page-tile tile-hover">
                     <i class="pi pi-question-circle tile-logo"></i>
                     <div class="tile-title">Frequently Asked Questions</div>
@@ -32,7 +32,7 @@
                         <i class="pi pi-arrow-right"></i>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="request-question-wrapper flex justify-between">
                 <div class="request-wrapper " style="width: 40%;">
@@ -106,11 +106,11 @@
 import { reactive, ref } from 'vue';
 
 const faqs = reactive([
-    { question: 'How do I create an account?', answer: 'Creating an account is simple. Click the Invest button, fill in your personal details,verify your email, and complete the identity verification process to start investing.' },
-    { question: 'What payment methods are accepted?', answer: 'We accept bank transfers, credit/debit cards, and various electronic payment methods depending on your region. All transactions are secure and encrypted.' },
-    { question: 'How long does it take to process withdrawals?', answer: 'Most withdrawal requests are processed within 1-3 business days, depending on your payment method and bank processing times.' },
-    { question: 'Is my investment protected?', answer: 'Yes, we implement bank-level security measures and segregated accounts. Additionally, investments are protected up to $500,000 through our insurance policy.' },
-    { question: 'What are the fees for trading?', answer: 'Our fee structure is transparent with no hidden costs. We offer competitive rates based on your account level and trading volume. View our full fee schedule in your account dashboard.' },
+    { question: 'How do I create an account?', answer: 'It’s easy! Click the Invest button, enter your details, verify your email, and you’ll be ready to start investing in no time.' },
+    { question: 'What payment methods are accepted?', answer: 'We accept bank transfers and credit or debit card payments. All transactions are fully secure and encrypted.' },
+    { question: 'How long does it take to process withdrawals?', answer: 'Most withdrawals are processed within 1–2 business days, depending on your bank and payment method.' },
+    { question: 'Is my investment protected?', answer: 'Absolutely. We use bank-level security and keep your funds in separate accounts, backed by comprehensive insurance for your peace of mind.' },
+    { question: 'What are the fees for trading?', answer: 'We charge zero fees on trades — no hidden costs, no surprises. You can check your account dashboard anytime for full details.' },
 ])
 
 const issues = ref([

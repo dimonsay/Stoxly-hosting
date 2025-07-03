@@ -4,13 +4,12 @@
             <div class="main-block flex justify-between">
                 <div class="text-block">
                     <div class="main-block-title">
-                        Borderless<br />
-                        Investing For <br />
-                        Everyone <br />
+                        Invest<br />
+                        Without <br />
+                        Borders <br />
                     </div>
                     <div class="main-block-description">
-                        Access global markets, invest in top companies, and grow your wealth with Stoxly's secure and
-                        intuitive platform.
+                        Discover how easy it is to grow your wealth, even if you're new to investing. Start today and take control of your financial future.
                     </div>
 
                     <div class="buttons-wrapper">

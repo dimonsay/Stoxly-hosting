@@ -1,6 +1,6 @@
 <template>
     <Title title="Global Markets"
-        description="Access thousands of investment opportunities across multiple asset classes and global exchanges"
+        description="Discover thousands of investment opportunities across a variety of assets and worldwide exchanges."
         class="block" />
     <Table class="block" />
 </template>

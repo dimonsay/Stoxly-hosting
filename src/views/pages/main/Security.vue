@@ -1,35 +1,34 @@
 <template>
     <div class="security-block-wrapper">
         <div class="container">
-            <div class="block-title">Your Security Is Our Priority</div>
+            <div class="block-title">Your Safety Comes First</div>
             <div class="block-description">
-                We implement industry-leading security measures to ensure your investments
-                and personal data remain protected.
+                We use the strongest security measures to protect your money and personal info—so you can invest with peace of mind.
             </div>
             <div class="security-levels-wrapper flex justify-around">
                 <div class="security-level">
                     <div class="security-logo">
                         <i class="fa-solid fa-shield"></i>
                     </div>
-                    <div class="security-title">Bank-Level Security</div>
-                    <div class="security-description">256-bit encryption and multi-factor authentication keep your data
-                        and investments secure at all times.</div>
+                    <div class="security-title">Bank-Level Protection</div>
+                    <div class="security-description">Your data and investments are shielded by 256-bit encryption and multi-factor authentication, the same trusted tech banks rely on.</div>
                 </div>
                 <div class="security-level">
                     <div class="security-logo">
                         <i class="fa-solid fa-suitcase"></i>
                     </div>
-                    <div class="security-title">Regulatory Compliance</div>
-                    <div class="security-description">Licensed and regulated in major jurisdictions worldwide, ensuring
-                        adherence to financial regulations.</div>
+                    <div class="security-title">Fully Licensed and Regulated</div>
+                    <div class="security-description">We operate under strict financial laws worldwide, giving you
+the confidence your investments are handled responsibly.</div>
                 </div>
                 <div class="security-level">
                     <div class="security-logo">
                         <i class="fa-solid fa-lock"></i>
                     </div>
-                    <div class="security-title">Asset Protection</div>
-                    <div class="security-description">Investments are held in segregated accounts, protected up to
-                        $500,000 through our insurance policy.</div>
+                    <div class="security-title">Your Assets Are Protected</div>
+                    <div class="security-description">Your funds are held securely in separate accounts and
+protected by comprehensive insurance — ensuring your peace
+of mind every step of the way.</div>
                 </div>
             </div>
         </div>

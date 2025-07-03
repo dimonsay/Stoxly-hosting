@@ -1,5 +1,5 @@
 <template>
-    <Title title="Help Center" description="Get support and answers to your questions about using the Stoxly platform"
+    <Title title="Help Center" description="Find answers and get support for all your questions about using our platform."
         class="block" />
     <Help class="block" />
 </template>

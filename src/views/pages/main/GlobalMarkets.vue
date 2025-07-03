@@ -3,10 +3,10 @@
     <div class="gloval-markets-wrapper">
         <div class="container">
             <div class="block-title">
-                Explore Global Markets
+                Discover Opportunities Worldwide
             </div>
-            <div class="block-description">Access thousands of investment opportunities across multiple asset classes
-                from around the world.</div>
+            <div class="block-description">Invest easily in thousands of assets—from stocks to
+commodities—across global markets at your fingertips.</div>
 
             <div class="top-companies-wrapper flex justify-between">
                 <div class="top-companies">
