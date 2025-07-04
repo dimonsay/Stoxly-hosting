@@ -13,7 +13,7 @@
 
 <style scoped>
 .block {
-    padding: 3% !important;
+    padding: 1% !important;
 }
 </style>
 

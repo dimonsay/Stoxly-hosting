@@ -13,7 +13,6 @@ const apiClient = axios.create({
 
 apiClient.getAssetsMain = async () => {
     const response = await apiClient.get('/stocks/displayed/');
-
     console.log(response)
 }
 
@@ -22,9 +21,29 @@ apiClient.getUser = async () => {
     console.log(response)
 }
 
-apiClient.getUser = async () => {
-    const response = await apiClient.get('/stocks/assets/');
+apiClient.getNews = async () => {
+    const response = (await apiClient.get('/stocks/news/')).data;
+    return response
+}
+
+apiClient.getLessons = async () => {
+    const response = (await apiClient.get('/stocks/lessons/')).data;
     console.log(response)
+}
+
+apiClient.getGuides = async () => {
+    const response = (await apiClient.get('/stocks/guides/')).data;
+    return response
+}
+
+apiClient.getGuidesPopular = async () => {
+    const response = (await apiClient.get('/stocks/guides/popular/')).data;
+    return response
+}
+
+apiClient.adminMessage = async (data) => {
+    const response = await apiClient.post('/stocks/admin/message/', data);
+    console.log(data)
 }
 
 apiClient.register = async (userData) => {
@@ -141,44 +160,6 @@ apiClient.login = async (loginData) => {
         return error.response
     }
 }
-
-apiClient.getMe = async () => {
-    try {
-        const response = await apiClient.get('auth/users/me/');
-
-        if (response.status === 200) {
-            return {
-                success: true,
-                data: response.data
-            };
-        }
-
-        // Обрабатываем другие статусы
-        return {
-            success: false,
-            status: response.status,
-            data: response.data
-        };
-
-    } catch (error) {
-        if (error.response) {
-            return {
-                success: false,
-                status: error.response.status,
-                errors: error.response.data,
-                isValidationError: error.response.status === 400
-            };
-        }
-
-        // Обработка ошибок без ответа (сеть, отменённые запросы)
-        return {
-            success: false,
-            error: error.message,
-            isNetworkError: true
-        };
-    }
-};
-
 
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');

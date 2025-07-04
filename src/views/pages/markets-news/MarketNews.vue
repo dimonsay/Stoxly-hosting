@@ -9,11 +9,12 @@
                 <div class="news-wrapper flex flex-col">
                     <div class="news page-tile tile-hover flex flex-col justify-between" v-for="news in news">
                         <div class="top flex justify-between mb10" style="align-items: center;">
-                            <div class="news-category">{{ news.category }}</div>
-                            <div class="news-date grey">{{ news.date }}</div>
+                            <div class="news-category">{{ news.category.name }}</div>
+                            <div class="news-date grey">{{ formatDate(news.created_at) }}
+                            </div>
                         </div>
                         <div class="news-title mb10">{{ news.title }}</div>
-                        <div class="news-description grey mb10">{{ news.description }}</div>
+                        <div class="news-description grey mb10">{{ truncateText(news.text) }}</div>
 
                         <div class="read-more flex blue mb10" style="align-items: center;">
                             <div class="text">Read more</div>
@@ -136,7 +137,32 @@
 </style>
 
 <script setup>
-import { reactive } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive } from 'vue';
+
+const news = reactive([])
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+};
+
+const truncateText = (text, maxLength = 200) => {
+    if (!text) return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+};
+
+onMounted(async () => {
+    try {
+        const data = await apiClient.getNews();
+
+        news.splice(0, news.length, ...data);
+        console.log(news)
+    } catch (err) {
+        console.error(err);
+    }
+});
 
 function loadMore() {
     return 0;
@@ -151,14 +177,9 @@ const indexes = reactive([
     { index: 'DAX', price: 18325.45, trend: 1.1 },
 ])
 
-const news = reactive([
-    { title: 'Global Markets Rally on Economic Data', description: 'Stock markets worldwide surge after positive economic indicators and central bank announcements.', category: 'Global Markets', date: 'May 15, 2025' },
-    { title: 'Tech Sector Leads as AI Investments Grow', description: 'Technology companies see significant gains as artificial intelligence adoption accelerates across industries.', category: 'Technology', date: 'May 14, 2025' },
-    { title: 'Energy Transition Reshaping Commodities Market', description: 'Renewable energy momentum continues to impact traditional energy commodities and create new investment opportunities.', category: 'Energy', date: 'May 13, 2025' },
-    { title: 'Central Banks Signal Rate Strategy Shift', description: 'Major central banks indicate potential policy changes that could impact global bond and currency markets.', category: 'Economics', date: 'May 12, 2025' },
-    { title: 'Emerging Markets Show Strong Growth Potential', description: 'Analysts highlight opportunities in select emerging markets based on economic reforms and growth forecasts.', category: 'Emerging Markets', date: 'May 11, 2025' },
-    { title: 'Supply Chain Innovations Drive Logistics Sector', description: 'Companies implementing advanced supply chain technologies report improved efficiency and reduced costs.', category: 'Logistics', date: 'May 10, 2025' },
-])
+
+
+
 
 const formatVolume = (volume) => {
     return volume.toLocaleString('en-US');

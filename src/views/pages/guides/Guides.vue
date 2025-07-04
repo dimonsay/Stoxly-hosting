@@ -13,20 +13,20 @@
                             <div class="tile-icon top flex justify-between" style="align-items: center;">
                                 <i class="pi pi-book blue"></i>
                                 <div class="level" :class="{
-                                    'bc-green': guide.level == 'Beginner',
-                                    'bc-violet': guide.level == 'Advanced',
-                                    'bc-dark-blue': guide.level == 'Intermediate',
-                                }">{{ guide.level }}</div>
+                                    'bc-green': capitalize(guide.category) == 'Beginner',
+                                    'bc-violet': capitalize(guide.category) == 'Advanced',
+                                    'bc-dark-blue': capitalize(guide.category) == 'Intermediate',
+                                }">{{ capitalize(guide.category) }}</div>
                             </div>
 
                             <div class="guide flex flex-col">
                                 <div class="guide-title">{{ guide.title }}</div>
-                                <div class="guide-description grey">{{ guide.description }}</div>
+                                <div class="guide-description grey">{{ guide.text }}</div>
                             </div>
 
                             <div class="categories grey">
-                                <div class="category" v-for="category in guide.categories">
-                                    {{ category }}
+                                <div class="category" v-for="category in guide.tags">
+                                    {{ category.name }}
                                 </div>
                             </div>
 
@@ -44,7 +44,7 @@
 
                         <div class="articles flex mb10" style="align-items: center;" v-for="article in articles">
                             <i class="pi pi-arrow-right blue"></i>
-                            <div class="article-description grey pointer"> {{ article }}</div>
+                            <div class="article-description grey pointer"> {{ capitalize(article.title) }}</div>
                         </div>
                     </div>
                     <div class="path-wrapper w450 page-tile">
@@ -181,7 +181,6 @@
     gap: 0.5rem;
     align-content: flex-start;
     min-height: 2rem;
-    /* Минимальная высота для пустых контейнеров */
 }
 
 .category {
@@ -197,73 +196,33 @@
 </style>
 
 <script setup>
-import { reactive } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive } from 'vue';
+
+const guides = reactive([]);
+const articles = reactive([])
+
+const capitalize = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+onMounted(async () => {
+    try {
+        const data = await apiClient.getGuides();
+        const popularData = await apiClient.getGuidesPopular();
+
+        articles.splice(0, articles.length, ...popularData)
+        guides.splice(0, guides.length, ...data);
+    } catch (err) {
+        console.error(err);
+    }
+});
 
 const pathes = reactive([
     { title: 'New Investor', description: 'Perfect for those starting their investment journey' },
     { title: 'Active Trader', description: 'For those looking to enhance trading skills and strategies' },
     { title: 'Global Investor', description: 'Focus on international markets and global diversification' },
-])
-
-const articles = reactive([
-    'Understanding Market Volatility',
-    'Building a Dividend Income Portfolio',
-    'Tax-Efficient Investment Strategies',
-    'Algorithmic Trading for Beginners',
-    'ESG Investing Principles'
-])
-
-const guides = reactive([
-    {
-        title: 'Getting Started with Investing',
-        description: 'Learn the fundamentals of investing, including key terminology, setting goals, and building your first portfolio.',
-        categories: [
-            'Investment Basics',
-            'Risk Management',
-            'Portfolio Building'
-        ], level: 'Beginner'
-    },
-    {
-        title: 'Understanding Stock Market Fundamentals',
-        description: 'Dive into how stock markets function, including valuation methods, market indicators, and trading strategies.',
-        categories: [
-            'Market Analysis',
-            'Stock Valuation',
-            'Trading Strategies'
-        ], level: 'Intermediate'
-    }, {
-        title: 'ETF Investment Strategies',
-        description: 'Explore how to use ETFs effectively for diversification, income generation, and targeted sector exposure.',
-        categories: [
-            'Passive Investing',
-            'ETF Selection',
-            'Asset Allocation'
-        ], level: 'Beginner'
-    }, {
-        title: 'Cryptocurrency Investing',
-        description: 'Navigate the world of digital assets, blockchain technology, and crypto investment approaches.',
-        categories: [
-            'Blockchain',
-            'Crypto Assets',
-            'Security'
-        ], level: 'Intermediate'
-    }, {
-        title: 'Advanced Technical Analysis',
-        description: 'Master chart patterns, indicators, and technical strategies for more sophisticated trading approaches.',
-        categories: [
-            'Chart Patterns',
-            'Indicators',
-            'Trading Systems'
-        ], level: 'Advanced'
-    }, {
-        title: 'Global Macro Investing',
-        description: 'Learn how to analyze macroeconomic trends and their impact on various asset classes across global markets.',
-        categories: [
-            'Economic Analysis',
-            'Central Banks',
-            'Global Markets'
-        ], level: 'Advanced'
-    },
 ])
 
 </script>

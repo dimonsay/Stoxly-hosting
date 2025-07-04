@@ -68,6 +68,7 @@
 </template>
 
 <script setup>
+import apiClient from '@/api/axios';
 import { reactive, ref } from 'vue';
 
 const faqs = reactive([
@@ -127,7 +128,7 @@ function validateMessage() {
     }
 }
 
-function submit() {
+async function submit() {
     validateIssue();
     validateSubject();
     validateMessage();
@@ -140,17 +141,15 @@ function submit() {
     }
     else if (!hasError) {
         const data = {
-            title: data.title,
-            email: data.email,
-            descrition: data.descrition,
-            category: data.category,
+            title: formData.subject,
+            description: formData.message,
+            category: formData.issue,
+            email: formData.email,
         };
 
-        console.log(data)
-
+        const response = await apiClient.adminMessage(data)
+        console.log(response)
     }
-
-
 }
 </script>
 
