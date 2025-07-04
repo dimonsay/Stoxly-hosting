@@ -3,12 +3,29 @@ import { AuthService } from '@/service/AuthService';
 import axios from 'axios';
 
 const apiClient = axios.create({
+
     baseURL: 'http://localhost:8000/api',
     headers: {
         'Content-Type': 'application/json'
     },
     withCredentials: true
 });
+
+apiClient.getAssetsMain = async () => {
+    const response = await apiClient.get('/stocks/displayed/');
+
+    console.log(response)
+}
+
+apiClient.getUser = async () => {
+    const response = await apiClient.get('/auth/me/');
+    console.log(response)
+}
+
+apiClient.getUser = async () => {
+    const response = await apiClient.get('/stocks/assets/');
+    console.log(response)
+}
 
 apiClient.register = async (userData) => {
     const requestData = {
@@ -22,7 +39,7 @@ apiClient.register = async (userData) => {
 
     try {
         const response = await apiClient.post('/auth/register/', requestData);
-        // Нормальный успешный ответ
+
         if (response.status >= 200 && response.status < 300) {
             return {
                 success: true,
@@ -30,7 +47,6 @@ apiClient.register = async (userData) => {
             };
         }
 
-        // Нестандартный успешный статус без данных
         return {
             success: false,
             error: 'Unexpected server response',
@@ -38,7 +54,6 @@ apiClient.register = async (userData) => {
         };
 
     } catch (error) {
-        // Обработка ошибок валидации (400 Bad Request)
         if (error.response?.status === 400) {
             return {
                 success: false,
@@ -48,7 +63,6 @@ apiClient.register = async (userData) => {
             };
         }
 
-        // Обработка других HTTP ошибок
         if (error.response) {
             return {
                 success: false,
@@ -57,7 +71,6 @@ apiClient.register = async (userData) => {
             };
         }
 
-        // Ошибки сети
         if (error.request) {
             return {
                 success: false,
@@ -66,7 +79,6 @@ apiClient.register = async (userData) => {
             };
         }
 
-        // Ошибки настройки запроса
         return {
             success: false,
             error: error.message || 'Request setup error'
@@ -132,9 +144,9 @@ apiClient.login = async (loginData) => {
 
 apiClient.getMe = async () => {
     try {
-        const response = await apiClient.get('auth/users/me/'); // Убрал requestData - GET запросы обычно не имеют тела
+        const response = await apiClient.get('auth/users/me/');
 
-        if (response.status === 200) { // Точно проверяем успешный статус
+        if (response.status === 200) {
             return {
                 success: true,
                 data: response.data

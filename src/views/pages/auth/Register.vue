@@ -11,6 +11,12 @@ function logo() {
     return isDarkTheme.value ? 'light' : 'dark';
 }
 
+function toLogin() {
+    router.push({
+        name: 'login',
+    })
+}
+
 const formData = reactive({
     firstName: 'asd',
     lastName: 'asd',
@@ -242,7 +248,8 @@ function goHome() {
                                     style="max-width: 320px; margin-bottom: 32px">Cancel</Button>
                             </div>
                             <span class="font-medium text-surface-600 dark:text-surface-200">Already have an account? <a
-                                    class="font-semibold cursor-pointer text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300">Login</a>
+                                    class="font-semibold cursor-pointer text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300"
+                                    @click="toLogin()">Login</a>
                             </span>
                         </div>
 

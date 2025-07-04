@@ -9,7 +9,7 @@
         "editor.formatOnSave": true
     },
     "[vue]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features",
+        "editor.defaultFormatter": "Vue.volar",
         "editor.formatOnSave": true
     },
     "[typescript]": {

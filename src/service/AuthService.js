@@ -1,4 +1,5 @@
 import apiClient from '@/api/axios';
+import router from '@/router';
 
 export class AuthService {
     static async login(email, password) {
@@ -25,7 +26,9 @@ export class AuthService {
                 localStorage.setItem('access_token', response.data.access_token);
                 return response.data.access_token;
             } else {
-                throw new Error('Не удалось обновить токен');
+                router.push({
+                    name: 'login',
+                })
             }
         } catch (error) {
             console.error('Ошибка обновления токена:', error);

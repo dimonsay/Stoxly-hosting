@@ -6,7 +6,7 @@
                 Discover Opportunities Worldwide
             </div>
             <div class="block-description">Invest easily in thousands of assets—from stocks to
-commodities—across global markets at your fingertips.</div>
+                commodities—across global markets at your fingertips.</div>
 
             <div class="top-companies-wrapper flex justify-between">
                 <div class="top-companies">
@@ -46,6 +46,7 @@ commodities—across global markets at your fingertips.</div>
 </template>
 
 <script setup>
+import apiClient from '@/api/axios';
 import { onMounted, reactive } from 'vue';
 
 const categories = reactive([
@@ -70,7 +71,15 @@ onMounted(() => {
     for (let i = 0; i < companies.length; i++) {
         companies[i].profit = (Math.random() * 10 - 5).toFixed(2)
     }
+
+    getAssets()
 })
+
+async function getAssets() {
+    const response = await apiClient.getAssetsMain()
+    console.log(response)
+
+}
 
 </script>
 

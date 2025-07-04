@@ -80,7 +80,20 @@
 </style>
 
 <script setup>
-import { reactive } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive } from 'vue';
+
+onMounted(() => {
+    apiClient.getUser().then(response => {
+        // предположим, что данные приходят в response.data
+        const data = response.data;
+        userWallet.available = data.available;
+        userWallet.orders = data.orders;
+        userWallet.portfolio = data.portfolio;
+        userWallet.manager = data.manager;
+    });
+});
+
 
 const userWallet = reactive({
     available: 10000,
@@ -88,6 +101,7 @@ const userWallet = reactive({
     orders: 100,
     manager: 300,
 })
+
 
 const formatVolume = (volume) => {
     return '$' + volume.toLocaleString('en-US');

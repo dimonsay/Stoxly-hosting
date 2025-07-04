@@ -64,7 +64,7 @@ async function verify() {
                 })
             } else if (type == 'login') {
                 router.push({
-                    name: 'me'
+                    name: 'dashboard'
                 })
             }
         } else {
@@ -103,7 +103,6 @@ const focus = (event) => {
         prevElementInputRef.value = nextElementInputRef.value
         console.log(prevElementInputRef.value)
     } else if (isValid && prevElementInputRef.value.id == 'val6') {
-        console.log(1)
         prevElementInputRef.value.blur()
         nextElementInputRef.value = ''
         prevElementInputRef.value = ''

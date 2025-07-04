@@ -1,66 +1,32 @@
 <template>
     <div class="help-wrapper">
         <div class="container">
-            <!-- <div class="tiles-wrapper">
-                <div class="page-tile tile-hover">
-                    <i class="pi pi-question-circle tile-logo"></i>
-                    <div class="tile-title">Frequently Asked Questions</div>
-                    <div class="tile-description">Find answers to common questions about our platform, investments, and
-                        account management.</div>
-                    <div class="learn-more flex" style="align-items: center; color: #33c3f0;">
-                        <div class="text" style="margin-right: 10px;">Learn more</div>
-                        <i class="pi pi-arrow-right"></i>
-                    </div>
-                </div>
-                <div class="page-tile tile-hover">
-                    <i class="pi pi-book tile-logo"></i>
-                    <div class="tile-title">Frequently Asked Questions</div>
-                    <div class="tile-description">Find answers to common questions about our platform, investments, and
-                        account management.</div>
-                    <div class="learn-more flex" style="align-items: center; color: #33c3f0;">
-                        <div class="text" style="margin-right: 10px;">Learn more</div>
-                        <i class="pi pi-arrow-right"></i>
-                    </div>
-                </div>
-                <div class="page-tile tile-hover">
-                    <i class="fa-solid fa-user-graduate tile-logo"></i>
-                    <div class="tile-title">Frequently Asked Questions</div>
-                    <div class="tile-description">Find answers to common questions about our platform, investments, and
-                        account management.</div>
-                    <div class="learn-more flex" style="align-items: center; color: #33c3f0;">
-                        <div class="text" style="margin-right: 10px;">Learn more</div>
-                        <i class="pi pi-arrow-right"></i>
-                    </div>
-                </div>
-            </div> -->
-
             <div class="request-question-wrapper flex justify-between">
-                <div class="request-wrapper " style="width: 40%;">
+                <div class="request-wrapper" style="width: 40%">
                     <div class="pageTitle">Send Us a Request</div>
 
                     <div class="page-tile tile-hover req-form">
-                        <div class="form-container text-left" style="width: 100%; min-width: 270px;">
+                        <div class="form-container text-left" style="width: 100%; min-width: 270px">
                             <IconField>
                                 <Select v-model="formData.issue" type="text" autocomplete="off"
                                     placeholder="Select a category" class="block mb-5"
-                                    @blur="validateName(formData.issue, 'first')" :options="issues"
+                                    @blur="validateIssue(formData.issue, 'first')" :options="issues"
                                     :class="{ 'error-border': errors.issue }"
-                                    style="width: 100%; min-width: 270px; padding: 0px;" />
+                                    style="width: 100%; min-width: 270px; padding: 0px" />
                             </IconField>
 
                             <IconField>
                                 <InputText v-model="formData.subject" type="text" autocomplete="off"
-                                    placeholder="Subject" class="block mb-5" :class="{ 'error-border': errors.subject }"
-                                    @blur="validateName(formData.subject, 'last')"
-                                    style="width: 100%; min-width: 270px" />
+                                    @blur="validateSubject(formData.subject)" placeholder="Subject" class="block mb-5"
+                                    :class="{ 'error-border': errors.subject }" style="width: 100%; min-width: 270px" />
                             </IconField>
 
                             <IconField>
                                 <Textarea v-model="formData.message" type="text" autocomplete="off"
                                     placeholder="Describe your problem" class="block mb-5"
-                                    @blur="validateUsername(formData.message)"
+                                    @blur="validateMessage(formData.message)"
                                     :class="{ 'error-border': errors.message }"
-                                    style="width: 100%; min-width: 270px; min-height: 200px;" />
+                                    style="width: 100%; min-width: 270px; min-height: 200px" />
                             </IconField>
 
                             <IconField>
@@ -73,8 +39,7 @@
                             <div class="mt-2 flex flex-wrap hidden">
                                 <Checkbox type="checkbox" id="confirmed" :binary="true" class="mr-2" />
                                 <label for="confirmed" class="text-surface-900 dark:text-surface-0 font-medium mr-2">I
-                                    have
-                                    read the</label>
+                                    have read the</label>
                                 <a class="text-surface-600 dark:text-surface-200 hover:text-primary cursor-pointer">Terms
                                     and Conditions</a>
                             </div>
@@ -110,32 +75,83 @@ const faqs = reactive([
     { question: 'What payment methods are accepted?', answer: 'We accept bank transfers and credit or debit card payments. All transactions are fully secure and encrypted.' },
     { question: 'How long does it take to process withdrawals?', answer: 'Most withdrawals are processed within 1–2 business days, depending on your bank and payment method.' },
     { question: 'Is my investment protected?', answer: 'Absolutely. We use bank-level security and keep your funds in separate accounts, backed by comprehensive insurance for your peace of mind.' },
-    { question: 'What are the fees for trading?', answer: 'We charge zero fees on trades — no hidden costs, no surprises. You can check your account dashboard anytime for full details.' },
-])
-
-const issues = ref([
-    'Option',
-    'Option',
-    'Option',
-    'Option',
-    'Option',
-    'Option',
+    { question: 'What are the fees for trading?', answer: 'We charge zero fees on trades — no hidden costs, no surprises. You can check your account dashboard anytime for full details.' }
 ]);
+
+const issues = ref(['Option', 'Option', 'Option', 'Option', 'Option', 'Option']);
 
 const errors = reactive({
     subject: false,
     issue: false,
     email: false,
     message: false
-})
+});
 
 const formData = reactive({
     subject: '',
     issue: '',
-    email: '',
-    message: ''
-})
+    message: '',
+    email: ''
+});
 
+function validateEmail() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+        errors.email = true;
+    } else {
+        errors.email = false;
+    }
+}
+
+function validateIssue() {
+    if (!formData.issue) {
+        errors.issue = true;
+    } else {
+        errors.issue = false;
+    }
+}
+
+function validateSubject() {
+    if (!formData.subject || formData.subject.length < 3) {
+        errors.subject = true;
+    } else {
+        errors.subject = false;
+    }
+}
+
+function validateMessage() {
+    if (!formData.message || formData.message.length < 3) {
+        errors.message = true;
+    } else {
+        errors.message = false;
+    }
+}
+
+function submit() {
+    validateIssue();
+    validateSubject();
+    validateMessage();
+    validateEmail();
+
+    const hasError = Object.values(errors).some((error) => error);
+    if (hasError) {
+        console.warn('Form error');
+        return;
+    }
+    else if (!hasError) {
+        const data = {
+            title: data.title,
+            email: data.email,
+            descrition: data.descrition,
+            category: data.category,
+        };
+
+        console.log(data)
+
+    }
+
+
+}
 </script>
 
 <style scoped>
@@ -164,7 +180,6 @@ const formData = reactive({
     border: 1px solid transparent !important;
     outline: none !important;
     transition: none;
-
 }
 
 .button {
@@ -207,5 +222,9 @@ const formData = reactive({
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     padding: 20px 0;
+}
+
+.error-border {
+    border: 1px solid red !important;
 }
 </style>

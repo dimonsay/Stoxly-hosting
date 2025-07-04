@@ -10,6 +10,7 @@ const routes = [
     {
         path: '/dashboard',
         component: DashboardLayout,
+        meta: { requiresAuth: true },
         children: [
             {
                 path: '/dashboard',
@@ -441,6 +442,32 @@ const router = createRouter({
     routes,
     scrollBehavior() {
         return { left: 0, top: 0 };
+    }
+});
+
+function isTokenValid(token) {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        return payload.exp > currentTime;
+    } catch (err) {
+        return false;
+    }
+}
+
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('access_token');
+
+    if (to.meta.requiresAuth) {
+        if (token && isTokenValid(token)) {
+            next();
+        } else {
+            router.push({
+                name: 'login',
+            })
+        }
+    } else {
+        next();
     }
 });
 
