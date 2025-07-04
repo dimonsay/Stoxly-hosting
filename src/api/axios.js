@@ -17,8 +17,8 @@ apiClient.getAssetsMain = async () => {
 }
 
 apiClient.getUser = async () => {
-    const response = await apiClient.get('/auth/me/');
-    console.log(response)
+    const response = (await apiClient.get('/auth/me/')).data;
+    return response
 }
 
 apiClient.getNews = async () => {
@@ -28,7 +28,7 @@ apiClient.getNews = async () => {
 
 apiClient.getLessons = async () => {
     const response = (await apiClient.get('/stocks/lessons/')).data;
-    console.log(response)
+    return response
 }
 
 apiClient.getGuides = async () => {
@@ -43,7 +43,7 @@ apiClient.getGuidesPopular = async () => {
 
 apiClient.adminMessage = async (data) => {
     const response = await apiClient.post('/stocks/admin/message/', data);
-    console.log(data)
+    return response.status
 }
 
 apiClient.register = async (userData) => {

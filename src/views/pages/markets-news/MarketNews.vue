@@ -158,7 +158,6 @@ onMounted(async () => {
         const data = await apiClient.getNews();
 
         news.splice(0, news.length, ...data);
-        console.log(news)
     } catch (err) {
         console.error(err);
     }

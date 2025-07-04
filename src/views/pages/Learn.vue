@@ -13,17 +13,17 @@
                         <div class="course-top flex justify-between mb10" style="align-items: center;">
                             <div class="course-title">{{ course.title }}</div>
                             <div class="course-level"
-                                :class="{ 'bc-dark-blue': course.level == 'Intermediate', 'bc-violet': course.level == 'Advanced', 'bc-green': course.level == 'Beginner' }">
-                                {{ course.level }}
+                                :class="{ 'bc-dark-blue': capitalize(course.category) == 'Intermediate', 'bc-violet': capitalize(course.category) == 'Advanced', 'bc-green': capitalize(course.category) == 'Beginner' }">
+                                {{ capitalize(course.category) }}
                             </div>
                         </div>
 
-                        <div class="course-description grey mb10">{{ course.description }}</div>
+                        <div class="course-description grey mb10">{{ truncateText(course.text, 200) }}</div>
 
-                        <div class="courses-levels-wrapper flex mb10" style="align-items: center;">
+                        <!-- <div class="courses-levels-wrapper flex mb10" style="align-items: center;">
                             <i class="pi pi-book blue" style="margin-right: 5px;"></i>
                             <div class="courses-lessons">{{ course.lessons }} lessons</div>
-                        </div>
+                        </div> -->
 
 
                         <div class="start pointer mb10" style="width: 100%; text-align: center;">
@@ -81,7 +81,8 @@
 
 <script setup>
 
-import { reactive } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive } from 'vue';
 import Title from '../uikit/Title.vue';
 
 const resources = reactive({
@@ -102,12 +103,27 @@ const resources = reactive({
     ]
 })
 
-const courses = reactive([
-    { title: 'Investment Fundamentals', level: 'Beginner', description: 'Master the basics of investing with this comprehensive introduction to financial markets and instruments.', lessons: 12 },
-    { title: 'Technical Analysis', level: 'Intermediate', description: 'Learn how to analyze price charts and use technical indicators to identify potential trading opportunities.', lessons: 10 },
-    { title: 'Fundamental Analysis', level: 'Intermediate', description: 'Discover how to evaluate companies through financial statements, industry analysis, and economic factors.', lessons: 8 },
-    { title: 'Portfolio Management', level: 'Intermediate', description: 'Develop strategies for building and managing a diversified investment portfolio aligned with your goals.', lessons: 6 },
-])
+const courses = reactive([])
+
+const capitalize = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const truncateText = (text, maxLength = 100) => {
+    if (!text) return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+};
+
+onMounted(async () => {
+    try {
+        const data = await apiClient.getLessons();
+
+        courses.splice(0, courses.length, ...data);
+    } catch (err) {
+        console.error(err);
+    }
+});
 
 </script>
 

@@ -6,21 +6,22 @@
                 <i class="pi pi-wallet wallet-logo blue"></i>
                 Available balance
             </div>
-            <div class="wallet-balance-number text-2xl font-semibold"> {{ formatVolume(userWallet.available) }}</div>
+            <div class="wallet-balance-number text-2xl font-semibold"> {{ formatVolume(user?.free_balance) }}</div>
         </div>
-        <div class="wallet-balance-wrapper page-tile ">
+        <div class="wallet-balance-wrapper page-tile " v-if="user?.orders_balance">
             <div class="wallet-balance-title mb-2 grey">
                 <i class="pi pi-arrow-right-arrow-left wallet-logo blue"></i>
                 Balance in orders
             </div>
-            <div class="wallet-balance-number text-2xl font-semibold">{{ formatVolume(userWallet.orders) }}</div>
+            <div class="wallet-balance-number text-2xl font-semibold">{{
+                formatVolume(user.orders_balance) }}</div>
         </div>
         <div class="wallet-balance-wrapper page-tile ">
             <div class="wallet-balance-title mb-2 grey">
                 <i class="fa-solid fa-arrow-trend-up wallet-logo blue"></i>
                 Portfolio balance
             </div>
-            <div class="wallet-balance-number text-2xl font-semibold">{{ formatVolume(userWallet.portfolio) }}</div>
+            <div class="wallet-balance-number text-2xl font-semibold">{{ formatVolume(user?.invested_balance) }}</div>
         </div>
         <div class="wallet-balance-wrapper page-tile">
             <div class="wallet-balance-title mb-2 grey">
@@ -28,8 +29,7 @@
                 Total account balance
             </div>
             <div class="wallet-balance-number text-2xl font-semibold">
-                {{ formatVolume(userWallet.available + userWallet.portfolio +
-                    userWallet.orders + userWallet.manager) }}
+                {{ formatVolume(user.total_balance) }}
             </div>
         </div>
 
@@ -80,31 +80,21 @@
 </style>
 
 <script setup>
-import apiClient from '@/api/axios';
-import { onMounted, reactive } from 'vue';
+import { onMounted } from 'vue';
 
-onMounted(() => {
-    apiClient.getUser().then(response => {
-        // предположим, что данные приходят в response.data
-        const data = response.data;
-        userWallet.available = data.available;
-        userWallet.orders = data.orders;
-        userWallet.portfolio = data.portfolio;
-        userWallet.manager = data.manager;
-    });
+defineProps({
+    user: {
+        type: Object,
+        required: true
+    }
 });
 
-
-const userWallet = reactive({
-    available: 10000,
-    portfolio: 2000,
-    orders: 100,
-    manager: 300,
+onMounted(async () => {
+    console.log(user)
 })
 
-
 const formatVolume = (volume) => {
-    return '$' + volume.toLocaleString('en-US');
+    return '$' + Number(volume || 0).toLocaleString('en-US');
 };
 
 </script>

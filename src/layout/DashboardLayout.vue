@@ -5,15 +5,31 @@
             <div class="container borders">
                 <router-view></router-view>
             </div>
-            <Wallet class="p-10" />
+            <Wallet class="p-10" :user="user" />
         </div>
 
     </div>
 </template>
 
 <script setup>
+import apiClient from '@/api/axios';
 import SideBar from '@/views/uikit/SideBar.vue';
 import Wallet from '@/views/uikit/Wallet.vue';
+import { onMounted, reactive } from 'vue';
+
+const user = reactive({})
+
+onMounted(async () => {
+    try {
+        const userData = await apiClient.getUser();
+
+        Object.assign(user, userData);
+
+        console.log(user);
+    } catch (err) {
+        console.error(err);
+    }
+});
 
 </script>
 

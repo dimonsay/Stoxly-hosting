@@ -6,7 +6,8 @@
             :key="category">
 
             <div class="recommended-title text-2xl mb-5 mt-5 font-semibold">
-               Popular {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+                <span v-if="category != 'recommended'">Popular</span> {{ category.charAt(0).toUpperCase() +
+                category.slice(1) }}
             </div>
 
             <div class="popular-items-wrapper grid grid-cols-3 gap-4 w-full">

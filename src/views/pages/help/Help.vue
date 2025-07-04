@@ -148,7 +148,12 @@ async function submit() {
         };
 
         const response = await apiClient.adminMessage(data)
-        console.log(response)
+        if (response == 201) {
+            formData.subject = ''
+            formData.issue = ''
+            formData.message = ''
+            formData.email = ''
+        }
     }
 }
 </script>
