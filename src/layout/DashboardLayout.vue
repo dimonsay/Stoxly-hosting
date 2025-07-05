@@ -24,8 +24,6 @@ onMounted(async () => {
         const userData = await apiClient.getUser();
 
         Object.assign(user, userData);
-
-        console.log(user);
     } catch (err) {
         console.error(err);
     }

@@ -20,21 +20,29 @@ export class AuthService {
 
     static async refreshToken() {
         try {
-            const response = await apiClient.post('/auth/refresh', {}, { withCredentials: true });
+            const refreshToken = localStorage.getItem('refresh_token');
+
+            if (!refreshToken) {
+                throw new Error('Refresh token не найден');
+            }
+
+            const response = await apiClient.post('/auth/refresh/', {
+                refresh: refreshToken
+            });
 
             if (response.status === 200) {
-                localStorage.setItem('access_token', response.data.access_token);
-                return response.data.access_token;
+                localStorage.setItem('access_token', response.data.access);
+                return response.data.access;
             } else {
-                router.push({
-                    name: 'login',
-                })
+                router.push({ name: 'login' });
             }
         } catch (error) {
             console.error('Ошибка обновления токена:', error);
+            router.push({ name: 'login' });
             throw error;
         }
     }
+
 
     static async logout() {
         try {

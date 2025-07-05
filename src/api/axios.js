@@ -11,8 +11,13 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+apiClient.getUserTransactions = async () => {
+    const response = (await apiClient.get('/stocks/my/')).data;
+    return response
+}
+
 apiClient.getAssetsMain = async () => {
-    const response = await apiClient.get('/stocks/displayed/');
+    const response = (await apiClient.get('/stocks/displayed/')).data;
     console.log(response)
 }
 
