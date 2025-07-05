@@ -120,10 +120,6 @@ function toHome() {
 }
 
 function toAuth() {
-    // router.push({
-    //     path: 'dashboard',
-    // })
-
     router.push({
         name: 'register',
     })

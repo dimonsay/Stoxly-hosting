@@ -7,7 +7,8 @@
                     <IconField style="display: flex; align-items: center;">
                         <InputIcon class="pi pi-search" style="position: absolute; left: 10px;" />
                         <InputText v-model="search" type="text" autocomplete="off" placeholder="Search stocks..."
-                            class="block mb-5" @blur="validateUsername(search)" :class="{ 'error-border': search }"
+                            class="block mb-5" @blur="validateUsername(search)" @input="searchAssets('stocks', 8)"
+                            :class="{ 'error-border': search }"
                             style="max-width: 320px; min-width: 270px; padding-left: 40px;" />
                     </IconField>
                 </div>
@@ -27,18 +28,18 @@
                     <div class="stock-item flex justify-between" v-for="stock in stocks">
                         <div class="stock-name">{{ stock.name }}</div>
                         <div class="stock-symbol">{{ stock.symbol }}</div>
-                        <div class="stock-open">${{ stock.open }}</div>
+                        <div class="stock-open">${{ stock.open_price }}</div>
                         <div class="stock-volume" style="text-align: center;">{{ formatVolume(stock.volume) }}</div>
                         <div class="stock-change flex" style="justify-content: center; align-items: center;"
-                            :class="{ 'red': stock.changePerchentage < 0, 'green': stock.changePerchentage > 0 }">
-                            <i class="pi pi-arrow-up arrow" :class="{ 'hidden': stock.changePerchentage < 0 }"></i>
-                            <i class="pi pi-arrow-down arrow" :class="{ 'hidden': stock.changePerchentage > 0 }"></i>
+                            :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
+                            <i class="pi pi-arrow-up arrow" :class="{ 'hidden': stock.change_percent < 0 }"></i>
+                            <i class="pi pi-arrow-down arrow" :class="{ 'hidden': stock.change_percent > 0 }"></i>
                             {{ stock.change }}
                         </div>
                         <div class="stock-change-percentage flex"
-                            :class="{ 'red': stock.changePerchentage < 0, 'green': stock.changePerchentage > 0 }">
-                            <div class="plus" :class="{ 'hidden': stock.changePerchentage < 0 }">+</div>
-                            {{ stock.changePerchentage }} %
+                            :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
+                            <div class="plus" :class="{ 'hidden': stock.change_percent < 0 }">+</div>
+                            {{ stock.change_percent }} %
                         </div>
                     </div>
                 </div>
@@ -62,11 +63,34 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive, ref } from 'vue';
+
+const search = ref('')
+const stocks = reactive([])
+
+onMounted(async () => {
+    searchAssets('stocks', 8);
+});
+
+async function searchAssets(category, items) {
+    try {
+        const data = await apiClient.searchAssets(search.value, category, items);
+
+        if (!Array.isArray(data)) {
+            console.error('Expected array from API, got:', data);
+            return;
+        }
+
+        stocks.splice(0, stocks.length, ...data);
+        console.log(stocks);
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 
-const search = reactive('')
-const stocks = reactive([
+const stocks1 = reactive([
     { name: 'Apple Inc.', symbol: 'AAPL', open: 185.78, volume: 54321000, change: 1.64, changePerchentage: 0.88 },
     { name: 'Microsoft Corporation', symbol: 'MSFT', open: 415.25, volume: 23456123, change: 2.73, changePerchentage: 0.66 },
     { name: 'Amazon.com Inc.', symbol: 'AMZN', open: 177.98, volume: 32458000, change: 1.33, changePerchentage: -0.75 },
@@ -123,7 +147,8 @@ const tiles = reactive([
 ])
 
 const formatVolume = (volume) => {
-    return volume.toLocaleString('en-US');
+    const safeVolume = Number(volume || 0); // если null или undefined → 0
+    return safeVolume.toLocaleString('en-US');
 };
 
 

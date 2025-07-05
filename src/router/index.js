@@ -2,6 +2,7 @@ import DashboardLayout from '@/layout/DashboardLayout.vue';
 import landingPage from '@/layout/landingPage.vue';
 import Community from '@/views/dashboard-pages/Community.vue';
 import Dashboard from '@/views/dashboard-pages/Dashboard.vue';
+import Portfolio from '@/views/dashboard-pages/Portfolio.vue';
 import Referrals from '@/views/dashboard-pages/Referrals.vue';
 import Trade from '@/views/dashboard-pages/Trade.vue';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -22,11 +23,11 @@ const routes = [
                 name: 'trade',
                 component: Trade
             },
-            // {
-            //     path: '/dashboard/portfolio',
-            //     name: 'portfolio',
-            //     component: Portfolio
-            // },
+            {
+                path: '/dashboard/portfolio',
+                name: 'portfolio',
+                component: Portfolio
+            },
             {
                 path: '/dashboard/referrals',
                 name: 'referrals',
@@ -445,12 +446,15 @@ const router = createRouter({
     }
 });
 
+
 function isTokenValid(token) {
+    if (!token) return false;
+
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const currentTime = Math.floor(Date.now() / 1000);
-        return payload.exp > currentTime;
-    } catch (err) {
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp > now;
+    } catch (e) {
         return false;
     }
 }
@@ -458,17 +462,27 @@ function isTokenValid(token) {
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('access_token');
 
-    if (to.meta.requiresAuth) {
-        if (token && isTokenValid(token)) {
-            next();
-        } else {
-            router.push({
-                name: 'login',
-            })
-        }
-    } else {
-        next();
+    const isAuthenticated = token && isTokenValid(token);
+
+    // Если пользователь уже вошёл и пытается попасть на страницы логина или регистрации — редиректим на /dashboard
+    const authPages = ['login', 'register', 'verification'];
+
+    if (authPages.includes(to.name) && isAuthenticated) {
+        return next({ name: 'dashboard' });
     }
+
+    // Защищённые страницы
+    if (to.meta.requiresAuth) {
+        if (isAuthenticated) {
+            return next();
+        } else {
+            return next({ name: 'login' });
+        }
+    }
+
+    // Остальные страницы — пропускаем
+    return next();
 });
+
 
 export default router;

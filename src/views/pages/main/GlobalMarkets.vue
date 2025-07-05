@@ -67,7 +67,7 @@ const companies = reactive([
     { name: 'Meta Inc.', stock: 'META', profit: '' },
 ])
 
-onMounted(() => {
+onMounted(async () => {
     for (let i = 0; i < companies.length; i++) {
         companies[i].profit = (Math.random() * 10 - 5).toFixed(2)
     }
@@ -78,7 +78,6 @@ onMounted(() => {
 async function getAssets() {
     const response = await apiClient.getAssetsMain()
     console.log(response)
-
 }
 
 </script>

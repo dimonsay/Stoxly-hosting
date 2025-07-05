@@ -11,6 +11,24 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+apiClient.searchAssets = async (search, category = '', page_size = 8, page = 1,) => {
+    const response = (await apiClient.get('/stocks/assets/', {
+        params: {
+            search,
+            category,
+            page_size,
+            page,
+        }
+    })).data;
+
+    return response.results
+}
+
+apiClient.getUserAssets = async () => {
+    const response = (await apiClient.get('/stocks/portfolio/')).data;
+    return response
+}
+
 apiClient.getUserTransactions = async () => {
     const response = (await apiClient.get('/stocks/my/')).data;
     return response
@@ -18,7 +36,7 @@ apiClient.getUserTransactions = async () => {
 
 apiClient.getAssetsMain = async () => {
     const response = (await apiClient.get('/stocks/displayed/')).data;
-    console.log(response)
+    return response
 }
 
 apiClient.getUser = async () => {
