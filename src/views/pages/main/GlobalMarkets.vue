@@ -1,90 +1,92 @@
 <template>
-
     <div class="gloval-markets-wrapper">
         <div class="container">
-            <div class="block-title">
-                Discover Opportunities Worldwide
+            <div class="block-title">Discover Opportunities Worldwide</div>
+            <div class="block-description">
+                Invest easily in thousands of assets—from stocks to commodities—across global markets at your
+                fingertips.
             </div>
-            <div class="block-description">Invest easily in thousands of assets—from stocks to
-                commodities—across global markets at your fingertips.</div>
 
             <div class="top-companies-wrapper flex justify-between">
                 <div class="top-companies">
                     <div class="top-title">Top Companies This Week</div>
-                    <div class="company-details-wrapper" v-for="company in companies">
-                        <div class="company-details flex justify-between" style="align-items: center !important;">
+                    <div class="company-details-wrapper" v-for="company in selectedAssets" :key="company.symbol">
+                        <div class="company-details flex justify-between items-center">
                             <div class="company-title-wrapper">
                                 <div class="companie-title">{{ company.name }}</div>
-                                <div class="stock-name">{{ company.stock }}</div>
+                                <div class="stock-name">{{ company.symbol }}</div>
                             </div>
-                            <div class="trend-wrapper flex"
-                                :class="{ 'red': company.profit < 0, 'green': company.profit > 0 }">
+                            <div class="trend-wrapper flex" v-if="company.change_percent"
+                                :class="{ red: company.change_percent < 0, green: company.change_percent > 0 }">
                                 <div class="trend">
-                                    <div class="arrow" :class="{ 'hidden': company.profit > 0 }"><i
-                                            class="fa-solid fa-arrow-trend-down"></i>
+                                    <div class="arrow" :class="{ hidden: company.change_percent > 0 }">
+                                        <i class="fa-solid fa-arrow-trend-down"></i>
                                     </div>
-                                    <div class="arrow" :class="{ 'hidden': company.profit < 0 }">
+                                    <div class="arrow" :class="{ hidden: company.change_percent < 0 }">
                                         <i class="fa-solid fa-arrow-trend-up"></i>
                                     </div>
                                 </div>
-                                <div class="profit"> {{ company.profit }} %</div>
+                                <div class="profit">{{ company.change_percent ?? '0.00' }}%</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="categories">
                     <div class="categories-title category-title">Categories</div>
-                    <div class="categories-wrapper" v-for="category in categories">
-                        <div class="category-name company-details" style="align-content: center !important; ">{{
-                            category.name }}</div>
+                    <div class="categories-wrapper" v-for="category in nonEmptyCategories" :key="category.category">
+                        <div class="category-name company-details flex items-center text-semibold"
+                            :class="{ active: category.category === selectedCategory }"
+                            @click="selectedCategory = category.category">
+                            {{ formatCategory(category.category) }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </template>
+
 
 <script setup>
 import apiClient from '@/api/axios';
-import { onMounted, reactive } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
-const categories = reactive([
-    { name: 'Stocks' },
-    { name: 'ETFs' },
-    { name: 'Bonds' },
-    { name: 'Commodities' },
-    { name: 'Forex' },
-    { name: 'Crypto' },
-])
+const rawData = ref([]);
+const selectedCategory = ref('stocks'); // начальная категория
 
-const companies = reactive([
-    { name: 'Apple Inc.', stock: 'AAPL', profit: '1' },
-    { name: 'Microsoft Inc.', stock: 'MSFT', profit: '-1' },
-    { name: 'Amazon.com Inc.', stock: 'AMZN', profit: '' },
-    { name: 'Alphabet Inc.', stock: 'GOOGL', profit: '' },
-    { name: 'Tesla Inc.', stock: 'TSLA', profit: '' },
-    { name: 'Meta Inc.', stock: 'META', profit: '' },
-])
 
 onMounted(async () => {
-    for (let i = 0; i < companies.length; i++) {
-        companies[i].profit = (Math.random() * 10 - 5).toFixed(2)
-    }
+    const response = await apiClient.getAssetsDisplayed();
+    rawData.value = response;
+    console.log(rawData.value)
+});
 
-    getAssets()
-})
-
-async function getAssets() {
-    const response = await apiClient.getAssetsMain()
-    console.log(response)
+function formatCategory(name) {
+    return name
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, c => c.toUpperCase());
 }
+
+const nonEmptyCategories = computed(() =>
+    rawData.value.filter(c => c.assets && c.assets.length > 0)
+);
+
+const selectedAssets = computed(() => {
+    const found = rawData.value.find(c => c.category === selectedCategory.value);
+    return found?.assets || [];
+});
+
 
 </script>
 
 <style scoped>
+.category-name.active {
+    background-color: #2d3b52;
+}
+
 .profit {
-    width: 70px;
+    width: 60px;
     text-align: right;
 }
 
@@ -102,7 +104,7 @@ async function getAssets() {
 }
 
 .trend {
-    margin-right: 10px;
+    margin-right: 0px;
 }
 
 .red {
@@ -137,7 +139,7 @@ async function getAssets() {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     background-color: #1d283a;
-    padding: 20px 20px;
+    padding: 10px 15px;
 }
 
 .top-companies-wrapper {

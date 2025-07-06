@@ -29,27 +29,31 @@
                     'animation-play-state': animationState
                 }">
                     <div class="stocks-item flex" v-for="(stock, index) in stocks" :key="index">
-                        <div class="stock-title">{{ stock.title }} ${{ stock.price }}</div>
-                        <div class="arrow green" :class="{ 'hidden': stock.trend < 0 }">
+                        <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price).toFixed(2) }}
+                        </div>
+                        <div class="arrow green" :class="{ 'hidden': stock.change_percent < 0 }">
                             <i class="fa-solid fa-arrow-trend-up"></i>
                         </div>
-                        <div class="arrow red" :class="{ 'hidden': stock.trend > 0 }">
+                        <div class="arrow red" :class="{ 'hidden': stock.change_percent > 0 }">
                             <i class="fa-solid fa-arrow-trend-down"></i>
                         </div>
-                        <div class="price" :class="{ 'red': stock.trend < 0, 'green': stock.trend > 0 }">
-                            {{ stock.trend > 0 ? '+' : '' }}{{ stock.trend }}%
+                        <div class="price"
+                            :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
+                            {{ stock.change_percent > 0 ? '+' : '' }}{{ stock.change_percent }}%
                         </div>
                     </div>
                     <div class="stocks-item flex" v-for="(stock, index) in stocks" :key="'dup-' + index">
-                        <div class="stock-title">{{ stock.title }} ${{ stock.price }}</div>
-                        <div class="arrow green" :class="{ 'hidden': stock.trend < 0 }">
+                        <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price).toFixed(2) }}
+                        </div>
+                        <div class="arrow green" :class="{ 'hidden': stock.change_percent < 0 }">
                             <i class="fa-solid fa-arrow-trend-up"></i>
                         </div>
-                        <div class="arrow red" :class="{ 'hidden': stock.trend > 0 }">
+                        <div class="arrow red" :class="{ 'hidden': stock.change_percent > 0 }">
                             <i class="fa-solid fa-arrow-trend-down"></i>
                         </div>
-                        <div class="price" :class="{ 'red': stock.trend < 0, 'green': stock.trend > 0 }">
-                            {{ stock.trend > 0 ? '+' : '' }}{{ stock.trend }}%
+                        <div class="price"
+                            :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
+                            {{ stock.change_percent > 0 ? '+' : '' }}{{ stock.change_percent }}%
                         </div>
                     </div>
                 </div>
@@ -61,6 +65,7 @@
 
 
 <script setup>
+import apiClient from '@/api/axios';
 import { useLayout } from '@/layout/composables/layout';
 import router from '@/router';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -82,30 +87,19 @@ const resumeAnimation = () => {
     animationState.value = 'running'
 }
 
-const stocks = reactive([
-    { title: 'AAPL', trend: '', price: '278' },
-    { title: 'QBTS', trend: '', price: '172' },
-    { title: 'BBD', trend: '', price: '54' },
-    { title: 'NVDA', trend: '', price: '89' },
-    { title: 'PLTR', trend: '', price: '102' },
-    { title: 'F', trend: '', price: '201' },
-    { title: 'TSLA', trend: '', price: '274' },
-    { title: 'HIMS', trend: '', price: '37' },
-    { title: 'LCID', trend: '', price: '15' },
-    { title: 'WBD', trend: '', price: '28' },
-    { title: 'RGTI', trend: '', price: '72' },
-    { title: 'INTC', trend: '', price: '99' },
-    { title: 'AAL', trend: '', price: '45' },
-    { title: 'NU', trend: '', price: '23' },
-    { title: 'CLF', trend: '', price: '75' },
-    { title: 'AMD', trend: '', price: '109' },
-])
+const stocks = reactive([])
 
-onMounted(() => {
-    for (let i = 0; i < stocks.length; i++) {
-        stocks[i].trend = (Math.random() * 10 - 5).toFixed(2)
+onMounted(async () => {
+    try {
+        const response = await apiClient.searchAssets('', 'stocks', 20)
+
+        stocks.splice(0, stocks.length, ...response)
+    } catch (err) {
+        console.warn(err)
     }
 })
+
+
 
 function toMarket() {
     router.push({

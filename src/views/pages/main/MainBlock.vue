@@ -9,13 +9,14 @@
                         Borders <br />
                     </div>
                     <div class="main-block-description">
-                        Discover how easy it is to grow your wealth, even if you're new to investing. Start today and take control of your financial future.
+                        Discover how easy it is to grow your wealth, even if you're new to investing. Start today and
+                        take control of your financial future.
                     </div>
 
                     <div class="buttons-wrapper">
                         <div class="get-started-btn btn flex invest-btn"
                             style="text-align: center; align-items: center;">
-                            <div class="button-title">Get started</div>
+                            <div class="button-title" @click="toAuth()">Get started</div>
                             <div class="arrow-btn-icon">
                                 <i class="fa-solid fa-arrow-right"></i>
                             </div>
@@ -23,57 +24,158 @@
                     </div>
 
                 </div>
-                <div class="portfolio-wrapper">
-                    <div class="portfolio">
-                        <div class="portfolio-value flex justify-between">
-                            <div class="value">
-                                <div class="portfolio-value-title">Portfolio value</div>
-                                <div class="portfolio-value-number">$24,568.80</div>
-                            </div>
-                            <div class="portfolio-profit">+5.23%</div>
-                        </div>
-                        <div class="portfoilo-trend">
-                            <div class="trend"></div>
-                            <div class="monthes flex justify-between">
-                                <div class="month">Jan</div>
-                                <div class="month">Feb</div>
-                                <div class="month">Mar</div>
-                                <div class="month">Apr</div>
-                                <div class="month">May</div>
-                                <div class="month">Jun</div>
+                <div class="portfolio-wrapper flex flex-col gap-5">
+                    <div class="portfolio" style="width: 600px; max-width: 700px;">
+                        <div class="portolio-title  text-2xl font-semibold mb-5">Portfolio value</div>
+                        <div class="flex justify-between align-center mb-5">
+                            <div class="portfolio-value-number">${{ formatValue(latestValue) }}</div>
+                            <div class="portfolio-profit" :class="{ positive: profit >= 0, negative: profit < 0 }">
+                                {{ profit.toFixed(2) }}%
                             </div>
                         </div>
-                        <div class="main-stocks flex justify-between">
-                            <div class="block">
-                                <div class="stock-trend">
-                                    <div class="stock-title">AAPL</div>
-                                    <div class="stock-price">$183.26</div>
-                                </div>
-                                <div class="stock-trend">
-                                    <div class="stock-title">MSFT</div>
-                                    <div class="stock-price">$183.26</div>
-                                </div>
-                            </div>
-                            <div class="block">
-                                <div class="stock-trend">
-                                    <div class="stock-title">AMZN</div>
-                                    <div class="stock-price">$183.26</div>
-                                </div>
-                                <div class="stock-trend">
-                                    <div class="stock-title">TSLA</div>
-                                    <div class="stock-price">$183.26</div>
-                                </div>
-                            </div>
+                        <Chart type="line" :data="chartData" :options="chartOptions" style="height: 260px" />
 
+                        <div class="grid assets-wrapper grid-cols-2 gap-2">
+                            <div class="asset-item  border rounded-lg p-2 border-white/10 bg-white/5"
+                                v-for="asset in assets">
+                                <div class="asset-symbol">
+                                    {{ asset.symbol }}
+                                </div>
+                                <div class="asset-price">
+                                    ${{ Number(asset.price).toFixed(2) }}
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 </template>
 
+<script setup>
+import apiClient from '@/api/axios';
+import router from '@/router';
+import { Chart as ChartJS, registerables } from 'chart.js';
+import { computed, onMounted, reactive, ref } from 'vue';
+
+ChartJS.register(...registerables);
+
+const assets = reactive([])
+
+onMounted(async () => {
+    const tickers = ['aapl', 'tsla', 'msft', 'nke'];
+
+    for (const ticker of tickers) {
+        const result = await apiClient.searchAssets(ticker, 'stocks');
+        assets.push(...result); // добавляем в массив
+    }
+
+    console.log(assets);
+})
+
+const baseValues = [20200, 21350, 20930, 21220, 20800, 22000];
+const portfolio = ref(
+    baseValues.map(v => randomizeValue(v, 1))
+);
+
+function formatValue(value) {
+    return new Intl.NumberFormat('en-US').format(value);
+}
+
+const latestValue = computed(() => portfolio.value[portfolio.value.length - 1]);
+
+function randomizeValue(base, variancePercent = 1) {
+    // variancePercent — процент вариации, например 1 = ±1%
+    const variance = base * (variancePercent / 100);
+    const randomOffset = (Math.random() * 2 - 1.5) * variance; // от -variance до +variance
+    return +(base + randomOffset).toFixed(2); // округлить до 2 знаков
+}
+
+const profit = computed(() => {
+    const len = portfolio.value.length;
+    if (len < 2) return 0;
+    const prev = portfolio.value[len - 2];
+    const curr = portfolio.value[len - 1];
+    return ((curr - prev) / prev) * 100;
+});
+
+const chartData = ref({
+    labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    datasets: [
+        {
+            label: 'Preview',
+            data: portfolio,
+            borderColor: '#42A5F5',
+            backgroundColor: 'rgba(66, 165, 245, 0.2)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4,
+            pointHoverRadius: 6
+        }
+    ]
+});
+
+
+
+const chartOptions = ref({
+    responsive: true,
+    plugins: {
+        legend: {
+            display: false,
+            position: 'left'
+        },
+        tooltip: {
+            callbacks: {
+                title: () => '',
+                label: (tooltipItem) => `$${tooltipItem.formattedValue}`,
+                labelPointStyle: () => ({
+                    pointStyle: 'rectRounded',
+                    radius: 0,
+                    fillStyle: 'transparent',
+                    strokeStyle: 'transparent',
+                    rotation: 0
+                })
+            }
+        },
+        title: {
+            display: false,
+            text: 'Portfolio Value'
+        }
+    },
+    scales: {
+        x: {
+            ticks: {
+                color: 'white',
+                font: {
+                    size: 14  // размер шрифта заголовка оси X
+                }
+            },
+            title: {
+                display: true,
+            }
+        },
+        y: {
+            display: false,
+            title: {
+                display: false,
+            },
+        }
+    }
+});
+
+function toAuth() {
+    router.push({ name: 'login' });
+}
+</script>
+
+
 <style scoped>
+canvas {
+    max-width: 100%;
+}
+
 .main-stocks {
     width: 100%;
     margin-top: 10px;
@@ -181,7 +283,3 @@
     font-size: 1.4rem;
 }
 </style>
-
-<script setup>
-
-</script>

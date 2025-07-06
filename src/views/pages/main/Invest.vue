@@ -80,6 +80,7 @@
 
 .step-description {
     padding: 25px;
+    min-height: 125px;
     background-color: #161a23;
     border-bottom-right-radius: var(--border-radius);
     border-bottom-left-radius: var(--border-radius);

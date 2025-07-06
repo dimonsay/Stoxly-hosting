@@ -34,8 +34,13 @@ apiClient.getUserTransactions = async () => {
     return response
 }
 
-apiClient.getAssetsMain = async () => {
-    const response = (await apiClient.get('/stocks/displayed/')).data;
+apiClient.getCategories = async () => {
+    const response = (await apiClient.get('/stocks/assets/categories/')).data;
+    return response
+}
+
+apiClient.getAssetsDisplayed = async () => {
+    const response = (await apiClient.get('/stocks/assets/displayed/')).data;
     return response
 }
 

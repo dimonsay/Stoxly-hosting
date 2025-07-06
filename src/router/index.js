@@ -479,8 +479,6 @@ router.beforeEach((to, from, next) => {
             return next({ name: 'login' });
         }
     }
-
-    // Остальные страницы — пропускаем
     return next();
 });
 
