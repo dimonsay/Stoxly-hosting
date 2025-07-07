@@ -15,7 +15,7 @@
                         </div>
                     </div>
                     <div class="step-description">
-                        Create your free account in minutes—just an email and phone number needed.
+                        Create your free account in minutes — just an email and phone number needed.
                     </div>
                 </div>
                 <div class="steps-item step-deposit">

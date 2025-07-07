@@ -7,8 +7,7 @@
                     <IconField style="display: flex; align-items: center;">
                         <InputIcon class="pi pi-search" style="position: absolute; left: 10px;" />
                         <InputText v-model="search" type="text" autocomplete="off" placeholder="Search stocks..."
-                            class="block mb-5" @blur="validateUsername(search)" @input="searchAssets('stocks', 8)"
-                            :class="{ 'error-border': search }"
+                            class="block mb-5" @input="searchAssets('stocks', 8)" :class="{ 'error-border': search }"
                             style="max-width: 320px; min-width: 270px; padding-left: 40px;" />
                     </IconField>
                 </div>
@@ -78,7 +77,7 @@ onMounted(async () => {
 
 async function loadCategoriesAndSearch() {
     try {
-        const response = await apiClient.getCategories();
+        const response = await apiClient.getCategory();
         const categories = response.categories;
 
         tiles.value = categories.map(cat => ({

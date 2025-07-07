@@ -1,8 +1,8 @@
 <template>
     <div class="dashboard-wrapper ">
         <div class="dashboard flex justify-around">
-            <SideBar class="p-10" />
-            <div class="container borders">
+            <SideBar class="pt-10 p-5" />
+            <div class="container borders dashboard-container">
                 <router-view></router-view>
             </div>
             <Wallet class="p-10" :user="user" />
@@ -32,7 +32,7 @@ onMounted(async () => {
 </script>
 
 <style>
-.container {
+.dashboard-container {
     min-height: 100vh;
 }
 

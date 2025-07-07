@@ -80,7 +80,6 @@
 </style>
 
 <script setup>
-import { onMounted } from 'vue';
 
 defineProps({
     user: {
@@ -88,10 +87,6 @@ defineProps({
         required: true
     }
 });
-
-onMounted(async () => {
-    console.log(user)
-})
 
 const formatVolume = (volume) => {
     return '$' + Number(volume || 0).toLocaleString('en-US');

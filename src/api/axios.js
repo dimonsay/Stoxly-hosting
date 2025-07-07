@@ -32,14 +32,6 @@ apiClient.buyAsset = async (asset_id, quantity) => {
     return response.data;
 };
 
-apiClient.buyAsset = async (asset_id, quantity) => {
-    const response = await apiClient.post('/stocks/trading/buy/', {
-        asset_id,
-        quantity
-    });
-    return response.data;
-};
-
 apiClient.sellAsset = async (asset_id, quantity) => {
     const response = await apiClient.post('/stocks/trading/sell/', {
         asset_id,
@@ -72,7 +64,7 @@ apiClient.getUserTransactions = async () => {
     return response
 }
 
-apiClient.getCategories = async () => {
+apiClient.getCategory = async () => {
     const response = (await apiClient.get('/stocks/assets/categories/')).data;
     return response
 }

@@ -1,36 +1,52 @@
 <template>
     <div class="trading-markets-wrapper page-tile dashboard-tile flex flex-col gap-5">
-        <div class="trading-markets-categories-wrapper flex gap-3">
-            <div class="trading-market-categorie pointer" v-for="(item, category) in instruments"
-                :class="{ 'active-categorie': selectedCategory === category }" :key="category"
-                @click="selectedCategory = category">{{ category.toUpperCase() }}</div>
+        <div class="flex">
+            <div class="trading-market-categorie pointer text-xl" v-for="item in categories" :key="item.value"
+                :class="{ 'active-categorie': selectedCategory === item.value }" @click="selectedCategory = item.value">
+                {{ item.label }}
+            </div>
         </div>
 
-        <div class="trade-block-title text-xl font-semibold">{{ selectedCategory.charAt(0).toUpperCase() +
-            selectedCategory.slice(1) }} Market Overview</div>
 
-        <div class="filtered-items flex flex-col  gap-5">
+        <div class="trade-block-title flex justify-between items-center">
+            <div class="category-title text-xl font-semibold">
+                {{categories.find(cat => cat.value === selectedCategory)?.label || ''}} Market Overview
+            </div>
+
+            <IconField style="display: flex; align-items: center; position: relative;">
+                <InputIcon class="pi pi-search"
+                    style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);" />
+                <InputText v-model="search" type="text" autocomplete="off" placeholder="Search..." class="block mb-5"
+                    style="max-width: 320px; min-width: 270px; padding-left: 40px;" />
+            </IconField>
+
+        </div>
+
+        <div class="filtered-items flex flex-col gap-5 ">
             <div class="filtered-item flex align-center justify-between p-5 bg-gray-700 pointer rounded-xl"
-                v-for="(item, category) in instruments[selectedCategory].slice(0, instrumentsLoad[selectedCategory])"
-                :key="item">
+                v-for="item in instruments" :key="item.symbol">
                 <div class="flex flex-col gap-3">
-                    <div class="filtered-item-name font-">{{ item.name.toUpperCase() }}</div>
+                    <div class="filtered-item-name">{{ item.name.toUpperCase() }}</div>
                     <div class="filtered-item-symbol grey">{{ item.symbol.toUpperCase() }}</div>
                 </div>
 
                 <div class="flex flex-col gap-3">
-                    <div class="filtered-item-toBuy green" @click="buyAsset(2, 1)">Price to buy: ${{ item.toBuy }}</div>
-                    <div class="filtered-item-toSell red" @click="sellAsset(2, 1)">Price to sell: ${{ item.toSell }}
+                    <div class="filtered-item-toBuy green" @click="buyAsset(item.id, 1)">
+                        Price to buy: ${{ Number(item.price).toFixed(2) }}
+                    </div>
+                    <div class="filtered-item-toSell red" @click="sellAsset(item.id, 1)">
+                        Price to sell: ${{ Number(item.price).toFixed(2) }}
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="load-more-btn invest-btn text-xl p-2 w-full pointer"
-            v-if="instruments[selectedCategory].length > instrumentsLoad[selectedCategory]" @click="loadMore()">Load
-            more</div>
+
+        <div class="load-more-btn invest-btn text-xl p-2 w-full pointer text-center"
+            v-if="instruments.length > instrumentsLoad" @click="loadMore">Load more</div>
     </div>
 </template>
+
 
 <style scoped>
 .trading-market-categorie {
@@ -45,77 +61,63 @@
 
 <script setup>
 import apiClient from '@/api/axios';
-import { reactive, ref } from 'vue';
+import { InputText } from 'primevue';
+import { onMounted, ref, watch } from 'vue';
 
-const selectedCategory = ref(null);
+const categories = ref([]);
+const selectedCategory = ref('');
+const search = ref('');
+const instruments = ref([]);
+const instrumentsLoad = ref(8);
 
-const instrumentsLoad = reactive({
-    stock: 3,
-    etfs: 3,
-    crypto: 3,
-    bonds: 3,
-})
-
-async function buyAsset(id, quantity = 1) {
+const fetchCategories = async () => {
     try {
-        const result = await apiClient.buyAsset(id, quantity);
-        console.log('Buy success:', result);
-        return result;
+        const data = await apiClient.getCategory();
+        categories.value = data.categories;
+        if (categories.value.length > 0) {
+            selectedCategory.value = categories.value[0].value; // 👈 not label!
+        }
     } catch (error) {
-        console.error('Buy failed:', error);
-        throw error;
+        console.error('Ошибка при получении категорий:', error);
     }
-}
-
-async function sellAsset(id, quantity = 1) {
-    try {
-        const result = await apiClient.sellAsset(id, quantity);
-        console.log('Sell success:', result);
-        return result;
-    } catch (error) {
-        console.error('Sell failed:', error);
-        throw error;
-    }
-}
-
-const instruments = reactive({
-    stock: [
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-    ],
-    etfs: [
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-    ],
-    crypto: [
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-    ],
-    bonds: [
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-        { name: 'Apple', symbol: 'AAPL', toSell: 123, toBuy: 124 },
-    ],
-})
-
-if (Object.keys(instruments).length > 0) {
-    selectedCategory.value = Object.keys(instruments)[0];
-}
-
-const loadMore = () => {
-    const category = selectedCategory.value;
-    instrumentsLoad[category] += 3;
 };
 
+const fetchInstruments = async () => {
+    try {
+        const result = await apiClient.searchAssets(search.value, selectedCategory.value, instrumentsLoad.value);
+        instruments.value = result;
+    } catch (error) {
+        console.error('Ошибка при получении инструментов:', error);
+    }
+};
+
+onMounted(async () => {
+    await fetchCategories();
+    await fetchInstruments();
+});
+
+watch([selectedCategory, search], () => {
+    fetchInstruments();
+});
+
+const loadMore = async () => {
+    instrumentsLoad.value += 4;
+    await fetchInstruments();
+};
+
+const buyAsset = async (id, quantity = 1) => {
+    try {
+        await apiClient.buyAsset(id, quantity);
+    } catch (error) {
+        console.error('Ошибка при покупке:', error);
+    }
+};
+
+const sellAsset = async (id, quantity = 1) => {
+    try {
+        await apiClient.sellAsset(id, quantity);
+    } catch (error) {
+        console.error('Ошибка при продаже:', error);
+    }
+};
 </script>

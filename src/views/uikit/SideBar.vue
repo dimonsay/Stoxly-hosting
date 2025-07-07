@@ -1,33 +1,49 @@
 <template>
     <div class="sidabar-wrapper">
-        <div class="name text-3xl font-bold pointer " style="text-align: left;">Stoxly</div>
+        <div class="name text-3xl font-bold pointer " style="text-align: center;">Stoxly</div>
 
-        <div class="menu-navigation flex flex-col gap-3 text-1xl">
-            <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('dashboard')" style="align-items: center;">
-                <i class="pi pi-chart-line menu-item-logo"></i>
-                <div class="menu-item-title grey">Dashboard</div>
+        <div class="menu-navigation flex flex-col gap-1 text-1xl">
+            <div class="menu-item flex pointer text-lg gap-2 items-center"
+                :class="{ 'active-item': isActive('dashboard').value }" @click="goTo('dashboard')">
+                <i class="pi pi-chart-line menu-item-logo text-3xl"></i>
+                <div class="menu-item-title ">Dashboard</div>
             </div>
-            <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('trade')" style="align-items: center;">
-                <i class="fa-solid fa-arrow-trend-up"></i>
-                <div class="menu-item-title grey">Trade</div>
+            <div class="menu-item flex pointer text-lg gap-2 items-center"
+                :class="{ 'active-item': isActive('trade').value }" @click="goTo('trade')">
+                <i class="fa-solid fa-arrow-trend-up menu-item-logo text-3xl"></i>
+                <div class="menu-item-title  text-lg">Trade</div>
             </div>
-            <!-- <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('portfolio')" style="align-items: center;">
-                <i class="pi pi-chart-pie menu-item-logo"></i>
-                <div class="menu-item-title grey">Portfolio</div>
-            </div> -->
-            <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('community')" style="align-items: center;">
-                <i class="pi pi-users menu-item-logo"></i>
-                <div class="menu-item-title grey">Community</div>
+            <div class="menu-item flex pointer text-lg gap-2 items-center"
+                :class="{ 'active-item': isActive('portfolio').value }" @click="goTo('portfolio')">
+                <i class="pi pi-chart-pie menu-item-logo text-3xl"></i>
+                <div class="menu-item-title ">Portfolio</div>
             </div>
-            <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('referrals')" style="align-items: center;">
-                <i class="pi pi-gift menu-item-logo"></i>
-                <div class="menu-item-title grey">Referrals</div>
+            <div class="menu-item flex pointer text-lg gap-2 items-center"
+                :class="{ 'active-item': isActive('community').value }" @click="goTo('community')">
+                <i class="pi pi-users menu-item-logo text-3xl"></i>
+                <div class="menu-item-title ">Community</div>
+            </div>
+            <div class="menu-item flex pointer text-lg gap-2 items-center"
+                :class="{ 'active-item': isActive('referrals').value }" @click="goTo('referrals')">
+                <i class="pi pi-gift menu-item-logo text-3xl"></i>
+                <div class="menu-item-title ">Referrals</div>
+            </div>
+            <div class="menu-item flex pointer text-lg gap-2 items-center"
+                :class="{ 'active-item': isActive('profile').value }" @click="goTo('profile')">
+                <i class="pi pi-user menu-item-logo text-3xl"></i>
+                <div class="menu-item-title ">Profile</div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.active-item {
+    background-color: #33c3f0;
+    border-radius: 6px;
+    color: white;
+}
+
 .sidabar-wrapper {
     width: 300px;
 }
@@ -37,8 +53,8 @@
 }
 
 .menu-item {
-    width: 150px;
-    padding: 5px 5px;
+    width: 100%;
+    padding: 5px 20px;
 }
 
 .menu-item i {
@@ -53,12 +69,17 @@
 </style>
 
 <script setup>
-import router from '@/router';
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter();
+const route = useRoute();
 
 function goTo(name) {
-    router.push({
-        name: name,
-    })
+    router.push({ name });
+}
+
+function isActive(name) {
+    return computed(() => route.name === name);
 }
 </script>
