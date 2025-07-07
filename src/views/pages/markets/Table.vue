@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="page-tiles-wrapper flex justify-between" style="align-items: center;">
-                <div class="flex justify-between" style="flex-direction: column; min-width: 270px; min-height: 200px;"
+                <div class="flex justify-between" style="flex-direction: column; min-width: 270px; min-height: 180px;"
                     :class="['page-tile', tile.name], 'flex'" v-for="tile in tiles">
                     <div class="tile-name">{{ tile.name }}</div>
 
@@ -137,11 +137,11 @@ const formatVolume = (volume) => {
 
 <style scoped>
 .data-wrapper {
-    min-height: 100px;
+    min-height: 90px;
 }
 
 .data-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
 }
 
