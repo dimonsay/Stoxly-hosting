@@ -119,19 +119,20 @@ const chartData = ref({
 
 
 
-const chartOptions = ref({
+const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
         legend: {
-            display: false,
-            position: 'left'
+            display: false
         },
         tooltip: {
+            displayColors: false, // ✅ отключает квадрат
             callbacks: {
                 title: () => '',
-                label: (tooltipItem) => `$${tooltipItem.formattedValue}`,
+                label: (tooltipItem) => `$${tooltipItem.formattedValue}`, // или $ если надо
                 labelPointStyle: () => ({
-                    pointStyle: 'rectRounded',
+                    pointStyle: 'line',
                     radius: 0,
                     fillStyle: 'transparent',
                     strokeStyle: 'transparent',
@@ -140,8 +141,7 @@ const chartOptions = ref({
             }
         },
         title: {
-            display: false,
-            text: 'Portfolio Value'
+            display: false
         }
     },
     scales: {
@@ -149,21 +149,24 @@ const chartOptions = ref({
             ticks: {
                 color: 'white',
                 font: {
-                    size: 14  // размер шрифта заголовка оси X
+                    size: 14
                 }
             },
             title: {
-                display: true,
+                display: true
             }
         },
         y: {
-            display: false,
-            title: {
-                display: false,
-            },
+            display: false
+        }
+    },
+    elements: {
+        point: {
+            radius: 0,
+            hoverRadius: 0
         }
     }
-});
+};
 
 function toAuth() {
     router.push({ name: 'login' });

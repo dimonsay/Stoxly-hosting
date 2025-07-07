@@ -1,9 +1,9 @@
 <script setup>
+import apiClient from '@/api/axios.js';
 import { useLayout } from '@/layout/composables/layout';
-import { ref, onMounted, reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 const { isDarkTheme } = useLayout();
-import apiClient from '@/api/axios.js';
 
 const router = useRouter();
 
@@ -26,6 +26,18 @@ onMounted(() => {
     }
 });
 
+function isTokenValid(token) {
+    if (!token) return false;
+
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp > now;
+    } catch (e) {
+        return false;
+    }
+}
+
 function registerPage() {
     router.push({
         name: 'register'
@@ -33,25 +45,31 @@ function registerPage() {
 }
 
 async function login() {
-    if (loginData.email != '' && loginData.password != '') {
-        const response = await apiClient.login(loginData)
-        console.log(response)
+    if (loginData.email !== '' && loginData.password !== '') {
+        const existingToken = localStorage.getItem('access_token');
+
+        if (isTokenValid(existingToken)) {
+            // Уже авторизован — не вызываем login, не запрашиваем OTP
+            return router.push({ name: 'dashboard' });
+        }
+
+        const response = await apiClient.login(loginData);
+        console.log(response);
+
         if (response.success) {
+            // токен получен, но верификация через OTP обязательна
             sessionStorage.setItem('email', loginData.email);
             sessionStorage.setItem('type', 'login');
 
             router.push({
                 name: 'verification'
-            })
+            });
         } else {
             if (response.isValidationError) {
-                // Ошибка валидации (400)
                 console.error('Ошибка валидации:', response.errors);
             } else if (response.isNetworkError) {
-                // Проблемы с сетью
                 console.error('Сетевая ошибка');
             } else {
-                // Другие ошибки
                 console.error('Ошибка:', response.status, response.errors);
             }
         }

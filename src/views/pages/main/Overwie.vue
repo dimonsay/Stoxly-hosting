@@ -3,46 +3,113 @@
         <div class="container">
             <div class="market-overwie">
                 <div class="title-wrapper">
-                    <div class="block-title">Market Overwie</div>
-                    <div class="block-description">Main indexes and their dinamic</div>
+                    <div class="block-title">Market Overview</div>
+                    <div class="block-description">Main indexes and their dynamic</div>
                 </div>
                 <div class="indexes-wrapper flex justify-between">
-                    <div class="index" v-for="index in indexes" style="text-align: left;">
+                    <div class="index" v-for="index in indexes" :key="index.title" style="text-align: left;">
                         <div class="index-title">{{ index.title }}</div>
-                        <div class="index-profit" :class="{ 'red': index.profit < 0, 'green': index.profit > 0 }">
-                            {{ index.profit }} %</div>
-                        <div class="profit-trend">
-
+                        <div class="index-profit" :class="{ red: index.profit < 0, green: index.profit > 0 }">
+                            {{ index.profit }} %
                         </div>
-
+                        <Chart type="line" :data="{
+                            labels: ['', '', '', '', ''],
+                            datasets: [
+                                {
+                                    data: index.data,
+                                    borderColor: '#42A5F5',
+                                    backgroundColor: 'rgba(66, 165, 245, 0.2)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }
+                            ]
+                        }" :options="chartOptions" style="height: 150px; width: 320px;" />
                     </div>
-
                 </div>
             </div>
-
-
         </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, reactive } from 'vue';
+import { reactive } from 'vue';
 
 const indexes = reactive([
-    { title: 'S&P 500', profit: '1.23', dynamic: '' },
-    { title: 'NASDAQ', profit: '1.87', dynamic: '' },
-    { title: 'Dow Jones', profit: '-0.32', dynamic: '' }
-])
-
-
-onMounted(() => {
-    for (let i = 0; i < indexes.length; i++) {
-        indexes[i].profit = (Math.random() * 5 - 3).toFixed(2)
+    {
+        title: 'S&P 500',
+        profit: 1.23,
+        data: [0.5, 0.8, 1.0, 1.2, 1.23]
+    },
+    {
+        title: 'NASDAQ',
+        profit: 1.87,
+        data: [1.1, 1.3, 1.5, 1.6, 1.87],
+    },
+    {
+        title: 'Dow Jones',
+        profit: 1.1,
+        data: [0.1, 0.15, 0.5, 1, 1.1]
     }
-})
+]);
+
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false
+        },
+        tooltip: {
+            displayColors: false, // ✅ отключает квадрат
+            callbacks: {
+                title: () => '',
+                label: (tooltipItem) => `${tooltipItem.formattedValue}%`, // или $ если надо
+                labelPointStyle: () => ({
+                    pointStyle: 'line',
+                    radius: 0,
+                    fillStyle: 'transparent',
+                    strokeStyle: 'transparent',
+                    rotation: 0
+                })
+            }
+        },
+        title: {
+            display: false
+        }
+    },
+    scales: {
+        x: {
+            ticks: {
+                color: 'white',
+                font: {
+                    size: 14
+                }
+            },
+            title: {
+                display: true
+            }
+        },
+        y: {
+            display: false
+        }
+    },
+    elements: {
+        point: {
+            radius: 0,
+            hoverRadius: 0
+        }
+    }
+};
 </script>
 
+
 <style scoped>
+.canvas {
+    width: 100%;
+}
+
 .red {
     color: #eb6c6d;
 }

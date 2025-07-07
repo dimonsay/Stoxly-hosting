@@ -1,5 +1,4 @@
 import apiClient from '@/api/axios';
-import router from '@/router';
 
 export class AuthService {
     static async login(email, password) {
@@ -11,6 +10,8 @@ export class AuthService {
             }
 
             localStorage.setItem('access_token', response.data.access_token);
+            localStorage.setItem('refresh_token', response.data.refresh_token);
+
             return response.data;
         } catch (error) {
             const errorMessage = error.response?.data?.detail || 'Ошибка авторизации';
@@ -19,26 +20,25 @@ export class AuthService {
     }
 
     static async refreshToken() {
+        const refreshToken = localStorage.getItem('refresh_token');
+
+        if (!refreshToken) {
+            throw new Error('Refresh token не найден');
+        }
+
         try {
-            const refreshToken = localStorage.getItem('refresh_token');
-
-            if (!refreshToken) {
-                throw new Error('Refresh token не найден');
-            }
-
             const response = await apiClient.post('/auth/refresh/', {
                 refresh: refreshToken
             });
 
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.access) {
                 localStorage.setItem('access_token', response.data.access);
                 return response.data.access;
             } else {
-                router.push({ name: 'login' });
+                throw new Error('Не удалось обновить токен');
             }
         } catch (error) {
-            console.error('Ошибка обновления токена:', error);
-            router.push({ name: 'login' });
+            console.error('Ошибка при обновлении токена:', error);
             throw error;
         }
     }

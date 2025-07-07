@@ -24,6 +24,44 @@ apiClient.searchAssets = async (search, category = '', page_size = 8, page = 1,)
     return response.results
 }
 
+apiClient.buyAsset = async (asset_id, quantity) => {
+    const response = await apiClient.post('/stocks/trading/buy/', {
+        asset_id,
+        quantity
+    });
+    return response.data;
+};
+
+apiClient.buyAsset = async (asset_id, quantity) => {
+    const response = await apiClient.post('/stocks/trading/buy/', {
+        asset_id,
+        quantity
+    });
+    return response.data;
+};
+
+apiClient.sellAsset = async (asset_id, quantity) => {
+    const response = await apiClient.post('/stocks/trading/sell/', {
+        asset_id,
+        quantity
+    });
+    return response.data;
+};
+
+apiClient.getRecommended = async (category) => {
+    const response = await apiClient.get('/stocks/assets/recommended/', {
+        params: { category }
+    });
+    return response.data;
+};
+
+apiClient.getPopularAssets = async () => {
+    const response = (await apiClient.get('/stocks/assets/popular/')).data.results;
+    return response
+}
+
+
+
 apiClient.getUserAssets = async () => {
     const response = (await apiClient.get('/stocks/portfolio/')).data;
     return response
@@ -191,37 +229,81 @@ apiClient.login = async (loginData) => {
 
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');
-    if (token) {
+
+    // 🚫 НЕ добавляем токен к запросам авторизации
+    if (
+        token &&
+        !config.url.includes('/auth/login') &&
+        !config.url.includes('/auth/register') &&
+        !config.url.includes('/auth/refresh')
+    ) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
 });
 
 let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+
+    failedQueue = [];
+};
 
 apiClient.interceptors.response.use(
-    (response) => response,
-    async (error) => {
+    response => response,
+    async error => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            if (isRefreshing) return Promise.reject(error);
+        if (
+            error.response?.status === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.url.includes('/auth/login') // ⬅️ исключаем сам login
+        ) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then(token => {
+                    originalRequest.headers.Authorization = `Bearer ${token}`;
+                    return apiClient(originalRequest);
+                }).catch(err => Promise.reject(err));
+            }
+
+            originalRequest._retry = true;
             isRefreshing = true;
 
             try {
-                console.log('Попытка обновления токена...');
-                await AuthService.refreshToken();
-                originalRequest._retry = true;
+                const newToken = await AuthService.refreshToken();
+                localStorage.setItem('access_token', newToken);
+                processQueue(null, newToken);
+
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
                 return apiClient(originalRequest);
             } catch (refreshError) {
-                console.error('Ошибка при обновлении токена:', refreshError);
+                processQueue(refreshError, null);
+
                 localStorage.removeItem('access_token');
-                await router.push('/auth/login');
+                localStorage.removeItem('refresh_token');
+
+                // ✅ Только если не на странице login уже
+                if (router.currentRoute.value.name !== 'login') {
+                    await router.push({ name: 'login' });
+                }
+
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
             }
         }
+
         return Promise.reject(error);
     }
 );

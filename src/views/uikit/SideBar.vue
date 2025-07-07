@@ -11,10 +11,10 @@
                 <i class="fa-solid fa-arrow-trend-up"></i>
                 <div class="menu-item-title grey">Trade</div>
             </div>
-            <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('portfolio')" style="align-items: center;">
+            <!-- <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('portfolio')" style="align-items: center;">
                 <i class="pi pi-chart-pie menu-item-logo"></i>
                 <div class="menu-item-title grey">Portfolio</div>
-            </div>
+            </div> -->
             <div class="menu-item flex pointer  text-lg gap-2" @click="goTo('community')" style="align-items: center;">
                 <i class="pi pi-users menu-item-logo"></i>
                 <div class="menu-item-title grey">Community</div>

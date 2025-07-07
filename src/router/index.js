@@ -1,5 +1,6 @@
 import DashboardLayout from '@/layout/DashboardLayout.vue';
 import landingPage from '@/layout/landingPage.vue';
+import { AuthService } from '@/service/AuthService';
 import Community from '@/views/dashboard-pages/Community.vue';
 import Dashboard from '@/views/dashboard-pages/Dashboard.vue';
 import Portfolio from '@/views/dashboard-pages/Portfolio.vue';
@@ -459,26 +460,46 @@ function isTokenValid(token) {
     }
 }
 
-router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('access_token');
+router.beforeEach(async (to, from, next) => {
+    const accessToken = localStorage.getItem('access_token');
+    const refreshToken = localStorage.getItem('refresh_token');
 
-    const isAuthenticated = token && isTokenValid(token);
+    const isAccessValid = isTokenValid(accessToken);
 
-    // Если пользователь уже вошёл и пытается попасть на страницы логина или регистрации — редиректим на /dashboard
+    // Страницы, где логин не нужен
     const authPages = ['login', 'register', 'verification'];
 
-    if (authPages.includes(to.name) && isAuthenticated) {
-        return next({ name: 'dashboard' });
+    // Если access-token валиден
+    if (isAccessValid) {
+        if (authPages.includes(to.name)) {
+            return next({ name: 'dashboard' });
+        }
+        return next();
     }
 
-    // Защищённые страницы
-    if (to.meta.requiresAuth) {
-        if (isAuthenticated) {
-            return next();
-        } else {
+    if (!isAccessValid && refreshToken) {
+        try {
+            const newAccess = await AuthService.refreshToken();
+            localStorage.setItem('access_token', newAccess);
+
+            if (authPages.includes(to.name)) {
+                return next({ name: 'dashboard' });
+            }
+
+            return next(); // ✅ Пускаем дальше — токен обновлён
+        } catch (e) {
+            // ❌ Refresh тоже не сработал — удаляем токены и редиректим
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
             return next({ name: 'login' });
         }
     }
+
+    // Если ни access, ни refresh — отправляем на login
+    if (to.meta.requiresAuth) {
+        return next({ name: 'login' });
+    }
+
     return next();
 });
 
