@@ -23,18 +23,18 @@
         </div>
 
         <div class="filtered-items flex flex-col gap-5 ">
-            <div class="filtered-item flex align-center justify-between p-5 bg-gray-700 pointer rounded-xl"
+            <div class="filtered-item flex align-center justify-between p-5 bg-gray-700 pointer rounded-xl select-none"
                 v-for="item in instruments" :key="item.symbol">
                 <div class="flex flex-col gap-3">
-                    <div class="filtered-item-name">{{ item.name.toUpperCase() }}</div>
+                    <div class="filtered-item-name text-xl font-semibold">{{ item.name.toUpperCase() }}</div>
                     <div class="filtered-item-symbol grey">{{ item.symbol.toUpperCase() }}</div>
                 </div>
 
                 <div class="flex flex-col gap-3">
-                    <div class="filtered-item-toBuy green" @click="buyAsset(item.id, 1)">
+                    <div class="filtered-item-toBuy text-green-500" @click="buyAsset(item.id, 1)">
                         Price to buy: ${{ Number(item.price).toFixed(2) }}
                     </div>
-                    <div class="filtered-item-toSell red" @click="sellAsset(item.id, 1)">
+                    <div class="filtered-item-toSell text-red-500" @click="sellAsset(item.id, 1)">
                         Price to sell: ${{ Number(item.price).toFixed(2) }}
                     </div>
                 </div>
@@ -69,6 +69,8 @@ const selectedCategory = ref('');
 const search = ref('');
 const instruments = ref([]);
 const instrumentsLoad = ref(8);
+
+const emit = defineEmits(['update-balance']);
 
 const fetchCategories = async () => {
     try {
@@ -108,6 +110,7 @@ const loadMore = async () => {
 const buyAsset = async (id, quantity = 1) => {
     try {
         await apiClient.buyAsset(id, quantity);
+        emit('update-balance');
     } catch (error) {
         console.error('Ошибка при покупке:', error);
     }
@@ -116,6 +119,7 @@ const buyAsset = async (id, quantity = 1) => {
 const sellAsset = async (id, quantity = 1) => {
     try {
         await apiClient.sellAsset(id, quantity);
+        emit('update-balance');
     } catch (error) {
         console.error('Ошибка при продаже:', error);
     }

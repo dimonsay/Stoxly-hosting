@@ -60,8 +60,6 @@ onMounted(async () => {
         const response = await apiClient.getUserTransactions()
 
         transactions.splice(0, transactions.length, ...response)
-
-        console.log(transactions)
     } catch (err) {
         console.warn(err)
     }

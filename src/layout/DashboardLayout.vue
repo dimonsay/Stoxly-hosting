@@ -3,7 +3,7 @@
         <div class="dashboard flex justify-around">
             <SideBar class="pt-10 p-5" />
             <div class="container borders dashboard-container">
-                <router-view></router-view>
+                <router-view @update-balance="refreshUserData"></router-view>
             </div>
             <Wallet class="p-10" :user="user" />
         </div>
@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+
 import apiClient from '@/api/axios';
 import SideBar from '@/views/uikit/SideBar.vue';
 import Wallet from '@/views/uikit/Wallet.vue';
@@ -28,6 +29,15 @@ onMounted(async () => {
         console.error(err);
     }
 });
+
+async function refreshUserData() {
+    try {
+        const userData = await apiClient.getUser();
+        Object.assign(user, userData);
+    } catch (err) {
+        console.error('Ошибка обновления данных пользователя', err);
+    }
+}
 
 </script>
 

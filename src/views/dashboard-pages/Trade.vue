@@ -1,22 +1,22 @@
 <template>
-    <div class="trade-wrapper">
-        <div class="trade-titlee dashboard-title">Trade</div>
+  <div class="trade-wrapper">
+    <div class="trade-titlee dashboard-title">Trade</div>
 
-        <div class="trading-controls-wrapper page-tile dashboard-tile">
-            <div class="trading-controls-title mb-5 text-2xl font-semibold">Trading controls</div>
+    <div class="trading-controls-wrapper page-tile dashboard-tile">
+      <div class="trading-controls-title mb-5 text-2xl font-semibold">Trading controls</div>
 
-            <div class="controls-items flex gap-3 ">
-                <div class="control-item pointer hover tex-xl" @click="changeControl(control)" v-for="(status, control) in controls" :key="control"
-                :class="{'bg-blue' : status}"
-                >
-                    {{ control.charAt(0).toUpperCase()+control.slice(1) }}
-                </div>
-            </div>
+      <div class="controls-items flex gap-3 ">
+        <div class="control-item pointer hover tex-xl" @click="changeControl(control)"
+          v-for="(status, control) in controls" :key="control" :class="{ 'bg-blue': status }">
+          {{ control.charAt(0).toUpperCase() + control.slice(1) }}
+        </div>
+      </div>
     </div>
 
-    <component class="mt-10" :is="currentComponent"  v-if="controls[selectedCategory]" />
+    <component class="mt-10" :is="currentComponent" v-if="controls[selectedCategory]"
+      @update-balance="onUpdateBalance" />
 
-</div>
+  </div>
 
 </template>
 
@@ -37,6 +37,12 @@ const components = {
   wallet: WalletBlock
 }
 
+const emit = defineEmits(['update-balance']);
+
+function onUpdateBalance() {
+  emit('update-balance');
+}
+
 
 const selectedCategory = ref('markets')
 const currentComponent = computed(() => {
@@ -44,18 +50,18 @@ const currentComponent = computed(() => {
 });
 
 const controls = reactive({
-    markets : true,
-    positions : false, 
-    orders : false,
-    transaction : false, 
-    wallet : false
+  markets: true,
+  positions: false,
+  orders: false,
+  transaction: false,
+  wallet: false
 })
 
 function changeControl(control) {
   Object.keys(controls).forEach(key => {
     controls[key] = false
   })
-  
+
   controls[control] = true
   selectedCategory.value = control
 }
@@ -63,11 +69,12 @@ function changeControl(control) {
 </script>
 
 <style scoped>
-.control-item{
-    padding: 5px 10px;
-    border-radius: 4px;
+.control-item {
+  padding: 5px 10px;
+  border-radius: 4px;
 }
-.bg-blue{
-    background-color: #33c3f0;
+
+.bg-blue {
+  background-color: #33c3f0;
 }
 </style>
