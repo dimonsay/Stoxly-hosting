@@ -11,6 +11,9 @@
                     <i class="pi pi-star-fill mr-1" v-for="(star, index) in 5" :key="index"
                         :class="{ 'text-gold': index < review.mark }" @click="review.mark = index + 1"></i>
                 </div>
+                <div class="error-show text-red-500">
+                    <div class="rating-error " v-if="reviewErrors.rating">{{ reviewErrors.rating }}</div>
+                </div>
             </div>
 
             <div class="review-text-wrapper flex flex-col gap-3">
@@ -18,10 +21,19 @@
                     Your Review
                 </div>
 
-                <Textarea type="text" v-model="review.text" style="min-height: 150px;" />
+                <Textarea type="text" v-model="review.text" style="min-height: 150px;"
+                    @input="reviewErrors.text = ''" />
             </div>
 
-            <div class="submit-btn invest-btn pointer" @click="submit()">Submit review</div>
+            <div class="error-show text-red-500">
+                <div class="rating-error " v-if="reviewErrors.text">{{ reviewErrors.text }}</div>
+            </div>
+
+            <div v-if="toast.show" class="toast text-green-500" :class="toast.type">
+                {{ toast.message }}
+            </div>
+
+            <div class="submit-btn invest-btn pointer" @click="sendReview()">Submit review</div>
         </div>
 
         <div class="platform-stats-wrapper page-tile dashboard-tile  flex-col flex gap-3  mb-5">
@@ -47,27 +59,23 @@
                 <div class="customer-review-wrapper flex justify-between bg-gray-700 p-5 rounded-xl"
                     v-for="review in customers.slice(0, loadCustomers)" :key="review.id">
                     <div class="about-review flex flex-col gap-3 text-xl">
-                        <div class="customer-review-name font-semibold">{{ review.name }}</div>
+                        <div class="customer-review-name font-semibold">{{ review.user.first_name + ' ' +
+                            review.user.last_name }}
+                        </div>
                         <div class="customer-review-stars flex gap-1">
-                            <i class="pi pi-star-fill text-gold" v-for="star in review.review" :key="star"></i>
+                            <i class="pi pi-star-fill text-gold" v-for="star in review.rating" :key="star"></i>
                         </div>
                         <div class="customer-review-text grey">{{ review.text }}</div>
                     </div>
-                    <div class="review-date grey">{{ review.date }}</div>
+                    <div class="review-date grey">{{ formatDate(review.created_at) }}</div>
                 </div>
                 <div class="load-more-btn invest-btn pointer p-3" style="margin: 0 auto;" @click="loadMore()"
                     v-if="loadCustomers < customers.length">Load more
                 </div>
             </div>
 
-
         </div>
     </div>
-
-
-
-
-
 
 </template>
 
@@ -79,11 +87,81 @@
 </style>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive, ref } from 'vue';
+
+const reviewErrors = reactive({
+    text: '',
+    rating: ''
+})
+
+const toast = reactive({
+    show: false,
+    message: '',
+    type: ''  // например, 'success' или 'error'
+});
+
+async function sendReview() {
+    reviewErrors.text = '';
+    reviewErrors.rating = '';
+
+    let hasErrors = false;
+
+    if (review.text.trim().length < 10) {
+        reviewErrors.text = 'The text of the review must contain a minimum of 10 characters.';
+        hasErrors = true;
+    }
+
+    if (typeof review.mark !== 'number' || review.mark < 1 || review.mark > 5) {
+        reviewErrors.rating = 'Select a rating from 1 to 5.';
+        hasErrors = true;
+    }
+
+    console.log('Отправляем отзыв:', {
+        text: review.text,
+        rating: review.mark,
+    });
+
+    if (hasErrors) return;
+
+    try {
+        const response = await apiClient.sendReview({
+            text: review.text,
+            rating: review.mark
+        })
+
+
+        review.mark = 0;
+        review.text = ''
+
+        if (response.status === 201) {
+            toast.message = 'Feedback has been sent.';
+            toast.type = 'success';
+            toast.show = true;
+
+            review.text = '';
+            review.mark = 0;
+
+            setTimeout(() => {
+                toast.show = false;
+            }, 2000);
+        }
+
+    } catch (err) {
+        console.warn(err)
+    }
+}
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+};
+
 
 const platformReview = reactive({
-    avarage: 4.5,
-    total: 1200
+    avarage: 0,
+    total: 0
 })
 
 function loadMore() {
@@ -92,24 +170,25 @@ function loadMore() {
 
 const loadCustomers = ref(3);
 
-const customers = reactive([
-    { name: 'TradingPro123', review: 5, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 4, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 3, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 2, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 1, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 4, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 4, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 4, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-    { name: 'TradingPro123', review: 4, text: 'Excellent platform! The portfolio tracking is outstanding and the interface is very intuitive.', date: 'May 25, 2025' },
-])
+const customers = reactive([])
 
 const review = reactive({
     mark: 0,
     text: '',
 })
 
-function submit() {
+onMounted(async () => {
+    try {
+        const reviewsStats = await apiClient.getReviewsStats()
 
-}
+        platformReview.total = reviewsStats.count;
+        platformReview.avarage = reviewsStats.average_rating;
+
+        customers.splice(0, customers.length, ...reviewsStats.results)
+
+        console.log(customers)
+    } catch (err) {
+        console.warn(err)
+    }
+})
 </script>

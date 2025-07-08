@@ -11,6 +11,17 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+apiClient.sendReview = async (review) => {
+    const response = await apiClient.post('/stocks/reviews/create/', review)
+
+    return response
+}
+
+apiClient.getReviewsStats = async () => {
+    const response = (await apiClient.get('/stocks/reviews')).data
+
+    return response
+}
 
 apiClient.getCurrentPortfolio = async (search = '', asset__category = '', page_size = 100, page = 1,) => {
     const response = (await apiClient.get('/stocks/portfolio/', {
