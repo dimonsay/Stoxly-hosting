@@ -36,6 +36,7 @@ onMounted(async () => {
     min-height: 100vh;
 }
 
+
 .bc-dark-grey {
     background-color: #374151;
 }

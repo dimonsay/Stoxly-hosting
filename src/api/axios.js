@@ -11,6 +11,20 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+
+apiClient.getCurrentPortfolio = async (search = '', asset__category = '', page_size = 100, page = 1,) => {
+    const response = (await apiClient.get('/stocks/portfolio/', {
+        params: {
+            search,
+            asset__category,
+            page_size,
+            page,
+        }
+    })).data;
+
+    return response.results
+}
+
 apiClient.searchAssets = async (search, category = '', page_size = 8, page = 1,) => {
     const response = (await apiClient.get('/stocks/assets/', {
         params: {
@@ -55,7 +69,7 @@ apiClient.getPopularAssets = async () => {
 
 
 apiClient.getUserAssets = async () => {
-    const response = (await apiClient.get('/stocks/portfolio/')).data;
+    const response = (await apiClient.get('/stocks/portfolio/by-category/')).data;
     return response
 }
 

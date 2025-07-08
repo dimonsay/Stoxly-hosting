@@ -165,7 +165,8 @@ const chartOptions = {
             radius: 0,
             hoverRadius: 0
         }
-    }
+    },
+
 };
 
 function toAuth() {
