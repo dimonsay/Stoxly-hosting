@@ -4,6 +4,7 @@ import { AuthService } from '@/service/AuthService';
 import Community from '@/views/dashboard-pages/Community.vue';
 import Dashboard from '@/views/dashboard-pages/Dashboard.vue';
 import Portfolio from '@/views/dashboard-pages/Portfolio.vue';
+import Profile from '@/views/dashboard-pages/Profile.vue';
 import Referrals from '@/views/dashboard-pages/Referrals.vue';
 import Trade from '@/views/dashboard-pages/Trade.vue';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -18,6 +19,11 @@ const routes = [
                 path: '/dashboard',
                 name: 'dashboard',
                 component: Dashboard
+            },
+            {
+                path: '/profile',
+                name: 'profile',
+                component: Profile
             },
             {
                 path: '/dashboard/trade',

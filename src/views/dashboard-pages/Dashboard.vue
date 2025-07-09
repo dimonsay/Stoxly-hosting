@@ -1,6 +1,8 @@
 <template>
-    <div class="recommended-wrapper pt-10 align-center flex flex-col" v-for="(items, category) in groupedRecommended"
+
+    <div class="recommended-wrapper align-center flex flex-col" v-for="(items, category) in groupedRecommended"
         :key="'recommended-' + category">
+        <div class="profile-title dashboard-title">Dashboard</div>
         <div class="recommended-title text-2xl mb-5 mt-5 font-semibold">
             Recommended {{ formatCategory(category) }}
         </div>

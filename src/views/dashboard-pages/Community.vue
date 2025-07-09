@@ -185,8 +185,6 @@ onMounted(async () => {
         platformReview.avarage = reviewsStats.average_rating;
 
         customers.splice(0, customers.length, ...reviewsStats.results)
-
-        console.log(customers)
     } catch (err) {
         console.warn(err)
     }
