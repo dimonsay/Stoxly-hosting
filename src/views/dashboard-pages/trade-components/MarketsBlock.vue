@@ -204,4 +204,5 @@ const sellAsset = async (id, quantity = 1) => {
         console.error('Ошибка при продаже:', error);
     }
 };
+
 </script>

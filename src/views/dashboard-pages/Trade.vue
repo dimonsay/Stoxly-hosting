@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <component class="mt-10" :is="currentComponent" v-if="controls[selectedCategory]"
+    <component class="mt-5" :is="currentComponent" v-if="controls[selectedCategory]"
       @update-balance="onUpdateBalance" />
 
   </div>

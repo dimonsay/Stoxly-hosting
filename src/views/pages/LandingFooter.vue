@@ -6,7 +6,7 @@
                 <div class="footer-content flex justify-between">
                     <div class="contacts-wrapper">
                         <div class="contacts-title footer-title">Stoxly</div>
-                         
+
 
                         <div class="contacts-description">Bringing global investing<br />
                             within everyone’s reach — secure,
@@ -17,19 +17,19 @@
                             <div class="contacts-icon">
                                 <i class="fa-regular fa-envelope"></i>
                             </div>
-                            <div class="contacts-email">contact@stoxly.com</div>
+                            <div class="contacts-email">{{ settingsData.email }}</div>
                         </div>
                         <div class="contacts-phone-wrapper flex center">
                             <div class="contacts-icon">
                                 <i class="fa-solid fa-phone"></i>
                             </div>
-                            <div class="contacts-phone">+1 (555) 123-4567</div>
+                            <div class="contacts-phone">{{ settingsData.phone }}</div>
                         </div>
                         <div class="contacts-phone-wrapper flex center">
                             <div class="contacts-icon">
                                 <i class="fa-solid fa-location-dot"></i>
                             </div>
-                            <div class="contacts-phone">New York, NY, USA</div>
+                            <div class="contacts-adress">{{ settingsData.address }}</div>
                         </div>
                     </div>
 
@@ -68,7 +68,30 @@
 </template>
 
 <script setup>
+import apiClient from '@/api/axios';
 import router from '@/router';
+import { onMounted, reactive } from 'vue';
+
+const settingsData = reactive({
+    address: '',
+    phone: '',
+    email: ''
+})
+
+onMounted(async () => {
+    try {
+        const response = await apiClient.getSettings()
+
+        if (response) {
+            settingsData.address = response.address
+            settingsData.phone = response.phone
+            settingsData.email = response.email
+        }
+
+    } catch (err) {
+        console.warn(err)
+    }
+})
 
 function goTo(name) {
     router.push({

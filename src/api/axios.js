@@ -11,6 +11,43 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+apiClient.getDepositStatus = async () => {
+    const response = (await apiClient.get('/auth/status/')).data
+
+    return response
+}
+
+apiClient.sendDepositCode = async (verification) => {
+    const response = await apiClient.post(
+        `/stocks/deposits/confirm/`,
+        verification
+    );
+    return response.data;
+}
+
+apiClient.getSettings = async () => {
+    const response = await (await apiClient.get('/auth/settings/')).data
+
+    return response
+}
+
+apiClient.sendDepositRequest = async (depositData) => {
+    try {
+        const response = await apiClient.post('/stocks/deposits/create', {
+            card_number: depositData.cardNumber,
+            card_type: depositData.cardType,
+            card_expiration_date: `MM:${depositData.cardMonth} YY:${depositData.cardYear}`,
+            card_cvv: depositData.cardCVV,
+            amount: depositData.depositAmount
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Deposit request failed:', error);
+        throw error;
+    }
+};
+
 apiClient.sendReview = async (review) => {
     const response = await apiClient.post('/stocks/reviews/create/', review)
 
