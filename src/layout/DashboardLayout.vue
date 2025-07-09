@@ -3,9 +3,9 @@
         <div class="dashboard flex justify-around items-start">
             <SideBar class="pt-10 p-5" />
             <div class="container borders dashboard-container">
-                <router-view @update-balance="refreshUserData"></router-view>
+                <router-view @update-balance="refreshUserData" :user="user"></router-view>
             </div>
-            <Wallet class="p-10 wallet-sticky" :user="user" />
+            <Wallet class="px-10 wallet-sticky" :user="user" />
         </div>
     </div>
 </template>

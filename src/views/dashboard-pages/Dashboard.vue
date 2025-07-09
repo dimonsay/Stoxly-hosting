@@ -1,21 +1,21 @@
 <template>
+    <div class="recommended-wrapper align-center flex flex-col">
 
-    <div class="recommended-wrapper align-center flex flex-col" v-for="(items, category) in groupedRecommended"
-        :key="'recommended-' + category">
         <div class="profile-title dashboard-title">Dashboard</div>
+
         <div class="recommended-title text-2xl mb-5 mt-5 font-semibold">
-            Recommended {{ formatCategory(category) }}
+            Recommended
         </div>
 
         <div class="popular-items-wrapper grid grid-cols-3 gap-4 w-full">
             <div class="recommended-item flex items-center justify-between page-tile dashboard-tile"
-                v-for="(item, index) in items.slice(0, visibleItemsCount[category] || 3)"
-                :key="`recommended-${category}-${index}`">
+                v-for="(item, index) in flatRecommended.slice(0, visibleItemsCount['recommended'] || 3)"
+                :key="`recommended-${index}`">
                 <div class="name-wrapper">
-                    <div class="recommended-item-title text-xl font-semibold">{{ item.name }}</div>
+                    <div class="recommended-item-title text-lg font-semibold">{{ item.name }}</div>
                     <div class="recommended-item-symbol grey">{{ item.symbol }}</div>
                 </div>
-                <div class="price-wrapper">
+                <div class="price-wrapper text-right">
                     <div class="recommended-item-price">${{ item.price }}</div>
                     <div class="recommended-item-trend text-right flex justify-end"
                         :class="{ red: item.trend < 0, green: item.trend > 0 }">
@@ -27,50 +27,48 @@
             </div>
         </div>
 
-        <div class="load-more-btn invest-btn pointer mt-5" @click="loadMore(category)"
-            v-if="items.length > (visibleItemsCount[category] || 3)">
+        <div class="load-more-btn invest-btn pointer mt-5" @click="loadMore('recommended')"
+            v-if="flatRecommended.length > (visibleItemsCount['recommended'] || 3)">
             Load more
         </div>
+    </div>
 
-        <div class="dashboard-page-wrapper">
-            <!-- POPULAR section -->
-            <div class="recommended-wrapper pt-10 align-center flex flex-col"
-                v-for="(items, category) in groupedPopular" :key="'popular-' + category">
-                <div class="recommended-title text-2xl mb-5 mt-5 font-semibold">
-                    Popular {{ formatCategory(category) }}
-                </div>
+    <!-- Popular -->
+    <div class="dashboard-page-wrapper">
+        <div class="recommended-wrapper pt-10 align-center flex flex-col" v-for="(items, category) in groupedPopular"
+            :key="'popular-' + category">
+            <div class="recommended-title text-2xl mb-5 mt-5 font-semibold">
+                Popular {{ formatCategory(category) }}
+            </div>
 
-                <div class="popular-items-wrapper grid grid-cols-3 gap-4 w-full">
-                    <div class="recommended-item flex items-center justify-between page-tile dashboard-tile"
-                        v-for="(item, index) in items.slice(0, visibleItemsCount[category] || 3)"
-                        :key="`popular-${category}-${index}`">
-                        <div class="name-wrapper">
-                            <div class="recommended-item-title text-xl font-semibold">{{ item.name }}</div>
-                            <div class="recommended-item-symbol grey">{{ item.symbol }}</div>
-                        </div>
-                        <div class="price-wrapper">
-                            <div class="recommended-item-price">${{ item.price }}</div>
-                            <div class="recommended-item-trend text-right flex justify-end"
-                                :class="{ red: item.trend < 0, green: item.trend > 0 }">
-                                <span v-if="item.trend >= 0">+</span>
-                                <span v-else>-</span>
-                                {{ Math.abs(item.trend) }} %
-                            </div>
+            <div class="popular-items-wrapper grid grid-cols-3 gap-4 w-full">
+                <div class="recommended-item flex items-center justify-between page-tile dashboard-tile"
+                    v-for="(item, index) in items.slice(0, visibleItemsCount[category] || 3)"
+                    :key="`popular-${category}-${index}`">
+                    <div class="name-wrapper">
+                        <div class="recommended-item-title text-lg font-semibold">{{ item.name }}</div>
+                        <div class="recommended-item-symbol grey">{{ item.symbol }}</div>
+                    </div>
+                    <div class="price-wrapper text-right">
+                        <div class="recommended-item-price">${{ item.price }}</div>
+                        <div class="recommended-item-trend text-right flex justify-end"
+                            :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                            <span v-if="item.trend >= 0">+</span>
+                            <span v-else>-</span>
+                            {{ Math.abs(item.trend) }} %
                         </div>
                     </div>
                 </div>
-
-                <div class="load-more-btn invest-btn pointer mt-5" @click="loadMore(category)"
-                    v-if="items.length > (visibleItemsCount[category] || 3)">
-                    Load more
-                </div>
             </div>
 
-            <!-- RECOMMENDED section -->
-
+            <div class="load-more-btn invest-btn pointer mt-5" @click="loadMore(category)"
+                v-if="items.length > (visibleItemsCount[category] || 3)">
+                Load more
+            </div>
         </div>
     </div>
 </template>
+
 
 
 <script setup>
@@ -85,8 +83,17 @@ const visibleItemsCount = reactive({});
 onMounted(async () => {
     await getCategory();
     await getPopular();
-    await getRecommendedAll();
+    await getRecommended();
 });
+
+async function getRecommended() {
+    try {
+        const response = await apiClient.getRecommended(); // без категории
+        recommended.splice(0, recommended.length, ...response?.results || []);
+    } catch (err) {
+        console.warn('Failed to load recommended assets', err);
+    }
+}
 
 function formatCategory(category) {
     return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -109,37 +116,16 @@ async function getPopular() {
     popular.splice(0, popular.length, ...response);
 }
 
-async function getRecommendedAll() {
-    const promises = categories.value.map(async (category) => {
-        try {
-            const response = await apiClient.getRecommended(category);
-            const items = response?.results || [];
-            return items.map(item => ({ ...item, category }));
-        } catch (err) {
-            console.warn(`Failed to load recommended for ${category}`, err);
-            return [];
-        }
-    });
-
-    const allResults = await Promise.all(promises);
-    const flat = allResults.flat();
-    recommended.splice(0, recommended.length, ...flat);
-}
-
-const groupedRecommended = computed(() => {
-    const map = {};
-    for (const item of recommended) {
-        const cat = item.category || 'other';
-        if (!map[cat]) map[cat] = [];
-        map[cat].push({
-            name: item.name,
-            symbol: item.symbol,
-            price: parseFloat(item.price),
-            trend: parseFloat(item.change_percent),
-        });
-    }
-    return map;
+const flatRecommended = computed(() => {
+    return recommended.map(item => ({
+        name: item.name,
+        symbol: item.symbol,
+        price: parseFloat(item.price),
+        trend: parseFloat(item.change_percent),
+    }));
 });
+
+
 
 const groupedPopular = computed(() => {
     const map = {};
@@ -158,8 +144,4 @@ const groupedPopular = computed(() => {
 
 </script>
 
-<style scoped>
-.dashboard-page-wrapper {
-    min-height: 100vh;
-}
-</style>
+<style scoped></style>

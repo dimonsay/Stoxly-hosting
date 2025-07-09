@@ -351,7 +351,6 @@ const formatVolume = (volume) => {
 
 .wallet-wrapper {
     position: sticky;
-    top: 80px;
     /* настрой под твой layout, например, под фиксированный header */
     z-index: 10;
     /* если нужно поверх других элементов */

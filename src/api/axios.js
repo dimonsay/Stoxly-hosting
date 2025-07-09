@@ -11,6 +11,24 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+apiClient.sendPassportData = async (files, description) => {
+    const formData = new FormData();
+
+    files.forEach(file => {
+        formData.append('document', file); // 👈 многократно ключ 'document'
+    });
+
+    formData.append('description', description);
+
+    const response = await apiClient.post('/auth/upload-document/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+
+    return response.data;
+};
+
 apiClient.getDepositStatus = async () => {
     const response = (await apiClient.get('/auth/status/')).data
 
