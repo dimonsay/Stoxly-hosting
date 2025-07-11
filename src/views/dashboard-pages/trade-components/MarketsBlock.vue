@@ -50,22 +50,37 @@
                 </div>
             </div>
             <Dialog v-model:visible="showTradePopup" modal
-                :header="`Confirm ${tradeType === 'buy' ? 'Purchase' : 'Sale'}`" :style="{ width: '600px' }"
-                :draggable="false" :modal="false">
+                :header="`${tradeType === 'buy' ? 'Purchase' : 'Sale'} ${selectedItem?.name || ''}`"
+                :style="{ width: '600px' }" :draggable="false" :modal="false">
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-3">
                         <div class="dialog-title flex flex-col gap-2">
-
-
                             <div class="popup-details flex justify-between text-lg font-semibold flex-col">
-                                <div class="popup-name">Name: {{ selectedItem?.name }}</div>
-                                <div class="popup-symbol">Symbol: {{ selectedItem?.symbol }}</div>
-                                <div class="popup-price">Price: ${{ Number(selectedItem?.price).toFixed(2) }}
+
+                                <div
+                                    class="asset-wrapper flex items-center justify-between dashboard-tile page-tile mb-5 !px-5">
+                                    <div class="flex flex-col gap-2 justify-between">
+                                        <div class="popup-name">{{ selectedItem?.name }}</div>
+                                        <div class="popup-symbol">{{ selectedItem?.symbol }}</div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-2 text-right justify-between">
+
+                                        <div class="popup-price">Price: ${{ Number(selectedItem?.price).toFixed(2) }}
+                                        </div>
+                                        <div class="text-sm text-gray-400" v-if="tradeType === 'sell'">
+                                            Available to sell: {{ maxSell }}
+                                        </div>
+                                    </div>
+
                                 </div>
+
+
 
                                 <div>
                                     Quantity:
-                                    <InputNumber size="small" v-model="tradeQuantity" :min="1" :step="1" showButtons />
+                                    <InputNumber size="small" v-model="tradeQuantity" :min="1"
+                                        :max="tradeType === 'sell' ? maxSell : null" :step="1" showButtons />
                                 </div>
 
                                 <div class="total-price text-lg my-3">Total price : ${{
@@ -73,12 +88,7 @@
                                         *
                                         selectedItem.price).toFixed(2) }}</div>
                             </div>
-
-
                         </div>
-
-
-
 
                     </div>
 
@@ -131,20 +141,39 @@ const selectedItem = ref(null);
 const tradeType = ref('buy');
 const tradeQuantity = ref(1);
 
-function openTradePopup(item, type) {
+const maxSell = ref(0);
+
+async function openTradePopup(item, type) {
     selectedItem.value = item;
     tradeType.value = type;
     tradeQuantity.value = 1;
     showTradePopup.value = true;
+
+    if (type === 'sell') {
+        try {
+            const response = await apiClient.getCurrentPortfolio('', '', 100, 1, item.asset_id);
+            maxSell.value = Number(response[0]?.quantity || 0);
+        } catch (error) {
+            console.error('Ошибка при получении количества в портфеле:', error);
+            maxSell.value = 0;
+        }
+    } else {
+        maxSell.value = 0;
+    }
 }
 
 async function confirmTrade() {
     if (!selectedItem.value || tradeQuantity.value < 1) return;
 
     if (tradeType.value === 'buy') {
-        await buyAsset(selectedItem.value.id, tradeQuantity.value);
+        await buyAsset(selectedItem.value.asset_id, tradeQuantity.value);
     } else {
-        await sellAsset(selectedItem.value.id, tradeQuantity.value);
+        if (tradeQuantity.value <= maxSell.value && maxSell.value > 0) {
+            await sellAsset(selectedItem.value.asset_id, tradeQuantity.value);
+        } else {
+            console.warn('Недостаточно количества для продажи');
+            return; // Не закрываем попап
+        }
     }
 
     showTradePopup.value = false;

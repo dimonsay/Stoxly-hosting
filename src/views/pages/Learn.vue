@@ -18,7 +18,7 @@
                             </div>
                         </div>
 
-                        <div class="course-description grey mb10">{{ truncateText(course.text, 200) }}</div>
+                        <div class="course-description grey mb10">{{ truncateText(course.text, 150) }}</div>
 
                         <!-- <div class="courses-levels-wrapper flex mb10" style="align-items: center;">
                             <i class="pi pi-book blue" style="margin-right: 5px;"></i>

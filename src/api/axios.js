@@ -78,13 +78,14 @@ apiClient.getReviewsStats = async () => {
     return response
 }
 
-apiClient.getCurrentPortfolio = async (search = '', asset__category = '', page_size = 100, page = 1,) => {
+apiClient.getCurrentPortfolio = async (search = '', asset__category = '', page_size = 100, page = 1, asset_id) => {
     const response = (await apiClient.get('/stocks/portfolio/', {
         params: {
             search,
             asset__category,
             page_size,
             page,
+            asset_id
         }
     })).data;
 

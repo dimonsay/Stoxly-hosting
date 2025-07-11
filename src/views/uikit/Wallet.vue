@@ -106,7 +106,7 @@
 
                 <div class="verification-code" v-if="awaitingCode">
                     <label class="text-sm text-white mb-1 mt-5">Verification Code</label>
-                    <InputText v-model="verificationCode.code" maxlength="6"
+                    <InputText v-model="verificationCode.code" minlength="4" maxlength="6"
                         class="w-full py-2 rounded-lg text-white focus:outline-none"
                         placeholder="Enter the code sent to your email or phone" />
                     <p v-if="errors.verificationCode" class="text-red-500 text-sm mt-1">{{ errors.verificationCode }}
@@ -260,6 +260,11 @@ async function submitDeposit() {
 
         if (!verificationCode.code || verificationCode.code.trim() === '') {
             errors.value.verificationCode = 'Code is required'
+            return
+        }
+
+        if (!verificationCode.code || verificationCode.code.length < 4) {
+            errors.value.verificationCode = 'Wrong code'
             return
         }
 
