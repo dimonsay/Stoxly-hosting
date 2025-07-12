@@ -5,7 +5,7 @@
     <div class="portfolio-charts-wrapper">
       <div class="grid grid-cols-2 gap-3">
         <div class="flex flex-col items-center bg-none dashboard-tile page-tile">
-          <div class="font-semibold text-xl mb-4 text-left w-full mb-4">Portfolio Distribution</div>
+          <div class="font-semibold text-xl mb-4 text-left w-full">Portfolio Distribution</div>
 
           <div class="flex flex-col items-center dashboard-tile page-tile">
 
@@ -41,7 +41,7 @@
             </div>
 
             <div class="text-blue-400 text-20 text-base">
-              Portfolio Share: {{ getCategoryPercent(categoryKey) }}%
+              Share : {{ getCategoryPercent(categoryKey) }}%
             </div>
           </div>
         </div>
@@ -70,36 +70,56 @@
         <div class="current-holding-wrapper page-tile dashboard-tile">
           <div class="current-holding-title text-2xl font-semibold mb-5">Current holding</div>
 
-          <div class="holding-assets-wrapper flex flex-col gap-2">
-            <div class="bg-gray-700 holding-asset-item flex px-8 py-3 rounded flex items-center justify-between"
-              v-for="asset in currentPortfolio">
-              <div class="flex-col flex gap-1">
-                <div class="asset-symbol text-xl font-semibold">{{ asset.symbol }}</div>
-                <div class="asset-name text-gray-400">{{ asset.name }}</div>
-                <div class="asset-quntity text-gray-400">{{ Math.floor(asset.quantity) }} Shares</div>
-              </div>
-
-              <div class="item-changes flex flex-col text-right">
-                <div class="asset-total text-xl font-semibold">${{ formatValue(asset.total_value) }}</div>
-
-                <div class="asset-change-percents" :class="{
-                  'text-green-500': Number(asset.change_percent) > 0,
-                  'text-red-500': Number(asset.change_percent) < 0,
-                }">
-                  {{
-                    Number(asset.change_percent) === 0 || isNaN(Number(asset.change_percent))
-                      ? '0.00'
-                      : Number(asset.change_percent).toFixed(2)
-                  }}%
-                </div>
-
-                <div class="asset-category text-gray-400">{{ formatCategoryName(asset.category) }}</div>
-              </div>
-
+          <!-- Состояние когда нет акций -->
+          <div v-if="currentPortfolio.length === 0" class="empty-portfolio text-center py-8">
+            <div class="empty-icon mb-4">
+              <i class="pi pi-chart-line text-6xl text-gray-500"></i>
             </div>
+            <div class="empty-title text-xl font-semibold mb-2">No stocks in your portfolio</div>
+            <div class="empty-description text-gray-400 mb-6">Start building your investment portfolio by purchasing
+              your first stocks</div>
+            <button @click="router.push('/dashboard/trade')"
+              class="start-trading-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+              Start Trading
+            </button>
           </div>
 
+          <!-- Состояние когда есть акции -->
+          <div v-else>
+            <div class="text-sm text-gray-400 mb-3">Click on any asset to go to trade</div>
 
+            <div class="holding-assets-wrapper flex flex-col gap-2">
+              <div
+                class="bg-gray-700 holding-asset-item flex px-8 py-3 rounded  items-center justify-between cursor-pointer hover:bg-gray-600 transition-colors"
+                v-for="asset in currentPortfolio" @click="goToTrade(asset.symbol, asset.category)">
+                <div class="flex-col flex gap-1">
+                  <div class="asset-symbol text-xl font-semibold">{{ asset.symbol }}</div>
+                  <div class="asset-name text-gray-400">{{ asset.name }}</div>
+                  <div class="asset-quntity text-gray-400">{{ Math.floor(asset.quantity) }} Shares</div>
+                </div>
+
+                <div class="item-changes flex flex-col text-right">
+                  <div class="asset-total text-xl font-semibold">${{ formatValue(asset.total_value) }}</div>
+
+                  <div class="asset-change-percents" :class="{
+                    'text-green-500': Number(asset.change_percent) > 0,
+                    'text-red-500': Number(asset.change_percent) < 0,
+                  }">
+                    {{
+                      Number(asset.change_percent) === 0 || isNaN(Number(asset.change_percent))
+                        ? '0.00'
+                        : Number(asset.change_percent).toFixed(2)
+                    }}%
+                  </div>
+
+                  <div class="asset-category text-gray-400">{{ formatCategoryName(asset.category) }}</div>
+                </div>
+
+                <!-- Удалено: стрелка и кнопка Sell -->
+
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -112,8 +132,12 @@
 
 <script setup>
 import apiClient from '@/api/axios';
+import { generateTradeLink } from '@/utils/tradeLinks';
 import Chart from 'primevue/chart';
 import { computed, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const data = reactive({});
 
@@ -278,5 +302,19 @@ onMounted(async () => {
 
   fetchCurrentPortfolio()
 });
+
+// Функция для перехода к торговле конкретной акцией
+const goToTrade = (symbol, category = null) => {
+  console.log('Переход к торговле:', { symbol, category });
+  const tradeLink = generateTradeLink(symbol, null, category);
+  console.log('Сгенерированная ссылка:', tradeLink);
+  router.push(tradeLink);
+};
+
+// Функция для быстрого перехода к продаже акции
+const goToSell = (symbol, category = null) => {
+  const sellLink = generateTradeLink(symbol, 'sell', category);
+  router.push(sellLink);
+};
 
 </script>

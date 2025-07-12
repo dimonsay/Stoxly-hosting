@@ -17,17 +17,23 @@
                 <div class="stocks-filters-wrapper flex justify-between">
                     <div class="filter-name filter">Name</div>
                     <div class="filter-symbol filter">Symbol</div>
-                    <div class="filter-open	 filter">Open</div>
+                    <div class="filter-buy filter">Buy Price <span class="text-xs text-gray-400"></span>
+                    </div>
+                    <div class="filter-sell filter">Sell Price <span class="text-xs text-gray-400"></span></div>
                     <div class="filter-volume filter">Volume</div>
                     <div class="filter-change filter">Change</div>
                     <div class="filter-change-percentage filter">Change %</div>
                 </div>
 
                 <div class="stocks-data-wrapper">
-                    <div class="stock-item flex justify-between" v-for="stock in stocks">
+                    <div class="stock-item flex justify-between" v-for="stock in stocks"
+                        @click="goToTrade(stock.symbol)">
                         <div class="stock-name">{{ stock.name }}</div>
                         <div class="stock-symbol">{{ stock.symbol }}</div>
-                        <div class="stock-open">${{ stock.open_price }}</div>
+                        <div class="stock-buy text-green-500" @click.stop="goToBuy(stock.symbol)">${{
+                            Number(stock.price_buy).toFixed(2) }}</div>
+                        <div class="stock-sell text-red-500" @click.stop="goToSell(stock.symbol)">${{
+                            Number(stock.price_sell).toFixed(2) }}</div>
                         <div class="stock-volume" style="text-align: center;">{{ formatVolume(stock.volume) }}</div>
                         <div class="stock-change flex" style="justify-content: center; align-items: center;"
                             :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
@@ -49,9 +55,10 @@
                     <div class="tile-name">{{ tile.name }}</div>
 
                     <div class="data-wrapper flex justify-between" style="flex-direction: column;">
-                        <div class="data-name pointer" v-for="data in tile.data" style="color: #33c3f0;">{{ data.name }}
-                            ({{
-                                data.symbol }})</div>
+                        <div class="data-name pointer" v-for="data in tile.data" style="color: #33c3f0;"
+                            @click="goToTradeWithCategory(data.symbol, tile.category)">
+                            {{ data.name }} ({{ data.symbol }})
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,8 +71,11 @@
 
 <script setup>
 import apiClient from '@/api/axios';
+import { generateTradeLink } from '@/utils/tradeLinks';
 import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const search = ref('')
 const stocks = reactive([])
 const tiles = ref([])
@@ -131,6 +141,29 @@ const formatVolume = (volume) => {
     return safeVolume.toLocaleString('en-US');
 };
 
+// Функция для перехода к торговле конкретной акцией
+const goToTrade = (symbol) => {
+    const tradeLink = generateTradeLink(symbol);
+    router.push(tradeLink);
+};
+
+// Функция для перехода к покупке конкретной акции
+const goToBuy = (symbol) => {
+    const buyLink = generateTradeLink(symbol, 'buy');
+    router.push(buyLink);
+};
+
+// Функция для перехода к продаже конкретной акции
+const goToSell = (symbol) => {
+    const sellLink = generateTradeLink(symbol, 'sell');
+    router.push(sellLink);
+};
+
+// Функция для перехода к торговле с указанием категории
+const goToTradeWithCategory = (symbol, category) => {
+    const tradeLink = generateTradeLink(symbol, null, category);
+    router.push(tradeLink);
+};
 
 </script>
 
@@ -197,9 +230,16 @@ const formatVolume = (volume) => {
     width: 10%;
 }
 
-.filter-last-price,
-.stock-last-price {
-    width: 15%;
+.filter-buy,
+.stock-buy {
+    width: 12%;
+    cursor: pointer;
+}
+
+.filter-sell,
+.stock-sell {
+    width: 12%;
+    cursor: pointer;
 }
 
 .filter-volume,

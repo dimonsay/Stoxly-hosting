@@ -29,7 +29,8 @@
                     'animation-play-state': animationState
                 }">
                     <div class="stocks-item flex" v-for="(stock, index) in stocks" :key="index">
-                        <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price).toFixed(2) }}
+                        <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price_buy).toFixed(2)
+                        }}
                         </div>
                         <div class="arrow green" :class="{ 'hidden': stock.change_percent < 0 }">
                             <i class="fa-solid fa-arrow-trend-up"></i>
@@ -43,7 +44,8 @@
                         </div>
                     </div>
                     <div class="stocks-item flex" v-for="(stock, index) in stocks" :key="'dup-' + index">
-                        <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price).toFixed(2) }}
+                        <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price_buy).toFixed(2)
+                            }}
                         </div>
                         <div class="arrow green" :class="{ 'hidden': stock.change_percent < 0 }">
                             <i class="fa-solid fa-arrow-trend-up"></i>

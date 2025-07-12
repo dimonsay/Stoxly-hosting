@@ -33,10 +33,10 @@
 
                     <div class="flex flex-col gap-3 text-right">
                         <div class="filtered-item-toBuy text-green-500">
-                            Price to buy: ${{ Number(item.price).toFixed(2) }}
+                            Price to buy: ${{ Number(item.price_buy).toFixed(2) }}
                         </div>
                         <div class="filtered-item-toSell text-red-500">
-                            Price to sell: ${{ Number(item.price).toFixed(2) }}
+                            Price to sell: ${{ Number(item.price_sell).toFixed(2) }}
                         </div>
                     </div>
 
@@ -48,6 +48,8 @@
                     <div class="sell-btn button-item pointer p-2 bg-red-600 hover:bg-red-600/80 rounded"
                         @click="openTradePopup(item, 'sell')">Sell</div>
                 </div>
+
+
             </div>
             <Dialog v-model:visible="showTradePopup" modal
                 :header="`${tradeType === 'buy' ? 'Purchase' : 'Sale'} ${selectedItem?.name || ''}`"
@@ -66,7 +68,9 @@
 
                                     <div class="flex flex-col gap-2 text-right justify-between">
 
-                                        <div class="popup-price">Price: ${{ Number(selectedItem?.price).toFixed(2) }}
+                                        <div class="popup-price">
+                                            Price: ${{ Number(tradeType === 'buy' ? selectedItem?.price_buy :
+                                                selectedItem?.price_sell).toFixed(2) }}
                                         </div>
                                         <div class="text-sm text-gray-400" v-if="tradeType === 'sell'">
                                             Available to sell: {{ maxSell }}
@@ -86,15 +90,26 @@
                                 <div class="total-price text-lg my-3">Total price : ${{
                                     Number(tradeQuantity
                                         *
-                                        selectedItem.price).toFixed(2) }}</div>
+                                        (tradeType === 'buy' ? selectedItem.price_buy : selectedItem.price_sell)).toFixed(2)
+                                }}</div>
                             </div>
                         </div>
 
                     </div>
 
-                    <Button :label="tradeType === 'buy' ? 'Confirm Purchase' : 'Confirm Sale'" class=""
-                        @click="confirmTrade" />
-                    <Button label="Cancel" class="p-button-secondary" @click="showTradePopup = false" />
+                    <div class="flex flex-col gap-2">
+                        <Button :label="tradeType === 'buy' ? 'Confirm Purchase' : 'Confirm Sale'" class=""
+                            @click="confirmTrade" />
+                        <Button label="Cancel" class="p-button-secondary" @click="showTradePopup = false" />
+
+                        <!-- Ссылки для шаринга -->
+                        <div class="share-links flex gap-2 justify-center mt-3 pt-3 border-t border-gray-600">
+                            <span class="cursor-pointer text-blue-400 hover:text-blue-300 text-sm"
+                                @click="copyTradeLink(selectedItem.symbol, tradeType)">
+                                Share {{ tradeType === 'buy' ? 'Buy' : 'Sell' }} Link
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </Dialog>
         </div>
@@ -127,8 +142,25 @@
 
 <script setup>
 import apiClient from '@/api/axios';
+import { generateTradeLink } from '@/utils/tradeLinks';
 import { InputNumber, InputText } from 'primevue';
 import { onMounted, ref, watch } from 'vue';
+
+// Props для получения параметров из URL
+const props = defineProps({
+    symbol: {
+        type: String,
+        default: null
+    },
+    action: {
+        type: String,
+        default: null
+    },
+    category: {
+        type: String,
+        default: null
+    }
+});
 
 const categories = ref([]);
 const selectedCategory = ref('');
@@ -204,7 +236,37 @@ const fetchInstruments = async () => {
 
 onMounted(async () => {
     await fetchCategories();
+
+    // Если указана категория, устанавливаем её
+    if (props.category) {
+        const categoryExists = categories.value.find(cat => cat.value === props.category);
+        if (categoryExists) {
+            selectedCategory.value = props.category;
+        }
+    }
+
     await fetchInstruments();
+
+    // Обработка параметров из URL
+    if (props.symbol) {
+        search.value = props.symbol.toUpperCase();
+        await fetchInstruments();
+
+        // Если указано действие, автоматически открываем диалог торговли
+        if (props.action && (props.action === 'buy' || props.action === 'sell')) {
+            // Найдем нужную акцию
+            const targetInstrument = instruments.value.find(item =>
+                item.symbol.toUpperCase() === props.symbol.toUpperCase()
+            );
+
+            if (targetInstrument) {
+                // Небольшая задержка для корректного отображения
+                setTimeout(() => {
+                    openTradePopup(targetInstrument, props.action);
+                }, 500);
+            }
+        }
+    }
 });
 
 watch([selectedCategory, search], () => {
@@ -232,6 +294,55 @@ const sellAsset = async (id, quantity = 1) => {
     } catch (error) {
         console.error('Ошибка при продаже:', error);
     }
+};
+
+const copyTradeLink = async (symbol, action) => {
+    const link = generateTradeLink(symbol, action);
+    const fullUrl = `${window.location.origin}${link}`;
+
+    try {
+        await navigator.clipboard.writeText(fullUrl);
+        // Показываем уведомление пользователю
+        showCopyNotification();
+    } catch (error) {
+        console.error('Ошибка при копировании ссылки:', error);
+        // Fallback для старых браузеров
+        const textArea = document.createElement('textarea');
+        textArea.value = fullUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopyNotification();
+    }
+};
+
+// Простое уведомление о копировании
+const showCopyNotification = () => {
+    // Создаем временное уведомление
+    const notification = document.createElement('div');
+    notification.textContent = 'Ссылка скопирована!';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 9999;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+
+    document.body.appendChild(notification);
+
+    // Удаляем уведомление через 3 секунды
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
 };
 
 </script>

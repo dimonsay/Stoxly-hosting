@@ -13,8 +13,10 @@
       </div>
     </div>
 
-    <component class="mt-5" :is="currentComponent" v-if="controls[selectedCategory]"
-      @update-balance="onUpdateBalance" />
+    <component class="mt-5" :is="currentComponent" v-if="controls[selectedCategory]" :symbol="symbol" :action="action"
+      :category="category" @update-balance="onUpdateBalance" />
+
+
 
   </div>
 
@@ -27,6 +29,22 @@ import OrdersBlock from './trade-components/OrdersBlock.vue';
 import PositionsBlock from './trade-components/PositionsBlock.vue';
 import TransactionsBlock from './trade-components/TransactionsBlock.vue';
 import WalletBlock from './trade-components/WalletBlock.vue';
+
+// Props для получения параметров из URL
+const props = defineProps({
+  symbol: {
+    type: String,
+    default: null
+  },
+  action: {
+    type: String,
+    default: null
+  },
+  category: {
+    type: String,
+    default: null
+  }
+});
 
 
 const components = {
@@ -56,6 +74,8 @@ const controls = reactive({
   transaction: false,
   wallet: false
 })
+
+
 
 function changeControl(control) {
   Object.keys(controls).forEach(key => {

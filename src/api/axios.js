@@ -220,13 +220,28 @@ apiClient.getNews = async () => {
     return response
 }
 
+apiClient.getNewsById = async (id) => {
+    const response = (await apiClient.get(`/stocks/news/${id}/`)).data;
+    return response
+}
+
 apiClient.getLessons = async () => {
     const response = (await apiClient.get('/stocks/lessons/')).data;
     return response
 }
 
+apiClient.getLessonById = async (id) => {
+    const response = (await apiClient.get(`/stocks/lessons/${id}/`)).data;
+    return response
+}
+
 apiClient.getGuides = async () => {
     const response = (await apiClient.get('/stocks/guides/')).data;
+    return response
+}
+
+apiClient.getGuideById = async (id) => {
+    const response = (await apiClient.get(`/stocks/guides/${id}/`)).data;
     return response
 }
 

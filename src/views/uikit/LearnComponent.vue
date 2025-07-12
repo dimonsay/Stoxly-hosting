@@ -24,19 +24,11 @@ onMounted(async () => {
 
     try {
         loading.value = true;
-        // Получаем все уроки
-        const allLessons = await apiClient.getLessons();
-
-        // Ищем урок с нужным ID
-        const foundLesson = allLessons.find(l => l.id === lessonId);
-
-        if (foundLesson) {
-            lesson.value = foundLesson;
-        } else {
-            error.value = 'Lesson not found';
-        }
+        // Используем новый API метод для получения конкретного урока
+        const lessonData = await apiClient.getLessonById(lessonId);
+        lesson.value = lessonData;
     } catch (err) {
-        console.error('Error loading lessons:', err);
+        console.error('Error loading lesson:', err);
         error.value = 'Failed to load lesson';
     } finally {
         loading.value = false;

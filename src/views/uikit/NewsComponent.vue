@@ -24,17 +24,9 @@ onMounted(async () => {
 
     try {
         loading.value = true;
-        // Получаем все новости
-        const allNews = await apiClient.getNews();
-
-        // Ищем новость с нужным ID
-        const foundNews = allNews.find(n => n.id === newsId);
-
-        if (foundNews) {
-            news.value = foundNews;
-        } else {
-            error.value = 'News not found';
-        }
+        // Используем новый API метод для получения конкретной новости
+        const newsData = await apiClient.getNewsById(newsId);
+        news.value = newsData;
     } catch (err) {
         console.error('Error loading news:', err);
         error.value = 'Failed to load news';

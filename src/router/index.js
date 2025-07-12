@@ -28,7 +28,12 @@ const routes = [
             {
                 path: '/dashboard/trade',
                 name: 'trade',
-                component: Trade
+                component: Trade,
+                props: (route) => ({
+                    symbol: route.query.symbol,
+                    action: route.query.action,
+                    category: route.query.category
+                })
             },
             {
                 path: '/dashboard/portfolio',
@@ -364,7 +369,7 @@ const routes = [
             {
                 path: '/learn/:id',
                 name: 'LessonDetails',
-                component: () => import('@/views/uikit/LearnComponent.vue'),
+                component: () => import('@/views/uikit/LessonComponent.vue'),
                 props: true
             },
             {

@@ -42,7 +42,7 @@
                                     {{ asset.symbol }}
                                 </div>
                                 <div class="asset-price">
-                                    ${{ Number(asset.price).toFixed(2) }}
+                                    ${{ Number(asset.price_buy).toFixed(2) }}
                                 </div>
                             </div>
                         </div>
