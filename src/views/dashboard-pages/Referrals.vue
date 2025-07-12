@@ -7,7 +7,7 @@
                     <div class="flex items-center">
                         <i class="pi pi-users mr-8 blue icon"></i>
                         <div>
-                            <div class="dashboard-count text-3x; font-medium">{{ referrals.referrals ?
+                            <div class="dashboard-count text-2xl font-medium">{{ referrals.referrals ?
                                 referrals.referrals.length : 0 }}</div>
                             <div class="referrals-title grey">Total referrals</div>
                         </div>
@@ -18,7 +18,7 @@
                     <div class="flex items-center">
                         <i class="pi pi-users mr-8 green icon"></i>
                         <div>
-                            <div class="tile-count text-3x; font-medium">{{ referrals.active }}</div>
+                            <div class="tile-count text-2xl font-medium">{{ referrals.active }}</div>
                             <div class="referrals-title grey">Active referrals</div>
                         </div>
                     </div>
@@ -28,7 +28,7 @@
                     <div class="flex items-center">
                         <i class="pi pi-dollar mr-8 blue icon"></i>
                         <div>
-                            <div class="tile-count text-3x; font-medium">${{ referrals.totalEarned() }}</div>
+                            <div class="tile-count text-2xl font-medium">${{ referrals.totalEarned() }}</div>
                             <div class="referrals-title grey">Total Earned</div>
                         </div>
                     </div>
@@ -36,9 +36,9 @@
 
                 <div class="earned-referrals page-tile dashboard-tile w-1/4">
                     <div class="flex items-center">
-                        <i class="pi pi-gift mr-8 orange icon"></i>
+                        <i class="pi pi-gift mr-8 text-orange-400 icon "></i>
                         <div>
-                            <div class="tile-count text-3x; font-medium">${{ referrals.pending }}</div>
+                            <div class="tile-count text-2xl font-medium ">${{ referrals.pending }}</div>
                             <div class="referrals-title grey">Pending Rewards</div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                 <div class="status flex flex-col">
                     <div class="earned text-right text-lg font-semibold">${{ referral.earned || 0 }}</div>
                     <div class="status text-sm font-medium" :class="{
-                        'text-orange-500 bg-orange-100 dark:bg-orange-900/20': referral.status === 'Pending',
+                        'text-orange-400 bg-orange-100 dark:bg-orange-900/20': referral.status === 'Pending',
                         'text-green-500 bg-green-100 dark:bg-green-900/20': referral.status === 'Active'
                     }">{{
                         referral.status || 'Active' }}</div>

@@ -71,6 +71,10 @@ apiClient.sendReview = async (review) => {
 
     return response
 }
+apiClient.getDepositWithdrawalHistory = async () => {
+    const response = (await apiClient.get('/stocks/my-deposit-withdrawal-history/')).data
+    return response
+}
 
 apiClient.getReviewsStats = async () => {
     const response = (await apiClient.get('/stocks/reviews/')).data
@@ -104,6 +108,8 @@ apiClient.searchAssets = async (search, category = '', page_size = 8, page = 1,)
 
     return response.results
 }
+
+
 
 apiClient.buyAsset = async (asset_id, quantity) => {
     const response = await apiClient.post('/stocks/trading/buy/', {

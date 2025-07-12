@@ -406,11 +406,6 @@ const routes = [
         ]
     },
     {
-        path: '/user',
-        name: 'me',
-        component: () => import('@/views/pages/Me.vue')
-    },
-    {
         path: '/landing',
         name: 'landing',
         component: () => import('@/views/pages/Landing.vue')
