@@ -46,18 +46,18 @@
             </div>
         </div>
 
-        <div class="referral-link-wrapper  page-tile dashboard-tile">
+        <div class="referral-link-wrapper page-tile dashboard-tile">
             <div class="link-title-wrapper flex justify-between items-center mb-5">
-                <div class="link-title text-3xl font-semibold ">Your Referral Link</div>
+                <div class="link-title text-3xl font-semibold">Your Referral Link</div>
             </div>
 
             <div class="flex align-center gap-3">
                 <div class="referral-link bc-dark-grey padding pointer" :class="{ 'copied': copied }"
-                    @click="copyToClipboard(link)" style="width: 100%;">
-                    {{ link }}
+                    @click="copyToClipboard(referralLink)" style="width: 100%;">
+                    {{ referralLink }}
                 </div>
-                <div class="clipboard text-2xl pointer" @click="copyToClipboard(link)">
-                    <i class="pi pi-clone bc-blue text-lg clone-padding rounded-lg "
+                <div class="clipboard text-2xl pointer" @click="copyToClipboard(referralLink)">
+                    <i class="pi pi-clone bc-blue text-lg clone-padding rounded-lg"
                         :class="{ 'hidden copied-btn': copied }"></i>
                     <i class="pi pi-check green bc-blue text-lg clone-padding rounded-lg"
                         :class="{ 'hidden ': !copied, 'copied-btn': copied }"></i>
@@ -65,95 +65,116 @@
             </div>
         </div>
 
-        <div class="view-referrals-wrapper flex gap-2 flex-col dashboard-tile page-tile" v-if="referrals.referrals">
+        <div class="view-referrals-wrapper flex gap-2 flex-col dashboard-tile page-tile"
+            v-if="referrals.referrals && referrals.referrals.length > 0">
             <div class="view-title text-3xl font-bold mb-5">Referrals</div>
             <div class="view-referral flex items-center justify-between page-tile bg-gray-700"
-                v-for="referral in referrals.referrals">
+                v-for="referral in referrals.referrals" :key="referral.id">
                 <div class="flex flex-col">
                     <div class="name-wrapper flex gap-4 text-lg font-semibold">
-                        <div class="name">{{ referral.name }}</div>
-                        <div class="surname">{{ referral.surname }}</div>
+                        <div class="name">{{ referral.first_name || referral.name }}</div>
+                        <div class="surname">{{ referral.last_name || referral.surname }}</div>
                     </div>
-                    <div class="joined grey">{{ referral.joined }}</div>
+                    <div class="joined grey">{{ formatDate(referral.date_joined || referral.joined) }}</div>
                 </div>
                 <div class="status flex flex-col">
-                    <div class="earned text-right text-lg font-semibold">${{ referral.earned }}</div>
+                    <div class="earned text-right text-lg font-semibold">${{ referral.earned || 0 }}</div>
                     <div class="status"
                         :class="{ 'orange': referral.status === 'Pending', 'green': referral.status === 'Active' }">{{
-                            referral.status }}</div>
+                            referral.status || 'Active' }}</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Пустое состояние -->
+        <div v-else-if="!loading" class="view-referrals-wrapper flex gap-2 flex-col dashboard-tile page-tile">
+            <div class="view-title text-3xl font-bold mb-5">Referrals</div>
+            <div class="empty-state text-center py-8">
+                <i class="pi pi-users text-4xl text-surface-400 mb-4"></i>
+                <h5 class="text-lg font-medium mb-2">No Referrals Yet</h5>
+                <p class="text-surface-600">
+                    Share your referral link with friends and start earning rewards!
+                </p>
+            </div>
+        </div>
+
+        <!-- Загрузка -->
+        <div v-if="loading" class="view-referrals-wrapper flex gap-2 flex-col dashboard-tile page-tile">
+            <div class="view-title text-3xl font-bold mb-5">Referrals</div>
+            <div class="loading-state text-center py-8">
+                <i class="pi pi-spin pi-spinner text-4xl text-primary mb-4"></i>
+                <p class="text-surface-600">Loading referrals...</p>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-.copied-btn {
-    background-color: transparent !important;
-    transition: hidden .3s ease-in-out;
-}
-
-.referral-link {
-    transition: .3s ease-in-out;
-    border: 1px solid rgba(0, 255, 255, 0.61);
-
-}
-
-.copied {
-    border: 1px solid green;
-}
-
-.referral-link {
-    padding: 10px 15px;
-    border-radius: 8px;
-}
-
-.clone-padding {
-    padding: 10px 15px;
-}
-
-.orange {
-    color: orange;
-}
-
-.icon {
-    font-size: 2.2rem;
-}
-</style>
-
 <script setup>
+import apiClient from '@/api/axios.js';
+import { computed, onMounted, reactive, ref } from 'vue';
 
-import { reactive, ref } from 'vue';
-
-const copied = ref(false)
-
-const link = ref('https://stoxly.com/STOXLY2024')
+const copied = ref(false);
+const loading = ref(true);
+const referralData = ref({
+    referral_code: '',
+    referrals: []
+});
 
 const referrals = reactive({
-    active: 6,
-    earned: 200,
-    pending: 30,
-    referrals: [
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 2 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 22 },
-        { name: 'Max', surname: 'Suit', status: 'Pending', joined: 'May 12, 2024', earned: 0 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 2 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 22 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 2 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 2 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 2 },
-        { name: 'Max', surname: 'Suit', status: 'Active', joined: 'May 12, 2024', earned: 2 },
-    ],
-    /**
-     * 
-     */
+    active: 0,
+    earned: 0,
+    pending: 0,
+    referrals: [],
     totalEarned() {
         return this.referrals.reduce((total, referral) => {
-            return total + referral.earned;
+            return total + (referral.earned || 0);
         }, 0);
     },
+});
 
-})
+// Вычисляемое свойство для реферальной ссылки
+const referralLink = computed(() => {
+    if (referralData.value.referral_code) {
+        return `${window.location.origin}/auth/register?ref=${referralData.value.referral_code}`;
+    }
+    return `${window.location.origin}/auth/register`;
+});
+
+// Функция для загрузки данных рефералов
+async function loadReferrals() {
+    loading.value = true;
+    try {
+        const response = await apiClient.get('/auth/my-referrals/');
+        referralData.value = response.data;
+
+        // Обновляем реактивные данные
+        referrals.referrals = referralData.value.referrals || [];
+        referrals.active = referrals.referrals.filter(ref => ref.status === 'Active').length;
+        referrals.earned = referrals.totalEarned();
+        referrals.pending = referrals.referrals.filter(ref => ref.status === 'Pending').length * 10; // Примерная сумма ожидающих наград
+
+    } catch (error) {
+        console.error('Error loading referrals:', error);
+        // В случае ошибки используем пустой массив
+        referrals.referrals = [];
+        referrals.active = 0;
+        referrals.earned = 0;
+        referrals.pending = 0;
+    } finally {
+        loading.value = false;
+    }
+}
+
+// Функция форматирования даты
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
 
 async function copyToClipboard(text) {
     try {
@@ -179,4 +200,49 @@ async function copyToClipboard(text) {
     }
 }
 
+// Загружаем данные при монтировании компонента
+onMounted(() => {
+    loadReferrals();
+});
 </script>
+
+<style scoped>
+.copied-btn {
+    background-color: transparent !important;
+    transition: hidden .3s ease-in-out;
+}
+
+.referral-link {
+    transition: .3s ease-in-out;
+    border: 1px solid rgba(0, 255, 255, 0.61);
+}
+
+.copied {
+    border: 1px solid green;
+}
+
+.referral-link {
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.clone-padding {
+    padding: 10px 15px;
+}
+
+.orange {
+    color: orange;
+}
+
+.icon {
+    font-size: 2.2rem;
+}
+
+.empty-state {
+    color: var(--surface-600);
+}
+
+.loading-state {
+    color: var(--surface-600);
+}
+</style>

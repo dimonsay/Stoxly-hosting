@@ -1,11 +1,13 @@
 <script setup>
 import apiClient from '@/api/axios.js';
 import { useLayout } from '@/layout/composables/layout';
-import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { extractReferralCodeFromURL as extractReferralCodeFromURLUtil, validateReferralCode as validateReferralCodeUtil } from '@/utils/referral.js';
+import { onMounted, reactive } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const { isDarkTheme } = useLayout();
 const router = useRouter();
+const route = useRoute();
 
 function logo() {
     return isDarkTheme.value ? 'light' : 'dark';
@@ -22,22 +24,72 @@ const formData = reactive({
     lastName: 'asd',
     username: 'dimonsay',
     email: 'dimonwar12@gmail.com',
+    phone: '', // Добавляем поле для номера телефона
     password: 'Varvarua73219@',
     password2: 'Varvarua73219@',
+    referralCode: '', // Добавляем поле для реферального кода
 });
 
 const validateCode = reactive('')
-
 
 const errors = reactive({
     firstName: false,
     lastName: false,
     username: false,
     email: false,
+    phone: false, // Добавляем ошибку для номера телефона
     password: false,
     password2: false,
     code: false,
-    validateCodeHidden: false
+    validateCodeHidden: false,
+    referralCode: false, // Добавляем ошибку для реферального кода
+});
+
+// Функция для извлечения реферального кода из URL
+function extractReferralCodeFromURL() {
+    const refCode = extractReferralCodeFromURLUtil();
+    if (refCode) {
+        formData.referralCode = refCode;
+        validateReferralCode(refCode);
+    }
+}
+
+// Функция валидации реферального кода
+function validateReferralCode(code) {
+    if (!code) {
+        errors.referralCode = false;
+        return true;
+    }
+
+    errors.referralCode = !validateReferralCodeUtil(code);
+    return !errors.referralCode;
+}
+
+// Функция для очистки реферального кода
+function clearReferralCode() {
+    formData.referralCode = '';
+    errors.referralCode = false;
+}
+
+// Функция валидации номера телефона
+function validatePhone(phone) {
+    if (!phone) {
+        errors.phone = false;
+        return true;
+    }
+
+    // Удаляем все пробелы, дефисы и скобки для проверки
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+    // Проверяем, что номер содержит только цифры и имеет длину от 10 до 15 символов
+    const phoneRegex = /^\+?[0-9]{10,15}$/;
+    errors.phone = !phoneRegex.test(cleanPhone);
+    return !errors.phone;
+}
+
+// Инициализация при загрузке компонента
+onMounted(() => {
+    extractReferralCodeFromURL();
 });
 
 function validatePassword(password) {
@@ -94,6 +146,8 @@ function ifEmpty() {
         errors.username = true
     } if (formData.email == '') {
         errors.email = true
+    } if (formData.phone == '') {
+        errors.phone = true
     } if (formData.password == '') {
         errors.password = true
     } if (formData.password2 == '') {
@@ -108,20 +162,24 @@ async function submit() {
     errors.firstName = false;
     errors.lastName = false;
     errors.username = false;
+    errors.phone = false;
     errors.password = false;
     errors.password2 = false;
     errors.email = false;
+    errors.referralCode = false;
 
     if (ifEmpty()) {
         validateEmail(formData.email);
         validateName(formData.firstName);
+        validatePhone(formData.phone);
         validatePassword(formData.password);
         validateUsername(formData.username);
         validateName(formData.lastName);
         validateConfirmedPassword(formData.password2);
+        validateReferralCode(formData.referralCode);
 
         if (!errors.firstName && !errors.lastName && !errors.username &&
-            !errors.email && !errors.password && !errors.password2) {
+            !errors.email && !errors.phone && !errors.password && !errors.password2 && !errors.referralCode) {
 
             const result = await apiClient.register(formData);
 
@@ -140,6 +198,12 @@ async function submit() {
                     }
                     if (result.errors.email) {
                         errors.email = true
+                    }
+                    if (result.errors.phone) {
+                        errors.phone = true
+                    }
+                    if (result.errors.referral_code) {
+                        errors.referralCode = true
                     }
                 } else {
                     console.error("Registration failed:", result.error);
@@ -182,6 +246,7 @@ function goHome() {
                             <span class="text-2xl font-semibold m-0 mb-2">Register</span>
                             <span class="block text-surface-600 dark:text-surface-200 font-medium mb-6">Let's get
                                 started</span>
+
                             <IconField>
                                 <InputText v-model="formData.firstName" type="text" autocomplete="off"
                                     placeholder="First Name" class="block mb-5"
@@ -215,6 +280,16 @@ function goHome() {
                             </IconField>
 
                             <IconField>
+                                <InputIcon class="pi pi-phone" />
+                                <InputText v-model="formData.phone" type="tel" autocomplete="off" placeholder="Phone"
+                                    class="block mb-5" :class="{ 'error-border': errors.phone }"
+                                    @blur="validatePhone(formData.phone)" style="max-width: 320px; min-width: 270px" />
+                            </IconField>
+                            <div v-if="errors.phone" class="text-red-500 text-sm mt-1 mb-3">
+                                Please enter a valid phone number
+                            </div>
+
+                            <IconField>
                                 <InputIcon class="pi pi-key" />
                                 <InputText v-model="formData.password" type="password" autocomplete="current-password"
                                     placeholder="Password" @blur="validatePassword(formData.password)"
@@ -237,6 +312,28 @@ function goHome() {
                                     read the</label>
                                 <a class="text-surface-600 dark:text-surface-200 hover:text-primary cursor-pointer">Terms
                                     and Conditions</a>
+                            </div>
+                        </div>
+
+                        <!-- Реферальный код -->
+                        <div class="referral-code-section mt-6 mb-4" style="max-width: 320px; min-width: 270px">
+                            <IconField>
+                                <InputIcon class="pi pi-users" />
+                                <InputText v-model="formData.referralCode" type="text" autocomplete="off"
+                                    placeholder="Referral Code (optional)" class="block"
+                                    @blur="validateReferralCode(formData.referralCode)"
+                                    :class="{ 'error-border': errors.referralCode }"
+                                    style="max-width: 320px; min-width: 270px" />
+                            </IconField>
+                            <div v-if="formData.referralCode" class="flex items-center justify-between mt-2">
+                                <span class="text-sm text-surface-600 dark:text-surface-400">
+                                    Referral code: {{ formData.referralCode }}
+                                </span>
+                                <Button type="button" icon="pi pi-times" size="small" text @click="clearReferralCode"
+                                    class="p-1" />
+                            </div>
+                            <div v-if="errors.referralCode" class="text-red-500 text-sm mt-1">
+                                Invalid referral code format
                             </div>
                         </div>
 

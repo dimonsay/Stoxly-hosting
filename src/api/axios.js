@@ -160,6 +160,61 @@ apiClient.getUser = async () => {
     return response
 }
 
+// Реферальные методы
+apiClient.getReferralStats = async () => {
+    try {
+        const response = await apiClient.get('/auth/referrals/stats/');
+        return {
+            success: true,
+            data: response.data
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.response?.data?.message || 'Failed to get referral stats'
+        };
+    }
+};
+
+apiClient.getReferrals = async (page = 1, pageSize = 10) => {
+    try {
+        const response = await apiClient.get('/auth/referrals/', {
+            params: {
+                page,
+                page_size: pageSize
+            }
+        });
+        return {
+            success: true,
+            data: response.data
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.response?.data?.message || 'Failed to get referrals'
+        };
+    }
+};
+
+
+
+apiClient.validateReferralCode = async (code) => {
+    try {
+        const response = await apiClient.post('/auth/validate-referral-code/', {
+            referral_code: code
+        });
+        return {
+            success: true,
+            data: response.data
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.response?.data?.message || 'Invalid referral code'
+        };
+    }
+};
+
 apiClient.getNews = async () => {
     const response = (await apiClient.get('/stocks/news/')).data;
     return response
@@ -194,8 +249,14 @@ apiClient.register = async (userData) => {
         first_name: userData.firstName,
         last_name: userData.lastName,
         password: userData.password,
-        password2: userData.password2
+        password2: userData.password2,
+        phone: userData.phone
     };
+
+    // Добавляем реферальный код если он есть в данных формы
+    if (userData.referralCode && userData.referralCode.trim()) {
+        requestData.referral_code = userData.referralCode.trim();
+    }
 
     try {
         const response = await apiClient.post('/auth/register/', requestData);
