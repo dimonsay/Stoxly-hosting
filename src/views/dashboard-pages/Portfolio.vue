@@ -3,7 +3,7 @@
     <div class="dashboard-title">Portfolio</div>
 
     <div class="portfolio-charts-wrapper">
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 gap-3" v-if="currentPortfolio.length > 0">
         <div class="flex flex-col items-center bg-none dashboard-tile page-tile">
           <div class="font-semibold text-xl mb-4 text-left w-full">Portfolio Distribution</div>
 
@@ -41,7 +41,7 @@
             </div>
 
             <div class="text-blue-400 text-20 text-base">
-              Share : {{ getCategoryPercent(categoryKey) }}%
+              Portfolio Share: {{ getCategoryPercent(categoryKey) }}%
             </div>
           </div>
         </div>

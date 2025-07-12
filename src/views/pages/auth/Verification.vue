@@ -11,6 +11,7 @@ const values = ref(Array(6).fill(null));
 const inputs = ref([]);
 
 const errorCode = ref(false);
+const serverError = ref('');
 
 const type = sessionStorage.getItem('type');
 const email = sessionStorage.getItem('email');
@@ -58,26 +59,19 @@ async function verify() {
 
             if (type == 'registration') {
                 sessionStorage.setItem('email', email);
-
-                router.push({
-                    name: 'login'
-                })
+                router.push({ name: 'login' })
             } else if (type == 'login') {
-                router.push({
-                    name: 'dashboard'
-                })
+                router.push({ name: 'dashboard' })
             }
         } else {
             if (response.isValidationError) {
                 values.value = Array(6).fill(null);
                 errorCode.value = true;
-                console.error('Ошибка валидации:', response.errors);
+                serverError.value = response.errors?.non_field_errors?.[0] || 'Invalid code';
             } else if (response.isNetworkError) {
-                // Проблемы с сетью
-                console.error('Сетевая ошибка');
+                serverError.value = 'Network error';
             } else {
-                // Другие ошибки
-                console.error('Ошибка:', response.status, response.errors);
+                serverError.value = response.message || 'Unknown error';
             }
         }
     }
@@ -115,30 +109,32 @@ const focus = (event) => {
 </script>
 
 <template>
-    <div :class="'login-body flex min-h-screen  ' + (isDarkTheme ? 'layout-dark' : 'layout-light')">
-        <div class="login-image w-6/12 h-screen hidden md:block" style="max-width: 490px">
-            <img :src="'/demo/images/pages/verification-' + (isDarkTheme ? 'ondark' : 'onlight') + '.png'"
-                alt="atlantis" class="h-screen w-full" />
-        </div>
-        <div class="w-full" style="background: var(--surface-ground)">
-            <Fluid
-                class="min-h-screen text-center w-full flex items-center md:items-start justify-center flex-col bg-auto md:bg-contain bg-no-repeat"
-                style="padding: 20% 10% 20% 10%; background: var(--exception-pages-image)">
-                <div class="flex flex-col">
-                    <div class="flex items-center mb-12 logo-container">
-                        <img :src="`/layout/images/logo/logo-${logo()}.png`" class="login-logo" style="width: 45px" />
-                        <img :src="`/layout/images/logo/appname-${logo()}.png`" class="login-appname ml-4"
-                            style="width: 100px" />
+    <div
+        class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="mx-auto mb-6">
+                    <div class="flex items-center justify-center">
+                        <img :src="`/layout/images/logo/logo-${logo()}.png`" class="w-12 h-12" />
+                        <img :src="`/layout/images/logo/appname-${logo()}.png`" class="ml-3 h-8" />
                     </div>
-                    <div class="form-container text-left" style="max-width: 320px; min-width: 270px">
-                        <span
-                            class="text-surface-900 dark:text-surface-0 font-bold mb-2 text-2xl m-0">Verification</span>
-                        <span class="text-surface-600 dark:text-surface-200 font-medium"><br>We have sent code to you
-                            email: <br><br></span>
-                        <div class="flex items-center mt-1 mb-6">
-                            <i class="pi pi-envelope text-surface-600 dark:text-surface-200"></i>
-                            <span class="text-surface-900 dark:text-surface-0 font-bold ml-2">
-                                {{ email[0] }}{{ email[1] }}*****@gmail.com
+                </div>
+            </div>
+            <!-- Verification Card -->
+            <Card class="bg-gray-800/50 backdrop-blur-sm border-gray-700/50 shadow-2xl">
+                <template #header>
+                    <div class="text-center mt-5">
+                        <h1 class="text-3xl font-bold text-white mb-2">Verification</h1>
+                        <p class="text-gray-400">We have sent a code to your email</p>
+                    </div>
+                </template>
+                <template #content>
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-center mt-1 mb-6">
+
+                            <span class="text-white font-bold ml-2">
+                                {{ email ? email[0] + email[1] + '*****@gmail.com' : '' }}
                             </span>
                         </div>
                         <div class="flex justify-between w-full items-center gap-4" @paste="handlePaste">
@@ -146,32 +142,56 @@ const focus = (event) => {
                                 v-model="values[index]" inputClass="w-12 text-center" :class="{ 'error': errorCode }"
                                 :max="9" @keyup="focus($event)" />
                         </div>
-                    </div>
-                    <div class="button-container mt-6 text-left" style="max-width: 320px; min-width: 270px">
-                        <div class="buttons flex items-center gap-4">
-                            <Button @click="verify" class="block"
-                                style="max-width: 320px; margin-bottom: 32px">Verify</Button>
+                        <div v-if="serverError" class="text-red-500 text-sm mb-2 text-center">
+                            {{ serverError }}
+                        </div>
+                        <div class="flex items-center gap-4 justify-center mt-6">
+                            <Button @click="verify" class="block" style="max-width: 160px;">Verify</Button>
                             <Button @click="goHome" class="block" severity="danger" outlined
-                                style="max-width: 320px; margin-bottom: 32px">Cancel</Button>
+                                style="max-width: 160px;">Cancel</Button>
                         </div>
                     </div>
-                </div>
 
-                <div class="login-footer flex items-center absolute" style="bottom: 75px">
-                    <div
-                        class="flex items-center login-footer-logo-container pr-6 mr-6 border-r border-surface-200 dark:border-surface-700">
-                        <img src="/layout/images/logo/logo-gray.png" class="login-footer-logo" style="width: 22px" />
-                        <img src="/layout/images/logo/appname-gray.png" class="login-footer-appname ml-2"
-                            style="width: 45px" />
-                    </div>
-                    <span class="text-sm text-surface-500 dark:text-surface-400 mr-4">Copyright 2024</span>
-                </div>
-            </Fluid>
+                </template>
+            </Card>
         </div>
     </div>
 </template>
 
-<style>
+<style scoped>
+.bg-gradient-to-br {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
+}
+
+:deep(.p-card) {
+    background: rgba(31, 41, 55, 0.5) !important;
+    border: 1px solid rgba(75, 85, 99, 0.5) !important;
+    backdrop-filter: blur(8px);
+}
+
+:deep(.p-card .p-card-header) {
+    background: transparent !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+:deep(.p-card .p-card-content) {
+    padding: 0 !important;
+}
+
+:deep(.p-inputtext),
+:deep(.p-inputnumber-input) {
+    background: rgba(55, 65, 81, 0.5) !important;
+    border: 1px solid #4b5563 !important;
+    color: white !important;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-inputnumber-input:focus) {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+    border-color: #3b82f6 !important;
+}
+
 .error {
     animation: shake .5s;
 }

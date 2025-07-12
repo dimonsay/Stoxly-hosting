@@ -122,3 +122,26 @@
 .container{
     max-width: 1280px;
 }
+
+.p-select:focus,
+.p-dropdown:focus,
+.p-multiselect:focus {
+    border-color: #0ea5e9 !important;
+    box-shadow: 0 0 0 1px #0ea5e9 !important;
+}
+
+.p-select:hover,
+.p-dropdown:hover,
+.p-multiselect:hover {
+    border-color: #0ea5e9 !important;
+}
+
+select:focus {
+    border-color: #0ea5e9 !important;
+    box-shadow: 0 0 0 1px #0ea5e9 !important;
+    outline: none !important;
+}
+
+select:hover {
+    border-color: #0ea5e9 !important;
+}

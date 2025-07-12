@@ -45,6 +45,14 @@ const errors = reactive({
     referralCode: false, // Добавляем ошибку для реферального кода
 });
 
+const serverErrors = reactive({
+    username: '',
+    email: '',
+    phone: '',
+    referralCode: '',
+    general: ''
+});
+
 // Функция для извлечения реферального кода из URL
 function extractReferralCodeFromURL() {
     const refCode = extractReferralCodeFromURLUtil();
@@ -167,6 +175,11 @@ async function submit() {
     errors.password2 = false;
     errors.email = false;
     errors.referralCode = false;
+    serverErrors.username = '';
+    serverErrors.email = '';
+    serverErrors.phone = '';
+    serverErrors.referralCode = '';
+    serverErrors.general = '';
 
     if (ifEmpty()) {
         validateEmail(formData.email);
@@ -192,18 +205,21 @@ async function submit() {
             } else {
                 if (result.isValidationError) {
                     // Ошибки валидации
-                    console.error("Validation errors:", result.errors);
                     if (result.errors.username) {
-                        errors.username = true
+                        errors.username = true;
+                        serverErrors.username = result.errors.username[0];
                     }
                     if (result.errors.email) {
-                        errors.email = true
+                        errors.email = true;
+                        serverErrors.email = result.errors.email[0];
                     }
                     if (result.errors.phone) {
-                        errors.phone = true
+                        errors.phone = true;
+                        serverErrors.phone = result.errors.phone[0];
                     }
                     if (result.errors.referral_code) {
-                        errors.referralCode = true
+                        errors.referralCode = true;
+                        serverErrors.referralCode = result.errors.referral_code[0];
                     }
                 } else {
                     console.error("Registration failed:", result.error);
@@ -220,111 +236,118 @@ function goHome() {
 </script>
 
 <template>
-    <div :class="'login-body flex min-h-screen  ' + (isDarkTheme ? 'layout-dark' : 'layout-light')">
-
-        <div class="w-full" style="background: var(--surface-ground)">
-
-            <Fluid
-                class="min-h-screen text-center w-full flex items-center md:items-start justify-center flex-col bg-auto md:bg-contain bg-no-repeat max-w-full"
-                style="align-items: center; background: var(--exception-pages-image)">
-
-
-                <div class="flex justify-between w-full" style="padding: 0 5%; align-items: center;">
-
-                    <div class="flex flex-col justify-center" style="margin: 0 auto;">
-
-                        <div class="flex items-center mb-12 logo-container">
-                            <img :src="`/layout/images/logo/logo-${logo()}.png`" class="login-logo"
-                                style="width: 45px" />
-                            <div class="login-appname ml-4  font-bold">
-                                <div class="name text-xl" style="text-align: left;">Stoxly</div>
-                                <div class="undername" style="font-weight: 100;">Bordless invest</div>
+    <div
+        class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="mx-auto mb-6">
+                    <div class="flex items-center justify-center">
+                        <img :src="`/layout/images/logo/logo-${logo()}.png`" class="w-12 h-12" />
+                        <img :src="`/layout/images/logo/appname-${logo()}.png`" class="ml-3 h-8" />
+                    </div>
+                </div>
+            </div>
+            <!-- Register Card -->
+            <Card class=" backdrop-blur-sm border-gray-700/50 shadow-2xl">
+                <template #header>
+                    <div class="text-center mt-5">
+                        <h1 class="text-3xl font-bold text-white mb-2">Create your account</h1>
+                        <p class="text-gray-400">Sign up to start trading with Stoxly</p>
+                    </div>
+                </template>
+                <template #content>
+                    <form @submit.prevent="submit" class="space-y-4">
+                        <div class="flex gap-4">
+                            <div class="flex-1 space-y-2">
+                                <label for="firstName" class="text-sm font-medium text-gray-300">First Name</label>
+                                <InputText id="firstName" v-model="formData.firstName" autocomplete="off"
+                                    placeholder="First Name"
+                                    :class="['w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400', { 'error-border': errors.firstName }]"
+                                    @blur="validateName(formData.firstName, 'first')" required />
+                            </div>
+                            <div class="flex-1 space-y-2">
+                                <label for="lastName" class="text-sm font-medium text-gray-300">Last Name</label>
+                                <InputText id="lastName" v-model="formData.lastName" autocomplete="off"
+                                    placeholder="Last Name"
+                                    :class="['w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400', { 'error-border': errors.lastName }]"
+                                    @blur="validateName(formData.lastName, 'last')" required />
                             </div>
                         </div>
-
-                        <div class="form-container text-left" style="max-width: 320px; min-width: 270px;">
-                            <span class="text-2xl font-semibold m-0 mb-2">Register</span>
-                            <span class="block text-surface-600 dark:text-surface-200 font-medium mb-6">Let's get
-                                started</span>
-
-                            <IconField>
-                                <InputText v-model="formData.firstName" type="text" autocomplete="off"
-                                    placeholder="First Name" class="block mb-5"
-                                    @blur="validateName(formData.firstName, 'first')"
-                                    :class="{ 'error-border': errors.firstName }"
-                                    style="max-width: 320px; min-width: 270px" />
-                            </IconField>
-
-                            <IconField>
-                                <InputText v-model="formData.lastName" type="text" autocomplete="off"
-                                    placeholder="Last Name" class="block mb-5"
-                                    :class="{ 'error-border': errors.lastName }"
-                                    @blur="validateName(formData.lastName, 'last')"
-                                    style="max-width: 320px; min-width: 270px" />
-                            </IconField>
-
-                            <IconField>
+                        <div class="space-y-2">
+                            <label for="username" class="text-sm font-medium text-gray-300">Username</label>
+                            <IconField iconPosition="left">
                                 <InputIcon class="pi pi-user" />
-                                <InputText v-model="formData.username" type="text" autocomplete="off"
-                                    placeholder="Username" class="block mb-5"
-                                    @blur="validateUsername(formData.username)"
-                                    :class="{ 'error-border': errors.username }"
-                                    style="max-width: 320px; min-width: 270px" />
+                                <InputText id="username" v-model="formData.username" autocomplete="off"
+                                    placeholder="Username"
+                                    :class="['w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400', { 'error-border': errors.username }]"
+                                    @blur="validateUsername(formData.username)" required />
                             </IconField>
-
-                            <IconField>
+                            <div v-if="serverErrors.username" class="text-red-500 text-sm mt-1">
+                                {{ serverErrors.username }}
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="email" class="text-sm font-medium text-gray-300">Email</label>
+                            <IconField iconPosition="left">
                                 <InputIcon class="pi pi-envelope" />
-                                <InputText v-model="formData.email" type="mail" autocomplete="off" placeholder="Email"
-                                    class="block mb-5" :class="{ 'error-border': errors.email }"
-                                    @blur="validateEmail(formData.email)" style="max-width: 320px; min-width: 270px" />
+                                <InputText id="email" v-model="formData.email" type="email" autocomplete="off"
+                                    placeholder="Email"
+                                    :class="['w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400', { 'error-border': errors.email }]"
+                                    @blur="validateEmail(formData.email)" required />
                             </IconField>
-
-                            <IconField>
+                            <div v-if="serverErrors.email" class="text-red-500 text-sm mt-1">
+                                {{ serverErrors.email }}
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="phone" class="text-sm font-medium text-gray-300">Phone</label>
+                            <IconField iconPosition="left">
                                 <InputIcon class="pi pi-phone" />
-                                <InputText v-model="formData.phone" type="tel" autocomplete="off" placeholder="Phone"
-                                    class="block mb-5" :class="{ 'error-border': errors.phone }"
-                                    @blur="validatePhone(formData.phone)" style="max-width: 320px; min-width: 270px" />
+                                <InputText id="phone" v-model="formData.phone" type="tel" autocomplete="off"
+                                    placeholder="Phone"
+                                    :class="['w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400', { 'error-border': errors.phone }]"
+                                    @blur="validatePhone(formData.phone)" required />
                             </IconField>
+                            <div v-if="serverErrors.phone" class="text-red-500 text-sm mt-1">
+                                {{ serverErrors.phone }}
+                            </div>
                             <div v-if="errors.phone" class="text-red-500 text-sm mt-1 mb-3">
                                 Please enter a valid phone number
                             </div>
-
-                            <IconField>
-                                <InputIcon class="pi pi-key" />
-                                <InputText v-model="formData.password" type="password" autocomplete="current-password"
-                                    placeholder="Password" @blur="validatePassword(formData.password)"
-                                    class="block mb-5" :class="{ 'error-border': errors.password }"
-                                    style="max-width: 320px; min-width: 270px" />
-                            </IconField>
-
-                            <IconField>
-                                <InputIcon class="pi pi-key" />
-                                <InputText v-model="formData.password2" type="password" autocomplete="current-password"
-                                    placeholder="Confirm Password" @blur="validateConfirmedPassword(formData.password2)"
-                                    class="block mb-5" :class="{ 'error-border': errors.password2 }"
-                                    style="max-width: 320px; min-width: 270px" />
-                            </IconField>
-
-                            <div class="mt-2 flex flex-wrap hidden">
-                                <Checkbox type="checkbox" id="confirmed" :binary="true" class="mr-2" />
-                                <label for="confirmed" class="text-surface-900 dark:text-surface-0 font-medium mr-2">I
-                                    have
-                                    read the</label>
-                                <a class="text-surface-600 dark:text-surface-200 hover:text-primary cursor-pointer">Terms
-                                    and Conditions</a>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-1 space-y-2">
+                                <label for="password" class="text-sm font-medium text-gray-300">Password</label>
+                                <Password id="password" v-model="formData.password" placeholder="Password"
+                                    :feedback="false" toggleMask
+                                    inputClass="w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400"
+                                    panelClass="bg-gray-700 border-gray-600" @blur="validatePassword(formData.password)"
+                                    required />
+                            </div>
+                            <div class="flex-1 space-y-2">
+                                <label for="password2" class="text-sm font-medium text-gray-300">Confirm
+                                    Password</label>
+                                <Password id="password2" v-model="formData.password2" placeholder="Confirm Password"
+                                    :feedback="false" toggleMask
+                                    inputClass="w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400"
+                                    panelClass="bg-gray-700 border-gray-600"
+                                    @blur="validateConfirmedPassword(formData.password2)" required />
                             </div>
                         </div>
-
-                        <!-- Реферальный код -->
-                        <div class="referral-code-section mt-6 mb-4" style="max-width: 320px; min-width: 270px">
-                            <IconField>
+                        <div class="space-y-2">
+                            <label for="referralCode" class="text-sm font-medium text-gray-300">Referral Code
+                                (optional)</label>
+                            <IconField iconPosition="left">
                                 <InputIcon class="pi pi-users" />
-                                <InputText v-model="formData.referralCode" type="text" autocomplete="off"
-                                    placeholder="Referral Code (optional)" class="block"
-                                    @blur="validateReferralCode(formData.referralCode)"
-                                    :class="{ 'error-border': errors.referralCode }"
-                                    style="max-width: 320px; min-width: 270px" />
+                                <InputText id="referralCode" v-model="formData.referralCode" autocomplete="off"
+                                    placeholder="Referral Code (optional)"
+                                    :class="['w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400', { 'error-border': errors.referralCode }]"
+                                    @blur="validateReferralCode(formData.referralCode)" />
                             </IconField>
+                            <div v-if="serverErrors.referralCode" class="text-red-500 text-sm mt-1">
+                                {{ serverErrors.referralCode }}
+                            </div>
                             <div v-if="formData.referralCode" class="flex items-center justify-between mt-2">
                                 <span class="text-sm text-surface-600 dark:text-surface-400">
                                     Referral code: {{ formData.referralCode }}
@@ -336,43 +359,82 @@ function goHome() {
                                 Invalid referral code format
                             </div>
                         </div>
-
-                        <div class="button-container mt-6 text-left" style="max-width: 320px; min-width: 270px">
-                            <div class="buttons flex items-center gap-4">
-                                <Button type="button" @click="submit()" class="block"
-                                    style="max-width: 320px; margin-bottom: 32px">Submit</Button>
-                                <Button type="button" @click="goHome" class="block" severity="danger" outlined
-                                    style="max-width: 320px; margin-bottom: 32px">Cancel</Button>
-                            </div>
-                            <span class="font-medium text-surface-600 dark:text-surface-200">Already have an account? <a
-                                    class="font-semibold cursor-pointer text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300"
-                                    @click="toLogin()">Login</a>
+                        <Button type="submit"
+                            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 transition-all duration-200 transform hover:scale-[1.02]">
+                            Sign Up
+                        </Button>
+                        <div class="mt-6 text-center flex flex-col gap-2">
+                            <span class="text-sm text-gray-400">
+                                Already have an account?
+                                <a @click.prevent="toLogin" href="#"
+                                    class="text-blue-400 hover:underline underline-offset-2 font-medium ml-1">Sign
+                                    in</a>
+                            </span>
+                            <span class="text-sm text-gray-400">
+                                <a @click.prevent="router.push({ name: 'forgotpassword' })" href="#"
+                                    class="text-blue-400 hover:underline underline-offset-2 font-medium">Forgot
+                                    password?</a>
                             </span>
                         </div>
-
-                        <div class="login-footer flex items-center mt-6">
-                            <div
-                                class="flex items-center login-footer-logo-container pr-6 mr-6 border-r border-surface-200 dark:border-surface-700">
-                                <img src="/layout/images/logo/logo-gray.png" class="login-footer-logo"
-                                    style="width: 22px" />
-                                <img src="/layout/images/logo/appname-gray.png" class="login-footer-appname ml-2"
-                                    style="width: 45px" />
-                            </div>
-                            <span class="text-sm text-surface-500 dark:text-surface-400 mr-4">Copyright 2025</span>
-                        </div>
-
+                    </form>
+                    <div class="mt-8 text-center text-xs text-gray-500">
+                        <p>
+                            By signing up, you agree to our
+                            <a href="/terms-of-service" class="text-blue-400 hover:underline underline-offset-2"
+                                target="_blank">Terms of Service</a>
+                            and
+                            <a href="/privacy-policy" class="text-blue-400 hover:underline underline-offset-2"
+                                target="_blank">Privacy Policy</a>
+                        </p>
                     </div>
-
-                </div>
-
-            </Fluid>
+                </template>
+            </Card>
         </div>
     </div>
-
 </template>
 
 <style>
 .error-border {
     border: 2px solid red !important;
+}
+</style>
+
+<style scoped>
+:deep(.p-card) {
+    background: rgba(31, 41, 55, 0.5) !important;
+    border: 1px solid rgba(75, 85, 99, 0.5) !important;
+    backdrop-filter: blur(8px);
+}
+
+:deep(.p-card .p-card-header) {
+    background: transparent !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+:deep(.p-card .p-card-content) {
+    padding: 0 !important;
+}
+
+:deep(.p-inputtext) {
+    background: rgba(55, 65, 81, 0.5) !important;
+    border: 1px solid #4b5563 !important;
+    color: white !important;
+}
+
+:deep(.p-inputtext:focus) {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+    border-color: #3b82f6 !important;
+}
+
+:deep(.p-password-input) {
+    background: rgba(55, 65, 81, 0.5) !important;
+    border: 1px solid #4b5563 !important;
+    color: white !important;
+}
+
+:deep(.p-password-input:focus) {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+    border-color: #3b82f6 !important;
 }
 </style>

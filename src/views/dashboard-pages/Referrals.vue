@@ -79,9 +79,11 @@
                 </div>
                 <div class="status flex flex-col">
                     <div class="earned text-right text-lg font-semibold">${{ referral.earned || 0 }}</div>
-                    <div class="status"
-                        :class="{ 'orange': referral.status === 'Pending', 'green': referral.status === 'Active' }">{{
-                            referral.status || 'Active' }}</div>
+                    <div class="status px-2 py-1 rounded text-sm font-medium" :class="{
+                        'text-orange-500 bg-orange-100 dark:bg-orange-900/20': referral.status === 'Pending',
+                        'text-green-500 bg-green-100 dark:bg-green-900/20': referral.status === 'Active'
+                    }">{{
+                        referral.status || 'Active' }}</div>
                 </div>
             </div>
         </div>
@@ -228,10 +230,6 @@ onMounted(() => {
 
 .clone-padding {
     padding: 10px 15px;
-}
-
-.orange {
-    color: orange;
 }
 
 .icon {
