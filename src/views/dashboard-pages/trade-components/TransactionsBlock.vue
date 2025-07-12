@@ -14,13 +14,19 @@
 
             <div class="stocks-data-wrapper">
                 <div class="stock-item flex justify-between items-center border-b border-b-blue-500 hover:bg-sky-600 px-4 py-2 text-lg text-white pointer"
-                    v-for="transaction in transactions" :key="transaction.id">
+                    v-for="transaction in visibleTransactions" :key="transaction.id">
                     <div class="basis-1/6 min-w-[80px]">{{ capitalize(transaction.type) }}</div>
                     <div class="basis-1/6 min-w-[80px] text-blue-400">{{ transaction.asset.symbol }}</div>
                     <div class="basis-1/6 min-w-[80px] text-center">{{ Math.floor(transaction.quantity) }}</div>
                     <div class="basis-1/6 min-w-[80px] text-center">${{ transaction.price_buy }}</div>
                     <div class="basis-1/6 min-w-[80px] text-center">${{ transaction.total }}</div>
                     <div class="basis-1/6 min-w-[100px] text-center">{{ formatDate(transaction.created_at) }}</div>
+                </div>
+            </div>
+            <div class="w-full flex justify-center mt-4" v-if="visibleCount < transactions.length">
+                <div class="flex justify-center">
+                    <button @click="loadMore"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition">Load more</button>
                 </div>
             </div>
         </div>
@@ -40,7 +46,7 @@
 
 <script setup>
 import apiClient from '@/api/axios';
-import { onMounted, reactive } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -54,11 +60,17 @@ const capitalize = (str) => {
 };
 
 const transactions = reactive([])
+const visibleCount = ref(5);
+
+const visibleTransactions = computed(() => transactions.slice(0, visibleCount.value));
+
+function loadMore() {
+    visibleCount.value += 5;
+}
 
 onMounted(async () => {
     try {
         const response = await apiClient.getUserTransactions()
-
         transactions.splice(0, transactions.length, ...response)
     } catch (err) {
         console.warn(err)

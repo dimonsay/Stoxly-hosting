@@ -73,7 +73,7 @@ apiClient.sendReview = async (review) => {
 }
 
 apiClient.getReviewsStats = async () => {
-    const response = (await apiClient.get('/stocks/reviews')).data
+    const response = (await apiClient.get('/stocks/reviews/')).data
 
     return response
 }

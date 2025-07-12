@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="load-more-btn invest-btn pointer mt-5" @click="loadMore('recommended')"
+        <div class="load-more-btn invest-btn pointer mt-5 mx-auto" @click="loadMore('recommended')"
             v-if="flatRecommended.length > (visibleItemsCount['recommended'] || 3)">
             Load more
         </div>
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="load-more-btn invest-btn pointer mt-5" @click="loadMore(category)"
+            <div class="load-more-btn invest-btn pointer mt-5 mx-auto" @click="loadMore(category)"
                 v-if="items.length > (visibleItemsCount[category] || 3)">
                 Load more
             </div>

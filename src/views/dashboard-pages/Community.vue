@@ -33,6 +33,10 @@
                 {{ toast.message }}
             </div>
 
+            <div v-if="serverError" class="text-red-500 text-sm mb-2 text-center">
+                {{ serverError }}
+            </div>
+
             <div class="submit-btn invest-btn pointer" @click="sendReview()">Submit review</div>
         </div>
 
@@ -46,7 +50,8 @@
                 </div>
                 <div class="avarage-mark-wrapper flex justify-between  text-xl">
                     <div class="avarage-mark-title">Average Rating</div>
-                    <div class="avarage-mark"> <i class="pi pi-star-fill text-gold"></i> {{ platformReview.avarage }}
+                    <div class="avarage-mark"> <i class="pi pi-star-fill text-gold"></i> {{
+                        platformReview.average_rating }}
                     </div>
                 </div>
             </div>
@@ -101,10 +106,12 @@ const toast = reactive({
     type: ''  // например, 'success' или 'error'
 });
 
+const serverError = ref('');
+
 async function sendReview() {
     reviewErrors.text = '';
     reviewErrors.rating = '';
-
+    serverError.value = '';
     let hasErrors = false;
 
     if (review.text.trim().length < 10) {
@@ -145,10 +152,14 @@ async function sendReview() {
             setTimeout(() => {
                 toast.show = false;
             }, 2000);
+        } else if (response.data?.error) {
+            serverError.value = response.data.error;
+        } else if (response.data?.message) {
+            serverError.value = response.data.message;
         }
 
     } catch (err) {
-        console.warn(err)
+        serverError.value = err.response?.data?.error || err.response?.data?.message || err.message || 'Ошибка отправки отзыва';
     }
 }
 
@@ -160,7 +171,7 @@ const formatDate = (dateString) => {
 
 
 const platformReview = reactive({
-    avarage: 0,
+    average_rating: 0,
     total: 0
 })
 
@@ -169,7 +180,6 @@ function loadMore() {
 }
 
 const loadCustomers = ref(3);
-
 const customers = reactive([])
 
 const review = reactive({
@@ -180,11 +190,11 @@ const review = reactive({
 onMounted(async () => {
     try {
         const reviewsStats = await apiClient.getReviewsStats()
-
         platformReview.total = reviewsStats.count;
-        platformReview.avarage = reviewsStats.average_rating;
-
-        customers.splice(0, customers.length, ...reviewsStats.results)
+        platformReview.average_rating = reviewsStats.average_rating;
+        if (reviewsStats.results) {
+            customers.splice(0, customers.length, ...reviewsStats.results);
+        }
     } catch (err) {
         console.warn(err)
     }

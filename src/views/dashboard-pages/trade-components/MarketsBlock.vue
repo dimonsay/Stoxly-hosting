@@ -32,23 +32,22 @@
                     </div>
 
                     <div class="flex flex-col gap-3 text-right">
-                        <div class="filtered-item-toBuy text-green-500">
-                            Price to buy: ${{ Number(item.price_buy).toFixed(2) }}
+                        <!-- <div class="filtered-item-toBuy text-green-500">
+                             }}
                         </div>
                         <div class="filtered-item-toSell text-red-500">
                             Price to sell: ${{ Number(item.price_sell).toFixed(2) }}
+                        </div> -->
+                        <div class="buttons-wrapper grid grid-cols-2 text-center gap-4 mt-2">
+                            <div class="buy-btn button-item pointer p-2 bg-green-600 rounded hover:bg-green-600/80 min-w-[150px]"
+                                @click="openTradePopup(item, 'buy')">Buy: ${{
+                                    Number(item.price_buy).toFixed(2) }}</div>
+                            <div class="sell-btn button-item pointer p-2 bg-red-600 hover:bg-red-600/80 rounded min-w-[150px]"
+                                @click="openTradePopup(item, 'sell')">Sell: ${{
+                                    Number(item.price_sell).toFixed(2) }}</div>
                         </div>
                     </div>
-
                 </div>
-
-                <div class="buttons-wrapper grid grid-cols-2 text-center gap-4 mt-2">
-                    <div class="buy-btn button-item pointer p-2 bg-green-600 rounded hover:bg-green-600/80"
-                        @click="openTradePopup(item, 'buy')">Buy</div>
-                    <div class="sell-btn button-item pointer p-2 bg-red-600 hover:bg-red-600/80 rounded"
-                        @click="openTradePopup(item, 'sell')">Sell</div>
-                </div>
-
 
             </div>
             <Dialog v-model:visible="showTradePopup" modal
@@ -109,6 +108,9 @@
                                 Share {{ tradeType === 'buy' ? 'Buy' : 'Sell' }} Link
                             </span>
                         </div>
+                    </div>
+                    <div v-if="buyError" class="text-red-500 text-sm mb-2 text-center">
+                        {{ buyError }}
                     </div>
                 </div>
             </Dialog>
@@ -174,12 +176,14 @@ const tradeType = ref('buy');
 const tradeQuantity = ref(1);
 
 const maxSell = ref(0);
+const buyError = ref('');
 
 async function openTradePopup(item, type) {
     selectedItem.value = item;
     tradeType.value = type;
     tradeQuantity.value = 1;
     showTradePopup.value = true;
+    buyError.value = '';
 
     if (type === 'sell') {
         try {
@@ -195,15 +199,24 @@ async function openTradePopup(item, type) {
 }
 
 async function confirmTrade() {
+    buyError.value = '';
     if (!selectedItem.value || tradeQuantity.value < 1) return;
 
     if (tradeType.value === 'buy') {
-        await buyAsset(selectedItem.value.asset_id, tradeQuantity.value);
+        const result = await buyAsset(selectedItem.value.asset_id, tradeQuantity.value);
+        if (result && result.error) {
+            buyError.value = result.error;
+            return; // Не закрываем попап
+        }
     } else {
         if (tradeQuantity.value <= maxSell.value && maxSell.value > 0) {
-            await sellAsset(selectedItem.value.asset_id, tradeQuantity.value);
+            const result = await sellAsset(selectedItem.value.asset_id, tradeQuantity.value);
+            if (result && result.error) {
+                buyError.value = result.error;
+                return;
+            }
         } else {
-            console.warn('Недостаточно количества для продажи');
+            buyError.value = 'Недостаточно количества для продажи';
             return; // Не закрываем попап
         }
     }
@@ -280,19 +293,33 @@ const loadMore = async () => {
 
 const buyAsset = async (id, quantity = 1) => {
     try {
-        await apiClient.buyAsset(id, quantity);
+        const response = await apiClient.buyAsset(id, quantity);
         emit('update-balance');
+        return response;
     } catch (error) {
-        console.error('Ошибка при покупке:', error);
+        if (error.response?.data?.error) {
+            return { error: error.response.data.error };
+        }
+        if (error.response?.data?.message) {
+            return { error: error.response.data.message };
+        }
+        return { error: error.message || 'Ошибка при покупке' };
     }
 };
 
 const sellAsset = async (id, quantity = 1) => {
     try {
-        await apiClient.sellAsset(id, quantity);
+        const response = await apiClient.sellAsset(id, quantity);
         emit('update-balance');
+        return response;
     } catch (error) {
-        console.error('Ошибка при продаже:', error);
+        if (error.response?.data?.error) {
+            return { error: error.response.data.error };
+        }
+        if (error.response?.data?.message) {
+            return { error: error.response.data.message };
+        }
+        return { error: error.message || 'Ошибка при продаже' };
     }
 };
 

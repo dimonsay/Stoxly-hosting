@@ -46,6 +46,9 @@
                         </div>
 
                         <div class="button-container mt-6 text-left" style="width: 100%; min-width: 270px">
+                            <div v-if="serverError" class="text-red-500 text-sm mb-2 text-center">
+                                {{ serverError }}
+                            </div>
                             <div class="buttons flex items-center gap-4">
                                 <Button type="button" @click="submit()" severity="info" class="block"
                                     style="width: 100%; margin-bottom: 32px">Submit</Button>
@@ -95,6 +98,8 @@ const formData = reactive({
     email: ''
 });
 
+const serverError = ref('');
+
 function validateEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email || !emailRegex.test(formData.email)) {
@@ -134,6 +139,7 @@ async function submit() {
     validateMessage();
     validateEmail();
 
+    serverError.value = '';
     const hasError = Object.values(errors).some((error) => error);
     if (hasError) {
         console.warn('Form error');
@@ -147,12 +153,18 @@ async function submit() {
             email: formData.email,
         };
 
-        const response = await apiClient.adminMessage(data)
-        if (response == 201) {
-            formData.subject = ''
-            formData.issue = ''
-            formData.message = ''
-            formData.email = ''
+        try {
+            const response = await apiClient.adminMessage(data)
+            if (response == 201) {
+                formData.subject = ''
+                formData.issue = ''
+                formData.message = ''
+                formData.email = ''
+            } else {
+                serverError.value = response?.error || response?.message || 'Ошибка отправки сообщения';
+            }
+        } catch (err) {
+            serverError.value = err.response?.data?.error || err.response?.data?.message || err.message || 'Ошибка отправки сообщения';
         }
     }
 }

@@ -71,7 +71,7 @@
             <div class="view-referral flex items-center justify-between page-tile bg-gray-700"
                 v-for="referral in referrals.referrals" :key="referral.id">
                 <div class="flex flex-col">
-                    <div class="name-wrapper flex gap-4 text-lg font-semibold">
+                    <div class="name-wrapper flex gap-2 text-lg font-semibold">
                         <div class="name">{{ referral.first_name || referral.name }}</div>
                         <div class="surname">{{ referral.last_name || referral.surname }}</div>
                     </div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="status flex flex-col">
                     <div class="earned text-right text-lg font-semibold">${{ referral.earned || 0 }}</div>
-                    <div class="status px-2 py-1 rounded text-sm font-medium" :class="{
+                    <div class="status text-sm font-medium" :class="{
                         'text-orange-500 bg-orange-100 dark:bg-orange-900/20': referral.status === 'Pending',
                         'text-green-500 bg-green-100 dark:bg-green-900/20': referral.status === 'Active'
                     }">{{
@@ -88,7 +88,6 @@
             </div>
         </div>
 
-        <!-- Пустое состояние -->
         <div v-else-if="!loading" class="view-referrals-wrapper flex gap-2 flex-col dashboard-tile page-tile">
             <div class="view-title text-3xl font-bold mb-5">Referrals</div>
             <div class="empty-state text-center py-8">
