@@ -9,7 +9,8 @@
                     </div>
 
                     <div class="guides-tiles-wrapper grid">
-                        <div class="guide-tile page-tile flex flex-col tile-hover" v-for="guide in guides">
+                        <div class="guide-tile page-tile flex flex-col tile-hover" v-for="guide in guides"
+                            @click="openGuide(guide)">
                             <div class="tile-icon top flex justify-between" style="align-items: center;">
                                 <i class="pi pi-book blue"></i>
                                 <div class="level" :class="{
@@ -198,13 +199,23 @@
 <script setup>
 import apiClient from '@/api/axios';
 import { onMounted, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const guides = reactive([]);
 const articles = reactive([])
 
 const capitalize = (str) => {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const openGuide = (guide) => {
+    router.push({
+        name: 'GuideDetails',
+        params: { id: guide.id },
+        state: guide
+    });
 };
 
 onMounted(async () => {

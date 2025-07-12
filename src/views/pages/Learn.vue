@@ -26,7 +26,8 @@
                         </div> -->
 
 
-                        <div class="start pointer mb10" style="width: 100%; text-align: center;">
+                        <div class="start pointer mb10" style="width: 100%; text-align: center;"
+                            @click="openLesson(course)">
                             Start Learning
                         </div>
 
@@ -83,7 +84,10 @@
 
 import apiClient from '@/api/axios';
 import { onMounted, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 import Title from '../uikit/Title.vue';
+
+const router = useRouter();
 
 const resources = reactive({
     books: [
@@ -113,6 +117,13 @@ const capitalize = (str) => {
 const truncateText = (text, maxLength = 100) => {
     if (!text) return '';
     return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+};
+
+const openLesson = (lesson) => {
+    router.push({
+        name: 'LessonDetails',
+        params: { id: lesson.id }
+    });
 };
 
 onMounted(async () => {

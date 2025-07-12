@@ -16,7 +16,7 @@
                         <div class="news-title mb10">{{ news.title }}</div>
                         <div class="news-description grey mb10">{{ truncateText(news.text) }}</div>
 
-                        <div class="read-more flex blue mb10" style="align-items: center;">
+                        <div class="read-more flex blue mb10" style="align-items: center;" @click="openNews(news)">
                             <div class="text">Read more</div>
                             <i class="pi pi-arrow-right"></i>
                         </div>
@@ -139,6 +139,9 @@
 <script setup>
 import apiClient from '@/api/axios';
 import { onMounted, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const news = reactive([])
 
@@ -166,6 +169,13 @@ onMounted(async () => {
 function loadMore() {
     return 0;
 }
+
+const openNews = (newsItem) => {
+    router.push({
+        name: 'NewsDetails',
+        params: { id: newsItem.id }
+    });
+};
 
 const indexes = reactive([
     { index: 'S&P 500', price: 5284.25, trend: 1.3 },

@@ -356,6 +356,24 @@ const routes = [
                 component: () => import('@/views/pages/Guides.vue')
             },
             {
+                path: '/guides/:id',
+                name: 'GuideDetails',
+                component: () => import('@/views/uikit/GuideComponent.vue'),
+                props: true
+            },
+            {
+                path: '/learn/:id',
+                name: 'LessonDetails',
+                component: () => import('@/views/uikit/LearnComponent.vue'),
+                props: true
+            },
+            {
+                path: '/market-news/:id',
+                name: 'NewsDetails',
+                component: () => import('@/views/uikit/NewsComponent.vue'),
+                props: true
+            },
+            {
                 path: '/pages/invoice',
                 name: 'invoice',
                 component: () => import('@/views/pages/Invoice.vue')
