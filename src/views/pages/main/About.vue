@@ -103,4 +103,75 @@
 .block-description {
     width: 60%;
 }
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .about-wrapper .container .flex {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .about-info {
+        width: 100%;
+    }
+
+    .block-description {
+        width: 100%;
+        text-align: left;
+    }
+
+    .advantages {
+        width: 100%;
+    }
+
+    .advantage {
+        padding: 15px 20px;
+        margin-top: 15px;
+    }
+
+    .advantage-logo {
+        font-size: 35px;
+        margin-right: 20px;
+    }
+
+    .advantage-title {
+        font-size: 1.2rem;
+    }
+
+    .advantage-description {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .about-wrapper .container .flex {
+        gap: 25px;
+    }
+
+    .advantage {
+        padding: 12px 15px;
+        margin-top: 12px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .advantage-logo {
+        font-size: 30px;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .advantage-title {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .advantage-description {
+        font-size: 13px;
+    }
+
+    .block-description {
+        font-size: 14px;
+    }
+}
 </style>

@@ -8,21 +8,18 @@
         </div>
 
         <div class="popular-items-wrapper grid grid-cols-3 gap-4 w-full">
-            <div class="recommended-item flex items-center justify-between page-tile dashboard-tile"
+            <div class="recommended-item page-tile dashboard-tile"
                 v-for="(item, index) in flatRecommended.slice(0, visibleItemsCount['recommended'] || 3)"
                 :key="`recommended-${index}`" @click="goToTrade(item.symbol, item.category)">
-                <div class="name-wrapper">
-                    <div class="recommended-item-title text-lg font-semibold">{{ item.name }}</div>
-                    <div class="recommended-item-symbol grey">{{ item.symbol }}</div>
+                <div class="recommended-item-header">
+                    <div class="recommended-item-title">{{ item.name }}</div>
+                    <div class="recommended-item-symbol">{{ item.symbol }}</div>
                 </div>
-                <div class="price-wrapper text-right">
+                <div class="recommended-item-footer">
                     <div class="recommended-item-price">${{ item.price && !isNaN(item.price) ?
                         Number(item.price).toFixed(2) : '0.00' }}</div>
-                    <div class="recommended-item-trend text-right flex justify-end"
-                        :class="{ red: item.trend < 0, green: item.trend > 0 }">
-                        <span v-if="item.trend >= 0">+</span>
-                        <span v-else>-</span>
-                        {{ Math.abs(item.trend) }} %
+                    <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                        <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
                     </div>
                 </div>
             </div>
@@ -43,21 +40,18 @@
             </div>
 
             <div class="popular-items-wrapper grid grid-cols-3 gap-4 w-full">
-                <div class="recommended-item flex items-center justify-between page-tile dashboard-tile"
+                <div class="recommended-item page-tile dashboard-tile"
                     v-for="(item, index) in items.slice(0, visibleItemsCount[category] || 3)"
                     :key="`popular-${category}-${index}`" @click="goToTrade(item.symbol, item.category)">
-                    <div class="name-wrapper">
-                        <div class="recommended-item-title text-lg font-semibold">{{ item.name }}</div>
-                        <div class="recommended-item-symbol grey">{{ item.symbol }}</div>
+                    <div class="recommended-item-header">
+                        <div class="recommended-item-title">{{ truncateTitle(item.name, 16) }}</div>
+                        <div class="recommended-item-symbol">{{ item.symbol }}</div>
                     </div>
-                    <div class="price-wrapper text-right">
+                    <div class="recommended-item-footer">
                         <div class="recommended-item-price">${{ item.price && !isNaN(item.price) ?
                             Number(item.price).toFixed(2) : '0.00' }}</div>
-                        <div class="recommended-item-trend text-right flex justify-end"
-                            :class="{ red: item.trend < 0, green: item.trend > 0 }">
-                            <span v-if="item.trend >= 0">+</span>
-                            <span v-else>-</span>
-                            {{ Math.abs(item.trend) }} %
+                        <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                            <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
                         </div>
                     </div>
                 </div>
@@ -86,6 +80,9 @@ const popular = reactive([]);
 const recommended = reactive([]);
 const visibleItemsCount = reactive({});
 
+// Определяем мобильное устройство
+const isMobile = window.innerWidth <= 768;
+
 onMounted(async () => {
     await getCategory();
     await getPopular();
@@ -97,6 +94,8 @@ async function getRecommended() {
         const response = await apiClient.getRecommended(); // без категории
         console.log('Recommended assets response:', response);
         recommended.splice(0, recommended.length, ...response?.results || []);
+        // Устанавливаем начальное количество видимых для recommended
+        visibleItemsCount['recommended'] = isMobile ? 4 : 3;
     } catch (err) {
         console.warn('Failed to load recommended assets', err);
     }
@@ -107,8 +106,8 @@ function formatCategory(category) {
 }
 
 const loadMore = category => {
-    if (!visibleItemsCount[category]) visibleItemsCount[category] = 3;
-    visibleItemsCount[category] += 3;
+    if (!visibleItemsCount[category]) visibleItemsCount[category] = isMobile ? 4 : 3;
+    visibleItemsCount[category] += isMobile ? 4 : 3;
 };
 
 async function getCategory() {
@@ -122,6 +121,11 @@ async function getPopular() {
     const response = await apiClient.getPopularAssets();
     console.log('Popular assets response:', response);
     popular.splice(0, popular.length, ...response);
+    // Для каждой категории устанавливаем начальное количество видимых
+    const cats = response.map(item => item.category || 'other');
+    cats.forEach(cat => {
+        if (!visibleItemsCount[cat]) visibleItemsCount[cat] = isMobile ? 4 : 3;
+    });
 }
 
 const flatRecommended = computed(() => {
@@ -162,6 +166,80 @@ const goToTrade = (symbol, category = null) => {
     router.push(tradeLink);
 };
 
+// Функция для обрезки названия на мобильной версии
+function truncateTitle(title, maxLength = 16) {
+    if (!title) return '';
+    return title.length > maxLength ? title.slice(0, maxLength) + '...' : title;
+}
+
 </script>
 
-<style scoped></style>
+<style scoped>
+@media (max-width: 768px) {
+    .popular-items-wrapper {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        justify-content: center;
+    }
+
+    .recommended-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 70px;
+        font-size: 0.98rem;
+        padding: 12px 8px !important;
+        align-items: flex-start;
+        width: 180px;
+        max-width: 100%;
+    }
+
+    .recommended-item-header {
+        width: 100%;
+        text-align: left;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 2px;
+    }
+
+    .recommended-item-title {
+        font-size: 0.98rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        max-width: 100%;
+    }
+
+    .recommended-item-symbol {
+        font-size: 0.92rem;
+        color: #33c3f0;
+        font-weight: 500;
+    }
+
+    .recommended-item-footer {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        margin-top: 2px;
+    }
+
+    .recommended-item-price {
+        font-weight: 500;
+    }
+
+    .recommended-item-trend {
+        font-weight: 600;
+    }
+
+    .recommended-item-trend.green {
+        color: #22c55e;
+    }
+
+    .recommended-item-trend.red {
+        color: #ef4444;
+    }
+}
+</style>

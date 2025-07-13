@@ -42,7 +42,7 @@
                     v-for="asset in priceHistory">
                     <div class="index-name">{{ asset.asset_symbol }}</div>
                     <div class="price-trend flex flex-col">
-                        <div class="index-price"> {{ formatVolume(asset.current_price) }}</div>
+                        <div class="index-price"> ${{ Number(asset.current_price).toFixed(2) }}</div>
                         <div class="index-trend flex" style="align-items: center;"
                             :class="{ 'green': parseFloat(asset.change_percent) > 0 }">
                             <div class="plus" :class="{ 'hidden': parseFloat(asset.change_percent) < 0 }">+</div>
@@ -162,6 +162,102 @@
     padding: 20px;
     font-size: 1.1rem;
     color: #666;
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .markets-news-wrapper .container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .lates-news-wrapper {
+        width: 100%;
+    }
+
+    .indexes-wrapper {
+        width: 100%;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem !important;
+    }
+
+    .news-title {
+        font-size: 1.2rem !important;
+    }
+
+    .news-description {
+        font-size: 1rem !important;
+    }
+
+    .index {
+        min-width: auto;
+        padding: 8px 0;
+    }
+
+    .index-name {
+        font-size: 1rem !important;
+    }
+
+    .load-more {
+        font-size: 1rem;
+        padding: 12px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .markets-news-wrapper .container {
+        padding: 0 10px;
+    }
+
+    .pageTitle {
+        font-size: 1.3rem !important;
+    }
+
+    .news {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .news-title {
+        font-size: 1.1rem !important;
+    }
+
+    .index {
+        padding: 6px 0;
+    }
+
+    .index-name {
+        font-size: 0.9rem !important;
+    }
+
+    .index-price {
+        font-size: 0.9rem;
+    }
+
+    .index-trend {
+        font-size: 0.8rem;
+    }
+
+    .market-chart,
+    .index canvas {
+        height: 120px !important;
+    }
+}
+
+.index {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.market-chart,
+.index canvas {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 150px !important;
+    box-sizing: border-box !important;
 }
 </style>
 

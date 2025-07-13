@@ -33,9 +33,9 @@
                                 {{ profit.toFixed(2) }}%
                             </div>
                         </div>
-                        <Chart type="line" :data="chartData" :options="chartOptions" style="height: 260px" />
+                        <Chart type="line" :data="chartData" :options="chartOptions" class="portfolio-chart" />
 
-                        <div class="grid assets-wrapper grid-cols-2 gap-2">
+                        <div class="assets-wrapper grid grid-cols-2 gap-2">
                             <div class="asset-item  border rounded-lg p-2 border-white/10 bg-white/5"
                                 v-for="asset in assets">
                                 <div class="asset-symbol">
@@ -285,5 +285,141 @@ canvas {
 .main-block-description {
     color: #dedfe0;
     font-size: 1.4rem;
+}
+
+.portfolio-wrapper,
+.portfolio {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+
+.portfolio-chart,
+.portfolio canvas {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 260px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+}
+
+/* По умолчанию (десктоп/планшет) — 2 в ряд */
+.assets-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .main-block {
+        flex-direction: column;
+        gap: 40px;
+        padding: 20px;
+    }
+
+    .text-block {
+        width: 100%;
+        text-align: center;
+    }
+
+    .main-block-title {
+        font-size: 2.5rem;
+    }
+
+    .main-block-description {
+        font-size: 1.2rem;
+    }
+
+    .buttons-wrapper {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .portfolio {
+        width: 100%;
+        padding: 25px;
+        border-radius: 20px;
+    }
+
+    .portfolio-value-number {
+        font-size: 1.2rem;
+    }
+
+    .portfolio-chart,
+    .portfolio canvas {
+        height: 180px !important;
+    }
+
+    .assets-wrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-block {
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .main-block-title {
+        font-size: 2rem;
+    }
+
+    .main-block-description {
+        font-size: 1rem;
+    }
+
+    .buttons-wrapper {
+        margin-top: 20px;
+    }
+
+    .invest-btn {
+        padding: 12px 24px !important;
+        font-size: 0.9rem;
+    }
+
+    .portfolio {
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .portfolio-value-number {
+        font-size: 1rem;
+    }
+
+    .portolio-title {
+        font-size: 1.1rem !important;
+    }
+
+    .portfolio-chart,
+    .portfolio canvas {
+        height: 120px !important;
+    }
+}
+
+@media screen and (min-width: 769px) {
+    .main-block {
+        gap: 48px;
+    }
+
+    .portfolio-chart,
+    .portfolio canvas {
+        max-width: 550px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .portfolio {
+        max-width: 550px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
 }
 </style>

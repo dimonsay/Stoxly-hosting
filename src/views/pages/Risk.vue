@@ -171,4 +171,19 @@ const riskManagement = reactive([
 .block:nth-child(odd) {
     background-color: var(--even-bg-color, #1d283a);
 }
+
+@media (max-width: 768px) {
+    .risk-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.2rem !important;
+    }
+
+    .main-risks-wrapper,
+    .specific-risks-wrapper,
+    .considerations-wrapper,
+    .managment-wrapper {
+        width: 100% !important;
+        margin-bottom: 24px !important;
+    }
+}
 </style>

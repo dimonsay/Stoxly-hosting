@@ -243,4 +243,29 @@ async function submit() {
 .error-border {
     border: 1px solid red !important;
 }
+
+@media (max-width: 768px) {
+    .request-question-wrapper {
+        flex-direction: column !important;
+        gap: 32px;
+        align-items: stretch !important;
+    }
+
+    .request-wrapper {
+        width: 100% !important;
+        margin-bottom: 24px;
+    }
+
+    .faq-wrapper {
+        width: 100% !important;
+        margin-top: 0;
+    }
+
+    .faq {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-bottom: 20px;
+    }
+}
 </style>

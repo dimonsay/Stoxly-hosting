@@ -140,6 +140,93 @@
 .button-item {
     transition: ease-in-out 0.3s;
 }
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .trading-market-categories {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .trading-market-categorie {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .trading-market-instruments {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .trading-market-instrument {
+        padding: 15px;
+    }
+
+    .trading-market-instrument-title {
+        font-size: 1.1rem;
+    }
+
+    .trading-market-instrument-symbol {
+        font-size: 0.9rem;
+    }
+
+    .trading-market-instrument-price {
+        font-size: 1rem;
+    }
+
+    .trading-market-instrument-change {
+        font-size: 0.9rem;
+    }
+
+    .trading-market-instrument-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .trading-market-instrument-button {
+        width: 100%;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .trading-market-categories {
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .trading-market-categorie {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .trading-market-instrument {
+        padding: 12px;
+    }
+
+    .trading-market-instrument-title {
+        font-size: 1rem;
+    }
+
+    .trading-market-instrument-symbol {
+        font-size: 0.8rem;
+    }
+
+    .trading-market-instrument-price {
+        font-size: 0.9rem;
+    }
+
+    .trading-market-instrument-change {
+        font-size: 0.8rem;
+    }
+
+    .trading-market-instrument-button {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+}
 </style>
 
 <script setup>

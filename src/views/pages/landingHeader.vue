@@ -1,7 +1,8 @@
 <template>
     <div class="header-content-wrapper">
         <header class="header">
-            <div class="header-nav flex align-items-center justify-between items-center container">
+            <!-- Desktop header -->
+            <div class="header-nav flex align-items-center justify-between items-center container desktop-header">
                 <div class="logo-wrapper">
                     <div class="flex logo-container align-items-center items-center" @click="toHome">
                         <img :src="`/layout/images/logo/logo-${logo()}.png`" class="login-logo" style="width: 45px" />
@@ -10,8 +11,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <div class="nav-wrapper" style="width: 60%;">
                     <div class="nav-container flex align-items-center justify-around"
                         style="align-items: center !important;">
@@ -22,7 +21,23 @@
                     </div>
                 </div>
             </div>
-
+            <!-- Mobile header -->
+            <div class="mobile-header container">
+                <div class="mobile-header-top flex justify-between align-items-center">
+                    <div class="flex logo-container align-items-center items-center" @click="toHome">
+                        <img :src="`/layout/images/logo/logo-${logo()}.png`" class="login-logo" style="width: 35px" />
+                        <div class="login-appname ml-3 font-bold">
+                            <div class="name" style="text-align: left; font-size: 18px;">Stoxly</div>
+                        </div>
+                    </div>
+                    <div class="nav-item invest-btn" @click="toAuth" style="margin-left: 12px;">Invest</div>
+                </div>
+                <div class="mobile-header-nav flex justify-between align-items-center">
+                    <div class="nav-item title" @click="toMarket">Markets</div>
+                    <div class="nav-item title" @click="toHelp">Help Center</div>
+                    <div class="nav-item title" @click="toAbout">About Us</div>
+                </div>
+            </div>
             <div class="stocks-animation-wrapper" @mouseenter="pauseAnimation" @mouseleave="resumeAnimation">
                 <div class="stocks-animation flex" :style="{
                     'animation-duration': animationDuration + 's',
@@ -60,7 +75,6 @@
                     </div>
                 </div>
             </div>
-
         </header>
     </div>
 </template>
@@ -233,5 +247,162 @@ header {
     background-color: transparent;
     outline: 1px solid #33c3f0;
     box-shadow: 0em 0 0.6em #33c3f0;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .header-nav {
+        padding: 8px 5px;
+    }
+
+    .nav-wrapper {
+        width: 70% !important;
+    }
+
+    .nav-item {
+        font-size: 14px;
+    }
+
+    .invest-btn {
+        width: 120px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .login-logo {
+        width: 35px !important;
+    }
+
+    .login-appname .name {
+        font-size: 18px !important;
+    }
+
+    .stocks-animation-wrapper {
+        font-size: 2.5vh;
+        min-height: 40px;
+        height: 40px;
+    }
+
+    .stocks-item {
+        margin-right: 8px;
+    }
+
+    .stocks-item * {
+        margin-right: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-nav {
+        padding: 6px 5px;
+    }
+
+    .nav-wrapper {
+        width: 80% !important;
+    }
+
+    .nav-item {
+        font-size: 12px;
+    }
+
+    .invest-btn {
+        width: 100px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .login-logo {
+        width: 30px !important;
+    }
+
+    .login-appname .name {
+        font-size: 16px !important;
+    }
+
+    .stocks-animation-wrapper {
+        font-size: 2.2vh;
+        min-height: 36px;
+        height: 36px;
+    }
+
+    .stocks-item {
+        margin-right: 6px;
+    }
+
+    .stocks-item * {
+        margin-right: 4px;
+    }
+}
+
+/* Increase top padding for landing page */
+.header-content-wrapper {
+    padding-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .header-content-wrapper {
+        padding-top: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content-wrapper {
+        padding-top: 10px;
+    }
+}
+
+.desktop-header {
+    display: flex;
+}
+
+.mobile-header {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktop-header {
+        display: none !important;
+    }
+
+    .mobile-header {
+        display: block !important;
+    }
+
+    .mobile-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+    }
+
+    .mobile-header-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0 0 0;
+        gap: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .mobile-header .nav-item {
+        font-size: 14px;
+        font-weight: bold;
+        padding: 0;
+    }
+
+    .mobile-header .invest-btn {
+        width: 100px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .mobile-header .login-logo {
+        width: 30px !important;
+    }
+
+    .mobile-header .login-appname .name {
+        font-size: 16px !important;
+    }
 }
 </style>

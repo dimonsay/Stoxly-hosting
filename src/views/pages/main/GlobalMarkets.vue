@@ -7,7 +7,7 @@
                 fingertips.
             </div>
 
-            <div class="top-companies-wrapper flex justify-between">
+            <div class="top-companies-wrapper flex flex-col">
                 <div class="top-companies">
                     <div class="top-title">Top Companies This Week</div>
                     <div class="company-details-wrapper" v-for="company in selectedAssets" :key="company.symbol">
@@ -31,7 +31,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="categories">
                     <div class="categories-title category-title">Categories</div>
                     <div class="categories-wrapper" v-for="category in nonEmptyCategories" :key="category.category">
@@ -144,9 +143,33 @@ const selectedAssets = computed(() => {
 
 .top-companies-wrapper {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.categories {
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .top-companies {
-    width: 60%;
+    width: 100%;
+}
+
+@media screen and (min-width: 769px) {
+    .top-companies-wrapper {
+        flex-direction: row;
+        gap: 40px;
+    }
+
+    .categories {
+        width: 30%;
+        margin-bottom: 0;
+    }
+
+    .top-companies {
+        width: 60%;
+    }
 }
 </style>

@@ -42,6 +42,67 @@
 .stock-item {
     transition: ease-in-out 0.15s;
 }
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .trading-transactions-wrapper {
+        padding: 15px;
+    }
+
+    .trade-block-title {
+        font-size: 1.2rem !important;
+        margin-bottom: 15px !important;
+    }
+
+    .stocks-filters-wrapper {
+        font-size: 0.8rem !important;
+        padding: 8px 12px !important;
+    }
+
+    .stock-item {
+        font-size: 0.8rem !important;
+        padding: 8px 12px !important;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .stock-item>div {
+        min-width: auto !important;
+        flex: 1;
+        text-align: center;
+    }
+
+    .stock-item>div:first-child,
+    .stock-item>div:nth-child(2) {
+        flex-basis: 50%;
+        text-align: left;
+    }
+
+    .stock-item>div:first-child {
+        font-weight: bold;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .trading-transactions-wrapper {
+        padding: 10px;
+    }
+
+    .trade-block-title {
+        font-size: 1.1rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .stocks-filters-wrapper {
+        font-size: 0.7rem !important;
+        padding: 6px 8px !important;
+    }
+
+    .stock-item {
+        font-size: 0.7rem !important;
+        padding: 6px 8px !important;
+    }
+}
 </style>
 
 <script setup>

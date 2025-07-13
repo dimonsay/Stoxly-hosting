@@ -136,4 +136,80 @@
 .invest-wrapper {
     padding: 40px;
 }
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .invest-wrapper {
+        padding: 20px;
+    }
+
+    .steps-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+        padding-top: 20px;
+    }
+
+    .steps-item {
+        width: 100%;
+    }
+
+    .step-description {
+        padding: 20px;
+        min-height: auto;
+        font-size: 14px;
+    }
+
+    .step-title-wrapper {
+        padding: 20px;
+        font-size: 18px;
+    }
+
+    .step-logo {
+        font-size: 2rem;
+        margin-right: 15px;
+    }
+
+    .invest-btn {
+        width: 100%;
+        max-width: 300px;
+        font-size: 16px;
+        margin-top: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .invest-wrapper {
+        padding: 15px;
+    }
+
+    .steps-wrapper {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .step-description {
+        padding: 15px;
+        font-size: 13px;
+    }
+
+    .step-title-wrapper {
+        padding: 15px;
+        font-size: 16px;
+    }
+
+    .step-logo {
+        font-size: 1.8rem;
+        margin-right: 12px;
+    }
+
+    .step-number {
+        font-size: 12px;
+    }
+
+    .invest-btn {
+        font-size: 14px;
+        margin-top: 15px;
+    }
+}
 </style>

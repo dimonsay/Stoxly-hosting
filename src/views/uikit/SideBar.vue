@@ -1,5 +1,5 @@
 <template>
-    <div class="sidabar-wrapper">
+    <div class="sidebar-wrapper">
         <div class="name text-3xl font-bold pointer " style="text-align: center;">Stoxly</div>
 
         <div class="menu-navigation flex flex-col gap-1 text-1xl">
@@ -65,6 +65,30 @@
 
 .login-logo {
     width: 2rem;
+}
+
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        box-shadow: 0 8px 32px 0 rgba(51, 195, 240, 0.15);
+        border-radius: 18px;
+        background: linear-gradient(135deg, #101a2b 80%, #1d283a 100%);
+        padding-top: 24px !important;
+        padding-bottom: 24px !important;
+        min-height: 90vh;
+        width: 90vw;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar-menu-item {
+        margin-bottom: 18px !important;
+        font-size: 1.15rem !important;
+        padding: 12px 0 !important;
+        text-align: center !important;
+    }
 }
 </style>
 

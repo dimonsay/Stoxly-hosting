@@ -15,7 +15,7 @@
                     <div class="basis-1/4 min-w-[120px]">{{ deposit.masked_card_number }}</div>
                     <div class="basis-1/4 min-w-[120px] text-center">${{ formatAmount(deposit.amount) }}</div>
                     <div class="basis-1/4 min-w-[120px] text-center"><span :class="getStatusClass(deposit.status)">{{
-                            capitalize(deposit.status) }}</span></div>
+                        capitalize(deposit.status) }}</span></div>
                     <div class="basis-1/4 min-w-[120px] text-center">{{ formatDate(deposit.created_at) }}</div>
                 </div>
             </div>
@@ -37,6 +37,64 @@
 
 .wallet-item {
     transition: ease-in-out 0.15s;
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .trading-wallet-wrapper {
+        padding: 15px;
+    }
+
+    .trade-block-title {
+        font-size: 1.2rem !important;
+        margin-bottom: 15px !important;
+    }
+
+    .wallet-filters-wrapper {
+        font-size: 0.9rem !important;
+        padding: 8px 12px !important;
+    }
+
+    .wallet-item {
+        font-size: 0.9rem !important;
+        padding: 8px 12px !important;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .wallet-item>div {
+        min-width: auto !important;
+        flex: 1;
+        text-align: center;
+    }
+
+    .wallet-item>div:first-child {
+        flex-basis: 100%;
+        text-align: left;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .trading-wallet-wrapper {
+        padding: 10px;
+    }
+
+    .trade-block-title {
+        font-size: 1.1rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .wallet-filters-wrapper {
+        font-size: 0.8rem !important;
+        padding: 6px 8px !important;
+    }
+
+    .wallet-item {
+        font-size: 0.8rem !important;
+        padding: 6px 8px !important;
+    }
 }
 </style>
 

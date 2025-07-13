@@ -234,4 +234,24 @@ onMounted(async () => {
 .block:nth-child(odd) {
     background-color: var(--even-bg-color, #1d283a);
 }
+
+@media (max-width: 768px) {
+
+    .courses-content-wrapper,
+    .resources-wrapper {
+        width: 100% !important;
+        margin-bottom: 24px !important;
+        padding: 10px 0 !important;
+    }
+
+    .resources-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 1.2rem !important;
+    }
+
+    .courses-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 1.2rem !important;
+    }
+}
 </style>

@@ -28,4 +28,17 @@ import Security from './main/Security.vue';
 .block:nth-child(even) {
     background-color: var(--even-bg-color, #1d283a);
 }
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .block {
+        padding: 3% 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .block {
+        padding: 2% 0;
+    }
+}
 </style>

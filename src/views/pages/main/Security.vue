@@ -3,7 +3,8 @@
         <div class="container">
             <div class="block-title">Your Safety Comes First</div>
             <div class="block-description">
-                We use the strongest security measures to protect your money and personal info—so you can invest with peace of mind.
+                We use the strongest security measures to protect your money and personal info—so you can invest with
+                peace of mind.
             </div>
             <div class="security-levels-wrapper flex justify-around">
                 <div class="security-level">
@@ -11,7 +12,8 @@
                         <i class="fa-solid fa-shield"></i>
                     </div>
                     <div class="security-title">Bank-Level Protection</div>
-                    <div class="security-description">Your data and investments are shielded by 256-bit encryption and multi-factor authentication, the same trusted tech banks rely on.</div>
+                    <div class="security-description">Your data and investments are shielded by 256-bit encryption and
+                        multi-factor authentication, the same trusted tech banks rely on.</div>
                 </div>
                 <div class="security-level">
                     <div class="security-logo">
@@ -19,7 +21,7 @@
                     </div>
                     <div class="security-title">Fully Licensed and Regulated</div>
                     <div class="security-description">We operate under strict financial laws worldwide, giving you
-the confidence your investments are handled responsibly.</div>
+                        the confidence your investments are handled responsibly.</div>
                 </div>
                 <div class="security-level">
                     <div class="security-logo">
@@ -27,8 +29,8 @@ the confidence your investments are handled responsibly.</div>
                     </div>
                     <div class="security-title">Your Assets Are Protected</div>
                     <div class="security-description">Your funds are held securely in separate accounts and
-protected by comprehensive insurance — ensuring your peace
-of mind every step of the way.</div>
+                        protected by comprehensive insurance — ensuring your peace
+                        of mind every step of the way.</div>
                 </div>
             </div>
         </div>
@@ -69,5 +71,56 @@ of mind every step of the way.</div>
 .security-description {
     font-size: 16px;
     color: #c4c9ce;
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .security-levels-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .security-level {
+        width: 100%;
+        padding: 25px;
+        border-radius: 15px;
+    }
+
+    .security-logo {
+        font-size: 40px;
+    }
+
+    .security-title {
+        font-size: 1.3rem;
+    }
+
+    .security-description {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .security-levels-wrapper {
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .security-level {
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .security-logo {
+        font-size: 35px;
+    }
+
+    .security-title {
+        font-size: 1.2rem;
+    }
+
+    .security-description {
+        font-size: 13px;
+    }
 }
 </style>

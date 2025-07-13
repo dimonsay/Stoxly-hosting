@@ -1,8 +1,10 @@
 <template>
     <div class="table-wrapper">
         <div class="container">
-            <div class="top-wrapper ">
-                <div class="table-title-wrapper flex justify-between" style="align-items: center !important;">
+            <div class="top-wrapper">
+                <!-- Desktop: заголовок и поиск в строку; Моб: заголовок над поиском -->
+                <div class="table-title-wrapper flex justify-between desktop-title-row"
+                    style="align-items: center !important;">
                     <div class="block-title">Stock Market Table</div>
                     <IconField style="display: flex; align-items: center;">
                         <InputIcon class="pi pi-search" style="position: absolute; left: 10px;" />
@@ -11,22 +13,34 @@
                             style="max-width: 320px; min-width: 270px; padding-left: 40px;" />
                     </IconField>
                 </div>
-
+                <div class="mobile-title-col">
+                    <div class="block-title">Stock Market Table</div>
+                    <IconField style="display: flex; align-items: center;">
+                        <InputIcon class="pi pi-search" style="position: absolute; left: 10px;" />
+                        <InputText v-model="search" type="text" autocomplete="off" placeholder="Search stocks..."
+                            class="block mb-5" @input="searchAssets('stocks', 8)" :class="{ 'error-border': search }"
+                            style="max-width: 320px; min-width: 270px; padding-left: 40px;" />
+                    </IconField>
+                </div>
             </div>
             <div class="stocks-wrapper">
-                <div class="stocks-filters-wrapper flex justify-between">
+                <div class="stocks-filters-wrapper flex justify-between desktop-filters-row">
                     <div class="filter-name filter">Name</div>
                     <div class="filter-symbol filter">Symbol</div>
-                    <div class="filter-buy filter">Buy Price <span class="text-xs text-gray-400"></span>
-                    </div>
+                    <div class="filter-buy filter">Buy Price <span class="text-xs text-gray-400"></span></div>
                     <div class="filter-sell filter">Sell Price <span class="text-xs text-gray-400"></span></div>
                     <div class="filter-volume filter">Volume</div>
                     <div class="filter-change filter">Change</div>
                     <div class="filter-change-percentage filter">Change %</div>
                 </div>
+                <div class="stocks-filters-wrapper flex justify-between mobile-filters-row">
+                    <div class="filter-symbol filter">Symbol</div>
+                    <div class="filter-change filter">Change</div>
+                    <div class="filter-change-percentage filter">Change %</div>
+                </div>
 
                 <div class="stocks-data-wrapper">
-                    <div class="stock-item flex justify-between" v-for="stock in stocks"
+                    <div class="stock-item flex justify-between desktop-stock-row" v-for="stock in stocks"
                         @click="goToTrade(stock.symbol)">
                         <div class="stock-name">{{ stock.name }}</div>
                         <div class="stock-symbol">{{ stock.symbol }}</div>
@@ -47,9 +61,24 @@
                             {{ stock.change_percent }} %
                         </div>
                     </div>
+                    <div class="stock-item flex justify-between mobile-stock-row" v-for="stock in stocks"
+                        @click="goToTrade(stock.symbol)">
+                        <div class="stock-symbol">{{ stock.symbol }}</div>
+                        <div class="stock-change flex" style="justify-content: center; align-items: center;"
+                            :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
+                            <i class="pi pi-arrow-up arrow" :class="{ 'hidden': stock.change_percent < 0 }"></i>
+                            <i class="pi pi-arrow-down arrow" :class="{ 'hidden': stock.change_percent > 0 }"></i>
+                            {{ stock.change }}
+                        </div>
+                        <div class="stock-change-percentage flex"
+                            :class="{ 'red': stock.change_percent < 0, 'green': stock.change_percent > 0 }">
+                            <div class="plus" :class="{ 'hidden': stock.change_percent < 0 }">+</div>
+                            {{ stock.change_percent }} %
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="page-tiles-wrapper flex justify-between" style="align-items: center;">
+            <div class="page-tiles-wrapper flex justify-between">
                 <div class="flex justify-between" style="flex-direction: column; min-width: 270px; min-height: 180px;"
                     :class="['page-tile', tile.name], 'flex'" v-for="tile in tiles">
                     <div class="tile-name">{{ tile.name }}</div>
@@ -275,5 +304,84 @@ const goToTradeWithCategory = (symbol, category) => {
 
 .p-inputicon {
     margin-top: calc(-2.3 * (var(--p-icon-size) / 2));
+}
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+    .desktop-title-row {
+        display: none !important;
+    }
+
+    .mobile-title-col {
+        display: block !important;
+        margin-bottom: 10px;
+    }
+
+    .mobile-title-col .p-inputtext {
+        width: 100vw !important;
+        min-width: 0 !important;
+        max-width: 100vw !important;
+        box-sizing: border-box;
+    }
+
+    .desktop-filters-row {
+        display: none !important;
+    }
+
+    .mobile-filters-row {
+        display: flex !important;
+        flex-wrap: wrap;
+        font-size: 13px !important;
+        padding: 6px 4px !important;
+        gap: 0;
+    }
+
+    .mobile-filters-row .filter {
+        font-size: 13px !important;
+        padding: 0 2px !important;
+        min-width: 0;
+        flex: 1 1 0;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    .mobile-stock-row>.stock-symbol,
+    .mobile-stock-row>.stock-change,
+    .mobile-stock-row>.stock-change-percentage {
+        flex: 1 1 0;
+        min-width: 0;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    .desktop-stock-row {
+        display: none !important;
+    }
+
+    .mobile-stock-row {
+        display: flex !important;
+    }
+
+    .page-tiles-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        padding: 0 !important;
+        margin-top: 20px !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-title-col {
+        display: none !important;
+    }
+
+    .mobile-filters-row {
+        display: none !important;
+    }
+
+    .mobile-stock-row {
+        display: none !important;
+    }
 }
 </style>

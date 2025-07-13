@@ -25,7 +25,7 @@
                                     pointHoverRadius: 6
                                 }
                             ]
-                        }" :options="chartOptions" style="height: 150px; width: 320px;" />
+                        }" :options="chartOptions" class="market-chart" />
                     </div>
                 </div>
             </div>
@@ -170,5 +170,80 @@ const chartOptions = {
     height: 100px;
     background-color: green;
     border-radius: 4px;
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .market-overwie-wrapper .container {
+        padding: 0 15px;
+    }
+
+    .indexes-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .index {
+        width: 100% !important;
+        padding: 15px;
+    }
+
+    .index-title {
+        font-size: 1.3rem;
+    }
+
+    .block-title {
+        font-size: 1.8rem;
+    }
+
+    .block-description {
+        font-size: 1rem;
+    }
+
+    /* Адаптивные графики */
+    .index canvas {
+        display: block !important;
+        box-sizing: border-box !important;
+        height: 150px !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .market-overwie-wrapper .container {
+        padding: 0 10px;
+    }
+
+    .index {
+        padding: 12px;
+    }
+
+    .index-title {
+        font-size: 1.2rem;
+    }
+
+    .block-title {
+        font-size: 1.5rem;
+    }
+
+    .block-description {
+        font-size: 0.9rem;
+    }
+
+    /* Адаптивные графики для маленьких экранов */
+    .index canvas {
+        display: block !important;
+        box-sizing: border-box !important;
+        height: 120px !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .market-chart,
+    .index canvas {
+        height: 120px !important;
+    }
 }
 </style>

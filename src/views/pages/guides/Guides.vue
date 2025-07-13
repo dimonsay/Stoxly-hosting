@@ -194,6 +194,30 @@
 .market-guides-wrapper {
     padding: 40px 0;
 }
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        flex-direction: column !important;
+        gap: 32px !important;
+        align-items: stretch !important;
+    }
+
+    .guides-wrapper,
+    .right {
+        width: 100% !important;
+        margin-bottom: 24px !important;
+    }
+
+    .guides-tiles-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 1.2rem !important;
+    }
+
+    .w450 {
+        width: 100% !important;
+        margin: 0 0 24px 0 !important;
+    }
+}
 </style>
 
 <script setup>
