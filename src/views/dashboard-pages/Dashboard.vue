@@ -11,15 +11,32 @@
             <div class="recommended-item page-tile dashboard-tile"
                 v-for="(item, index) in flatRecommended.slice(0, visibleItemsCount['recommended'] || 3)"
                 :key="`recommended-${index}`" @click="goToTrade(item.symbol, item.category)">
-                <div class="recommended-item-header">
-                    <div class="recommended-item-title">{{ item.name }}</div>
-                    <div class="recommended-item-symbol">{{ item.symbol }}</div>
+                <!-- Desktop Layout -->
+                <div class="hidden md:flex justify-between items-center w-full">
+                    <div class="flex flex-col">
+                        <div class="recommended-item-title font-semibold">{{ item.name }}</div>
+                        <div class="recommended-item-symbol text-gray-500">{{ item.symbol }}</div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <div class="recommended-item-price font-semibold">${{ item.price && !isNaN(item.price) ?
+                            Number(item.price).toFixed(2) : '0.00' }}</div>
+                        <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                            <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
+                        </div>
+                    </div>
                 </div>
-                <div class="recommended-item-footer">
-                    <div class="recommended-item-price">${{ item.price && !isNaN(item.price) ?
-                        Number(item.price).toFixed(2) : '0.00' }}</div>
-                    <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
-                        <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
+                <!-- Mobile Layout -->
+                <div class="md:hidden">
+                    <div class="recommended-item-header">
+                        <div class="recommended-item-title">{{ item.name }}</div>
+                        <div class="recommended-item-symbol">{{ item.symbol }}</div>
+                    </div>
+                    <div class="recommended-item-footer">
+                        <div class="recommended-item-price">${{ item.price && !isNaN(item.price) ?
+                            Number(item.price).toFixed(2) : '0.00' }}</div>
+                        <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                            <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
+                        </div>
                     </div>
                 </div>
             </div>
@@ -43,15 +60,32 @@
                 <div class="recommended-item page-tile dashboard-tile"
                     v-for="(item, index) in items.slice(0, visibleItemsCount[category] || 3)"
                     :key="`popular-${category}-${index}`" @click="goToTrade(item.symbol, item.category)">
-                    <div class="recommended-item-header">
-                        <div class="recommended-item-title">{{ truncateTitle(item.name, 16) }}</div>
-                        <div class="recommended-item-symbol">{{ item.symbol }}</div>
+                    <!-- Desktop Layout -->
+                    <div class="hidden md:flex justify-between items-center w-full">
+                        <div class="flex flex-col">
+                            <div class="recommended-item-title font-semibold">{{ truncateTitle(item.name, 16) }}</div>
+                            <div class="recommended-item-symbol text-gray-500">{{ item.symbol }}</div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <div class="recommended-item-price font-semibold">${{ item.price && !isNaN(item.price) ?
+                                Number(item.price).toFixed(2) : '0.00' }}</div>
+                            <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                                <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
+                            </div>
+                        </div>
                     </div>
-                    <div class="recommended-item-footer">
-                        <div class="recommended-item-price">${{ item.price && !isNaN(item.price) ?
-                            Number(item.price).toFixed(2) : '0.00' }}</div>
-                        <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
-                            <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
+                    <!-- Mobile Layout -->
+                    <div class="md:hidden">
+                        <div class="recommended-item-header">
+                            <div class="recommended-item-title">{{ truncateTitle(item.name, 16) }}</div>
+                            <div class="recommended-item-symbol">{{ item.symbol }}</div>
+                        </div>
+                        <div class="recommended-item-footer">
+                            <div class="recommended-item-price">${{ item.price && !isNaN(item.price) ?
+                                Number(item.price).toFixed(2) : '0.00' }}</div>
+                            <div class="recommended-item-trend" :class="{ red: item.trend < 0, green: item.trend > 0 }">
+                                <span v-if="item.trend >= 0">+</span><span v-else>-</span>{{ Math.abs(item.trend) }} %
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -175,6 +209,44 @@ function truncateTitle(title, maxLength = 16) {
 </script>
 
 <style scoped>
+/* Desktop styles */
+.recommended-item {
+    padding: 16px;
+    min-height: 80px;
+}
+
+.recommended-item-title {
+    font-size: 1rem;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.recommended-item-symbol {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.recommended-item-price {
+    font-size: 1rem;
+}
+
+.recommended-item-trend {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.recommended-item-trend.green {
+    color: #22c55e;
+}
+
+.recommended-item-trend.red {
+    color: #ef4444;
+}
+
+/* Mobile styles */
 @media (max-width: 768px) {
     .popular-items-wrapper {
         grid-template-columns: repeat(2, 1fr) !important;
@@ -191,7 +263,7 @@ function truncateTitle(title, maxLength = 16) {
         padding: 12px 8px !important;
         align-items: flex-start;
         width: 180px;
-        max-width: 100%;
+        max-width: 180px;
     }
 
     .recommended-item-header {
@@ -222,24 +294,21 @@ function truncateTitle(title, maxLength = 16) {
         width: 100%;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         font-size: 0.95rem;
         margin-top: 2px;
     }
 
     .recommended-item-price {
         font-weight: 500;
+        flex: 1;
+        min-width: 0;
     }
 
     .recommended-item-trend {
         font-weight: 600;
-    }
-
-    .recommended-item-trend.green {
-        color: #22c55e;
-    }
-
-    .recommended-item-trend.red {
-        color: #ef4444;
+        margin-left: 8px;
+        white-space: nowrap;
     }
 }
 </style>

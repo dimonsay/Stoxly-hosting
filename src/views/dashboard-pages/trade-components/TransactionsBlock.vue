@@ -136,6 +136,8 @@ onMounted(async () => {
     } catch (err) {
         console.warn(err)
     }
+
+    console.log(transactions)
 })
 
 </script>
