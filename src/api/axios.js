@@ -226,6 +226,11 @@ apiClient.getNews = async () => {
     return response
 }
 
+apiClient.getPriceHistory = async () => {
+    const response = (await apiClient.get('/stocks/price-history/')).data;
+    return response
+}
+
 apiClient.getNewsById = async (id) => {
     const response = (await apiClient.get(`/stocks/news/${id}/`)).data;
     return response

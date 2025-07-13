@@ -4,7 +4,7 @@
             <div class="market-overwie">
                 <div class="title-wrapper">
                     <div class="block-title">Market Overview</div>
-                    <div class="block-description">Main indexes and their dynamic</div>
+                    <div class="block-description">Top assets and their price dynamics</div>
                 </div>
                 <div class="indexes-wrapper flex justify-between">
                     <div class="index" v-for="index in indexes" :key="index.title" style="text-align: left;">
@@ -34,25 +34,56 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import apiClient from '@/api/axios';
+import { onMounted, reactive } from 'vue';
 
-const indexes = reactive([
-    {
-        title: 'S&P 500',
-        profit: 1.23,
-        data: [0.5, 0.8, 1.0, 1.2, 1.23]
-    },
-    {
-        title: 'NASDAQ',
-        profit: 1.87,
-        data: [1.1, 1.3, 1.5, 1.6, 1.87],
-    },
-    {
-        title: 'Dow Jones',
-        profit: 1.1,
-        data: [0.1, 0.15, 0.5, 1, 1.1]
+const indexes = reactive([]);
+
+onMounted(async () => {
+    await loadMarketData();
+});
+
+async function loadMarketData() {
+    try {
+        const data = await apiClient.getPriceHistory();
+
+        // Преобразуем данные API в формат для графиков
+        const marketData = data.slice(0, 3).map(asset => ({
+            title: asset.asset_symbol,
+            profit: parseFloat(asset.change_percent),
+            data: [
+                parseFloat(asset.price1),
+                parseFloat(asset.price2),
+                parseFloat(asset.price3),
+                parseFloat(asset.price4),
+                parseFloat(asset.change_percent)
+            ]
+        }));
+
+        indexes.splice(0, indexes.length, ...marketData);
+    } catch (err) {
+        console.error('Error loading market data:', err);
+        // Заглушка при ошибке API
+        const fallbackData = [
+            {
+                title: 'NVDA',
+                profit: 1.45,
+                data: [0.2, 0.6, 0.5, 0.7, 1.45]
+            },
+            {
+                title: 'TSLA',
+                profit: 0.79,
+                data: [0.5, 0.65, 0.72, 0.9, 0.79]
+            },
+            {
+                title: 'NKE',
+                profit: 0.27,
+                data: [12.0, 23.0, 32.0, 43.0, 0.27]
+            }
+        ];
+        indexes.splice(0, indexes.length, ...fallbackData);
     }
-]);
+}
 
 const chartOptions = {
     responsive: true,
@@ -62,10 +93,10 @@ const chartOptions = {
             display: false
         },
         tooltip: {
-            displayColors: false, // ✅ отключает квадрат
+            displayColors: false,
             callbacks: {
                 title: () => '',
-                label: (tooltipItem) => `${tooltipItem.formattedValue}%`, // или $ если надо
+                label: (tooltipItem) => `${tooltipItem.formattedValue}%`,
                 labelPointStyle: () => ({
                     pointStyle: 'line',
                     radius: 0,
