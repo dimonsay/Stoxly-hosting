@@ -45,7 +45,7 @@
                 }">
                     <div class="stocks-item flex" v-for="(stock, index) in stocks" :key="index">
                         <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price_buy).toFixed(2)
-                        }}
+                            }}
                         </div>
                         <div class="arrow green" :class="{ 'hidden': stock.change_percent < 0 }">
                             <i class="fa-solid fa-arrow-trend-up"></i>
@@ -60,7 +60,7 @@
                     </div>
                     <div class="stocks-item flex" v-for="(stock, index) in stocks" :key="'dup-' + index">
                         <div class="stock-title text-semibold">{{ stock.symbol }} ${{ Number(stock.price_buy).toFixed(2)
-                            }}
+                        }}
                         </div>
                         <div class="arrow green" :class="{ 'hidden': stock.change_percent < 0 }">
                             <i class="fa-solid fa-arrow-trend-up"></i>
@@ -335,14 +335,14 @@ header {
 }
 
 /* Increase top padding for landing page */
-.header-content-wrapper {
-    padding-top: 20px;
-}
+
 
 @media (max-width: 768px) {
     .header-content-wrapper {
         padding-top: 15px;
     }
+
+
 }
 
 @media (max-width: 480px) {

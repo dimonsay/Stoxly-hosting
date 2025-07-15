@@ -100,10 +100,17 @@ const router = useRouter();
 const route = useRoute();
 
 function goTo(name) {
-    router.push({ name });
+    if (name === 'trade') {
+        router.push({ name: 'trade-markets' });
+    } else {
+        router.push({ name });
+    }
 }
 
 function isActive(name) {
+    if (name === 'trade') {
+        return computed(() => route.name && route.name.startsWith('trade-'));
+    }
     return computed(() => route.name === name);
 }
 </script>

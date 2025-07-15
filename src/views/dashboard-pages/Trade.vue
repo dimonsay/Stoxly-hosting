@@ -2,99 +2,69 @@
   <div class="trade-wrapper">
     <div class="trade-titlee dashboard-title">Trade</div>
 
-    <div class="trading-controls-wrapper page-tile dashboard-tile">
+    <div class="trading-controls-wrapper page-tile dashboard-tile mb-10">
       <div class="trading-controls-title mb-5 text-2xl font-semibold">Trading controls</div>
 
       <div class="controls-items flex gap-3 ">
-        <div class="control-item pointer hover tex-xl" @click="changeControl(control)"
-          v-for="(status, control) in controls" :key="control" :class="{ 'bg-blue': status }">
-          {{ control.charAt(0).toUpperCase() + control.slice(1) }}
-        </div>
+        <router-link v-for="control in navTabs" :key="control.value"
+          :to="{ name: control.routeName, query: $route.query }" class="control-item pointer tex-xl"
+          :class="{ 'bg-blue': $route.name === control.routeName }">
+          {{ control.label }}
+        </router-link>
       </div>
     </div>
 
-    <component class="mt-5" :is="currentComponent" v-if="controls[selectedCategory]" :symbol="symbol" :action="action"
-      :category="category" @update-balance="onUpdateBalance" />
-
-
-
+    <router-view @update-balance="onUpdateBalance" />
   </div>
-
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue';
-import MarketsBlock from './trade-components/MarketsBlock.vue';
-import OrdersBlock from './trade-components/OrdersBlock.vue';
-import PositionsBlock from './trade-components/PositionsBlock.vue';
-import TransactionsBlock from './trade-components/TransactionsBlock.vue';
-import WalletBlock from './trade-components/WalletBlock.vue';
+import { useRoute } from 'vue-router';
+const $route = useRoute();
 
-// Props для получения параметров из URL
-const props = defineProps({
-  symbol: {
-    type: String,
-    default: null
-  },
-  action: {
-    type: String,
-    default: null
-  },
-  category: {
-    type: String,
-    default: null
-  }
-});
-
-
-const components = {
-  markets: MarketsBlock,
-  orders: OrdersBlock,
-  positions: PositionsBlock,
-  transaction: TransactionsBlock,
-  wallet: WalletBlock
-}
+const navTabs = [
+  { label: 'Markets', value: 'markets', routeName: 'trade-markets' },
+  { label: 'Orders', value: 'orders', routeName: 'trade-orders' },
+  { label: 'Positions', value: 'positions', routeName: 'trade-positions' },
+  { label: 'Transaction', value: 'transaction', routeName: 'trade-transaction' },
+  { label: 'Wallet', value: 'wallet', routeName: 'trade-wallet' },
+];
 
 const emit = defineEmits(['update-balance']);
-
 function onUpdateBalance() {
   emit('update-balance');
 }
-
-
-const selectedCategory = ref('markets')
-const currentComponent = computed(() => {
-  return components[selectedCategory.value];
-});
-
-const controls = reactive({
-  markets: true,
-  positions: false,
-  orders: false,
-  transaction: false,
-  wallet: false
-})
-
-
-
-function changeControl(control) {
-  Object.keys(controls).forEach(key => {
-    controls[key] = false
-  })
-
-  controls[control] = true
-  selectedCategory.value = control
-}
-
 </script>
 
 <style scoped>
 .control-item {
   padding: 5px 10px;
   border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s;
 }
 
 .bg-blue {
   background-color: #33c3f0;
+}
+
+@media (max-width: 768px) {
+  .controls-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+
+  .control-item {
+    min-width: 90px;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .trading-controls-wrapper {
+    padding: 1.25rem !important;
+  }
 }
 </style>

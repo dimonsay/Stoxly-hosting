@@ -27,13 +27,48 @@ const routes = [
             },
             {
                 path: '/dashboard/trade',
-                name: 'trade',
                 component: Trade,
                 props: (route) => ({
                     symbol: route.query.symbol,
                     action: route.query.action,
                     category: route.query.category
-                })
+                }),
+                children: [
+                    {
+                        path: '',
+                        redirect: { name: 'trade-markets' }
+                    },
+                    {
+                        path: 'markets',
+                        name: 'trade-markets',
+                        component: () => import('@/views/dashboard-pages/trade-components/MarketsBlock.vue'),
+                        props: route => ({ ...route.query })
+                    },
+                    {
+                        path: 'orders',
+                        name: 'trade-orders',
+                        component: () => import('@/views/dashboard-pages/trade-components/OrdersBlock.vue'),
+                        props: true
+                    },
+                    {
+                        path: 'positions',
+                        name: 'trade-positions',
+                        component: () => import('@/views/dashboard-pages/trade-components/PositionsBlock.vue'),
+                        props: true
+                    },
+                    {
+                        path: 'transaction',
+                        name: 'trade-transaction',
+                        component: () => import('@/views/dashboard-pages/trade-components/TransactionsBlock.vue'),
+                        props: true
+                    },
+                    {
+                        path: 'wallet',
+                        name: 'trade-wallet',
+                        component: () => import('@/views/dashboard-pages/trade-components/WalletBlock.vue'),
+                        props: true
+                    }
+                ]
             },
             {
                 path: '/dashboard/portfolio',

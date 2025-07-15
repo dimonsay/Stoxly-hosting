@@ -7,52 +7,55 @@
             </div>
         </div>
 
-
-        <div class="trade-block-title flex justify-between items-center">
-            <div class="category-title text-xl font-semibold">
+        <div class="trade-block-title flex justify-between items-center trade-block-title-row">
+            <div class="category-title text-xl font-semibold mb-2">
                 {{categories.find(cat => cat.value === selectedCategory)?.label || ''}} Market Overview
             </div>
-
-            <IconField style="display: flex; align-items: center; position: relative;">
+            <IconField style="display: flex; align-items: center; position: relative; margin-bottom: 0;">
                 <InputIcon class="pi pi-search"
                     style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);" />
                 <InputText v-model="search" type="text" autocomplete="off" placeholder="Search..." class="block mb-5"
                     style="max-width: 320px; min-width: 270px; padding-left: 40px;" />
             </IconField>
-
         </div>
 
         <div class="filtered-items flex flex-col gap-5 ">
             <div class="filtered-item flex flex-col align-center justify-between p-5 bg-gray-700 rounded-xl select-none"
                 v-for="item in instruments" :key="item.symbol">
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col gap-3">
-                        <div class="filtered-item-name text-xl font-semibold">{{ item.name.toUpperCase() }}</div>
-                        <div class="filtered-item-symbol grey">{{ item.symbol.toUpperCase() }}</div>
+                <!-- Desktop: symbol сверху, name под ним, справа buy/sell; Mobile: как было -->
+                <div class="flex flex-col md:flex-row md:items-stretch md:justify-between w-full mobile-asset-row">
+                    <!-- Левая колонка: symbol сверху, name под ним -->
+                    <div
+                        class="flex flex-col md:justify-between md:items-start gap-1 w-full md:w-auto md:min-w-[180px]">
+                        <div class="filtered-item-name text-xl font-semibold mobile-asset-name">
+                            {{ item.name.toUpperCase() }}
+                        </div>
+                        <div class="filtered-item-symbol grey mobile-asset-symbol md:mb-2">
+                            {{ item.symbol.toUpperCase() }}
+                        </div>
                     </div>
-
-                    <div class="flex flex-col gap-3 text-right">
-                        <!-- <div class="filtered-item-toBuy text-green-500">
-                             }}
-                        </div>
-                        <div class="filtered-item-toSell text-red-500">
-                            Price to sell: ${{ Number(item.price_sell).toFixed(2) }}
-                        </div> -->
-                        <div class="buttons-wrapper grid grid-cols-2 text-center gap-4 mt-2">
-                            <div class="buy-btn button-item pointer p-2 bg-green-600 rounded hover:bg-green-600/80 min-w-[150px]"
-                                @click="openTradePopup(item, 'buy')">Buy: ${{
-                                    Number(item.price_buy).toFixed(2) }}</div>
-                            <div class="sell-btn button-item pointer p-2 bg-red-600 hover:bg-red-600/80 rounded min-w-[150px]"
-                                @click="openTradePopup(item, 'sell')">Sell: ${{
-                                    Number(item.price_sell).toFixed(2) }}</div>
-                        </div>
+                    <!-- Правая колонка: buy сверху, sell снизу (только для десктопа) -->
+                    <div
+                        class="hidden md:flex flex-col justify-center items-end md:ml-8 md:w-auto w-full mt-2 md:mt-0 text-center">
+                        <div class="buy-btn button-item pointer p-2 bg-green-600 rounded hover:bg-green-600/80 min-w-[150px] w-full md:w-[150px] mb-2"
+                            @click="openTradePopup(item, 'buy')">Buy: ${{
+                                Number(item.price_buy).toFixed(2) }}</div>
+                        <div class="sell-btn button-item pointer p-2 bg-red-600 hover:bg-red-600/80 rounded min-w-[150px] w-full md:w-[150px]"
+                            @click="openTradePopup(item, 'sell')">Sell: ${{
+                                Number(item.price_sell).toFixed(2) }}</div>
                     </div>
                 </div>
-
+                <!-- Кнопки для мобильной версии (снизу карточки) -->
+                <div class="flex md:hidden mobile-asset-buttons mt-3">
+                    <div class="buy-btn button-item pointer p-2 bg-green-600 rounded hover:bg-green-600/80 w-full"
+                        @click="openTradePopup(item, 'buy')">Buy: ${{ Number(item.price_buy).toFixed(2) }}</div>
+                    <div class="sell-btn button-item pointer p-2 bg-red-600 hover:bg-red-600/80 rounded w-full ml-2"
+                        @click="openTradePopup(item, 'sell')">Sell: ${{ Number(item.price_sell).toFixed(2) }}</div>
+                </div>
             </div>
             <Dialog v-model:visible="showTradePopup" modal
                 :header="`${tradeType === 'buy' ? 'Purchase' : 'Sale'} ${selectedItem?.name || ''}`"
-                :style="{ width: '600px' }" :draggable="false" :modal="false">
+                :style="{ width: dialogWidth }" :draggable="false" :modal="false">
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-3">
                         <div class="dialog-title flex flex-col gap-2">
@@ -104,8 +107,8 @@
                         <!-- Ссылки для шаринга -->
                         <div class="share-links flex gap-2 justify-center mt-3 pt-3 border-t border-gray-600">
                             <span class="cursor-pointer text-blue-400 hover:text-blue-300 text-sm"
-                                @click="copyTradeLink(selectedItem.symbol, tradeType)">
-                                Share {{ tradeType === 'buy' ? 'Buy' : 'Sell' }} Link
+                                @click="copyTradeLink(selectedItem.symbol)">
+                                Share Asset Link
                             </span>
                         </div>
                     </div>
@@ -143,15 +146,19 @@
 
 /* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
-    .trading-market-categories {
+
+    .trading-market-categories,
+    .trading-markets-wrapper>.flex {
+        display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 15px;
     }
 
     .trading-market-categorie {
-        padding: 8px 12px;
-        font-size: 0.9rem;
+        min-width: 90px;
+        text-align: center;
+        margin-bottom: 4px;
     }
 
     .trading-market-instruments {
@@ -188,6 +195,69 @@
         width: 100%;
         padding: 8px;
         font-size: 0.9rem;
+    }
+
+    .mobile-asset-row {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px;
+        display: flex !important;
+        justify-content: space-between !important;
+    }
+
+    .mobile-asset-name {
+        font-size: 1rem !important;
+        font-weight: 600;
+        margin-right: 0;
+        display: block;
+    }
+
+    .mobile-asset-symbol {
+        font-size: 0.92rem !important;
+        color: #33c3f0 !important;
+        font-weight: 500;
+        display: block;
+    }
+
+    .mobile-asset-buttons {
+        flex-direction: row;
+        gap: 8px !important;
+        margin-top: 8px !important;
+        width: 100%;
+    }
+
+    .buy-btn,
+    .sell-btn {
+        width: 100% !important;
+        min-width: 0 !important;
+        font-size: 0.98rem !important;
+        padding: 10px 0 !important;
+        text-align: center !important;
+    }
+
+    .trade-block-title-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+
+    .category-title {
+        margin-bottom: 0 !important;
+    }
+}
+
+@media screen and (min-width: 769px) {
+    .mobile-asset-buttons {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 0;
+        align-items: flex-end;
+    }
+
+    .buy-btn,
+    .sell-btn {
+        width: 150px !important;
+        min-width: 150px !important;
     }
 }
 
@@ -231,9 +301,8 @@
 
 <script setup>
 import apiClient from '@/api/axios';
-import { generateTradeLink } from '@/utils/tradeLinks';
 import { InputNumber, InputText } from 'primevue';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 // Props для получения параметров из URL
 const props = defineProps({
@@ -264,6 +333,8 @@ const tradeQuantity = ref(1);
 
 const maxSell = ref(0);
 const buyError = ref('');
+
+const hasOpenedFromUrl = ref(false);
 
 async function openTradePopup(item, type) {
     selectedItem.value = item;
@@ -348,21 +419,20 @@ onMounted(async () => {
     await fetchInstruments();
 
     // Обработка параметров из URL
-    if (props.symbol) {
+    if (props.symbol && !hasOpenedFromUrl.value) {
         search.value = props.symbol.toUpperCase();
         await fetchInstruments();
 
-        // Если указано действие, автоматически открываем диалог торговли
         if (props.action && (props.action === 'buy' || props.action === 'sell')) {
-            // Найдем нужную акцию
             const targetInstrument = instruments.value.find(item =>
                 item.symbol.toUpperCase() === props.symbol.toUpperCase()
             );
-
             if (targetInstrument) {
-                // Небольшая задержка для корректного отображения
                 setTimeout(() => {
-                    openTradePopup(targetInstrument, props.action);
+                    if (!hasOpenedFromUrl.value) {
+                        openTradePopup(targetInstrument, props.action);
+                        hasOpenedFromUrl.value = true;
+                    }
                 }, 500);
             }
         }
@@ -410,17 +480,16 @@ const sellAsset = async (id, quantity = 1) => {
     }
 };
 
-const copyTradeLink = async (symbol, action) => {
-    const link = generateTradeLink(symbol, action);
+const copyTradeLink = async (symbol) => {
+    // Используем выбранную категорию, а не props
+    const link = `/dashboard/trade/markets?symbol=${encodeURIComponent(symbol)}&category=${encodeURIComponent(selectedCategory.value)}`;
     const fullUrl = `${window.location.origin}${link}`;
 
     try {
         await navigator.clipboard.writeText(fullUrl);
-        // Показываем уведомление пользователю
         showCopyNotification();
     } catch (error) {
-        console.error('Ошибка при копировании ссылки:', error);
-        // Fallback для старых браузеров
+        // fallback
         const textArea = document.createElement('textarea');
         textArea.value = fullUrl;
         document.body.appendChild(textArea);
@@ -459,4 +528,11 @@ const showCopyNotification = () => {
     }, 3000);
 };
 
+// Адаптивная ширина для Dialog
+const dialogWidth = computed(() => {
+    if (window.innerWidth <= 768) {
+        return '95vw';
+    }
+    return '600px';
+});
 </script>

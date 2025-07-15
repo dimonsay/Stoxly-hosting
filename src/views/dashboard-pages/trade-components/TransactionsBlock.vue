@@ -18,7 +18,7 @@
                     <div class="basis-1/6 min-w-[80px]">{{ capitalize(transaction.type) }}</div>
                     <div class="basis-1/6 min-w-[80px] text-blue-400">{{ transaction.asset.symbol }}</div>
                     <div class="basis-1/6 min-w-[80px] text-center">{{ Math.floor(transaction.quantity) }}</div>
-                    <div class="basis-1/6 min-w-[80px] text-center">${{ transaction.price_buy }}</div>
+                    <div class="basis-1/6 min-w-[80px] text-center">${{ transaction.price }}</div>
                     <div class="basis-1/6 min-w-[80px] text-center">${{ transaction.total }}</div>
                     <div class="basis-1/6 min-w-[100px] text-center">{{ formatDate(transaction.created_at) }}</div>
                 </div>

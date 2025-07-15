@@ -50,7 +50,7 @@
 
     <!-- Popular -->
     <div class="dashboard-page-wrapper">
-        <div class="recommended-wrapper pt-10 align-center flex flex-col" v-for="(items, category) in groupedPopular"
+        <div class="recommended-wrapper pt-5 align-center flex flex-col" v-for="(items, category) in groupedPopular"
             :key="'popular-' + category">
             <div class="recommended-title text-2xl mb-5 mt-5 font-semibold">
                 Popular {{ formatCategory(category) }}

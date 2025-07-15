@@ -52,7 +52,7 @@
                 <FileUpload name="document" :customUpload="true" @uploader="onCustomUpload" :multiple="true"
                     accept="image/*" :maxFileSize="1000000">
                     <template #empty>
-                        <span>Загрузите фотографии документов</span>
+                        <span>Upload passport photo to verify your identity</span>
                     </template>
                 </FileUpload>
             </div>
