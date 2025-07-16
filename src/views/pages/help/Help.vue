@@ -36,22 +36,16 @@
                                     @blur="validateEmail(formData.email)" style="width: 100%; min-width: 270px" />
                             </IconField>
 
-                            <div class="mt-2 flex flex-wrap hidden">
-                                <Checkbox type="checkbox" id="confirmed" :binary="true" class="mr-2" />
-                                <label for="confirmed" class="text-surface-900 dark:text-surface-0 font-medium mr-2">I
-                                    have read the</label>
-                                <a class="text-surface-600 dark:text-surface-200 hover:text-primary cursor-pointer">Terms
-                                    and Conditions</a>
-                            </div>
+
                         </div>
 
-                        <div class="button-container mt-6 text-left" style="width: 100%; min-width: 270px">
+                        <div class="button-container text-left" style="width: 100%; min-width: 270px">
                             <div v-if="serverError" class="text-red-500 text-sm mb-2 text-center">
                                 {{ serverError }}
                             </div>
                             <div class="buttons flex items-center gap-4">
                                 <Button type="button" @click="submit()" severity="info" class="block"
-                                    style="width: 100%; margin-bottom: 32px">Submit</Button>
+                                    style="width: 100%;">Submit</Button>
                             </div>
                         </div>
                     </div>
@@ -82,7 +76,16 @@ const faqs = reactive([
     { question: 'What are the fees for trading?', answer: 'We charge zero fees on trades — no hidden costs, no surprises. You can check your account dashboard anytime for full details.' }
 ]);
 
-const issues = ref(['Option', 'Option', 'Option', 'Option', 'Option', 'Option']);
+const issues = ref([
+    'Deposit',
+    'Withdrawal',
+    'Account',
+    'Investing',
+    'Promotions & Referral',
+    'KYC',
+    'Technical Issues/ Bugs',
+    'Other Questions'
+]);
 
 const errors = reactive({
     subject: false,
@@ -246,6 +249,7 @@ async function submit() {
 
 @media (max-width: 768px) {
     .request-question-wrapper {
+        padding-top: 10px;
         flex-direction: column !important;
         gap: 32px;
         align-items: stretch !important;

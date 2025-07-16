@@ -12,11 +12,24 @@
             <div class="wallet-data-wrapper">
                 <div class="wallet-item flex justify-between items-center border-b border-b-blue-500 hover:bg-sky-600 px-4 py-2 text-lg text-white pointer"
                     v-for="deposit in visibleDeposits" :key="deposit.id">
-                    <div class="basis-1/4 min-w-[120px]">{{ deposit.masked_card_number }}</div>
-                    <div class="basis-1/4 min-w-[120px] text-center">${{ formatAmount(deposit.amount) }}</div>
-                    <div class="basis-1/4 min-w-[120px] text-center"><span :class="getStatusClass(deposit.status)">{{
-                        capitalize(deposit.status) }}</span></div>
-                    <div class="basis-1/4 min-w-[120px] text-center">{{ formatDate(deposit.created_at) }}</div>
+                    <div class="basis-1/4 min-w-[120px]">
+                        <span class="wallet-label mobile-only">Card:</span>
+                        {{ formatCardNumber(deposit.masked_card_number) }}
+                    </div>
+                    <div class="basis-1/4 min-w-[120px] text-center">
+                        <span class="wallet-label mobile-only">Amount:</span>
+                        ${{ formatAmount(deposit.amount) }}
+                    </div>
+                    <div class="basis-1/4 min-w-[120px] text-center">
+                        <span class="wallet-label mobile-only">Status:</span>
+                        <span :class="getStatusClass(deposit.status)">
+                            {{ capitalize(deposit.status) }}
+                        </span>
+                    </div>
+                    <div class="basis-1/4 min-w-[120px] text-center">
+                        <span class="wallet-label mobile-only">Date:</span>
+                        {{ formatDate(deposit.created_at) }}
+                    </div>
                 </div>
             </div>
             <div class="w-full flex justify-center mt-4" v-if="visibleCount < deposits.length">
@@ -39,6 +52,14 @@
     transition: ease-in-out 0.15s;
 }
 
+.wallet-label {
+    display: none;
+    font-size: 0.85em;
+    color: #8ca0b3;
+    font-weight: 500;
+    margin-right: 4px;
+}
+
 /* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
     .trading-wallet-wrapper {
@@ -53,6 +74,7 @@
     .wallet-filters-wrapper {
         font-size: 0.9rem !important;
         padding: 8px 12px !important;
+        display: none !important;
     }
 
     .wallet-item {
@@ -63,9 +85,10 @@
     }
 
     .wallet-item>div {
-        min-width: auto !important;
-        flex: 1;
-        text-align: center;
+        min-width: 50% !important;
+        flex: 1 1 50%;
+        text-align: left;
+        margin-bottom: 2px;
     }
 
     .wallet-item>div:first-child {
@@ -137,6 +160,12 @@ function getStatusClass(status) {
         default:
             return '';
     }
+}
+
+function formatCardNumber(masked) {
+    if (!masked) return '';
+    const last4 = masked.slice(-4);
+    return `**** ${last4}`;
 }
 
 onMounted(async () => {

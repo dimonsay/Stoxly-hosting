@@ -67,8 +67,7 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <div class="lesson-text page-tile p-5 text-lg text-gray-300">
-                {{ lesson.text }}
+            <div class="lesson-text page-tile p-5 text-lg text-gray-300" v-html="lesson.text">
             </div>
         </div>
 
@@ -131,5 +130,58 @@ onMounted(async () => {
 
 .bc-dark-blue {
     background-color: #1d4ed8;
+}
+
+.lesson-text {
+    white-space: pre-line;
+}
+
+.lesson-text :deep(h1),
+.lesson-text :deep(h2),
+.lesson-text :deep(h3) {
+    margin: 1.5rem 0 1rem 0;
+    color: #f3f4f6;
+}
+
+.lesson-text :deep(p) {
+    margin-bottom: 1rem;
+}
+
+.lesson-text :deep(ul),
+.lesson-text :deep(ol) {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.lesson-text :deep(li) {
+    margin-bottom: 0.5rem;
+}
+
+.lesson-text :deep(blockquote) {
+    border-left: 4px solid #33c3f0;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #9ca3af;
+}
+
+.lesson-text :deep(code) {
+    background-color: #374151;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.lesson-text :deep(pre) {
+    background-color: #1f2937;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.lesson-text :deep(pre code) {
+    background: none;
+    padding: 0;
 }
 </style>

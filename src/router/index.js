@@ -404,7 +404,7 @@ const routes = [
             {
                 path: '/learn/:id',
                 name: 'LessonDetails',
-                component: () => import('@/views/uikit/LessonComponent.vue'),
+                component: () => import('@/views/uikit/LearnComponent.vue'),
                 props: true
             },
             {

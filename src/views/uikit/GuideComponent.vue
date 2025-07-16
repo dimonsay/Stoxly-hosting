@@ -55,10 +55,6 @@ onMounted(async () => {
                     <div class="guide-date text-white">{{ formatDate(guide.created_at) }}</div>
                 </div>
 
-                <div class="guide-description text-gray-300 mt-3">
-                    {{ guide.description }}
-                </div>
-
                 <div v-if="guide.categories?.length" class="guide-categories flex gap-2 mt-3">
                     <span v-for="category in guide.categories" :key="category.id"
                         class="category px-3 py-1 bg-gray-700 rounded text-sm">
@@ -68,7 +64,7 @@ onMounted(async () => {
             </div>
 
             <div class="guide-content-wrapper page-tile p-5">
-                <div class="guide-text text-lg text-gray-300 mb-6" v-html="guide.content">
+                <div class="guide-text text-lg text-gray-300 mb-6" v-html="guide.text">
                 </div>
 
                 <div v-if="guide.steps?.length" class="guide-steps mt-8">

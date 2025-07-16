@@ -262,7 +262,6 @@ function truncateTitle(title, maxLength = 16) {
         font-size: 0.98rem;
         padding: 12px 8px !important;
         align-items: flex-start;
-        width: 180px;
         max-width: 180px;
     }
 
