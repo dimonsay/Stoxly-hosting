@@ -2,127 +2,77 @@
     <div class="trading-wallet-wrapper page-tile dashboard-tile">
         <div class="trade-block-title text-xl font-semibold mb-10">Deposit History</div>
         <div class="wallet-wrapper">
-            <div
-                class="wallet-filters-wrapper flex justify-between border-b border-b-blue-500 px-4 py-2 bg-[#161a23] font-semibold text-lg text-white">
-                <div class="basis-1/4 min-w-[120px]">Card</div>
-                <div class="basis-1/4 min-w-[120px] text-center">Amount</div>
-                <div class="basis-1/4 min-w-[120px] text-center">Status</div>
-                <div class="basis-1/4 min-w-[120px] text-center">Date</div>
+            <!-- Desktop Table -->
+            <div class="hidden md:block">
+                <DataTable :value="visibleDeposits" :rows="visibleDeposits.length" class="wallet-table"
+                    responsiveLayout="scroll" tableStyle="table-layout: fixed; width: 100%;">
+                    <Column field="masked_card_number" header="Card" style="width: 160px"
+                        bodyStyle="padding: 10px 16px; text-align:left;"
+                        headerStyle="text-align:left; padding: 10px 16px;">
+                        <template #body="{ data }">
+                            {{ formatCardNumber(data.masked_card_number) }}
+                        </template>
+                    </Column>
+                    <Column field="amount" header="Amount" style="width: 120px"
+                        bodyStyle="padding: 10px 16px; text-align:left;"
+                        headerStyle="text-align:left; padding: 10px 16px;">
+                        <template #body="{ data }">
+                            ${{ formatAmount(data.amount) }}
+                        </template>
+                    </Column>
+                    <Column field="status" header="Status" style="width: 120px"
+                        bodyStyle="padding: 10px 16px; text-align:left;"
+                        headerStyle="text-align:left; padding: 10px 16px;">
+                        <template #body="{ data }">
+                            <span :class="getStatusClass(data.status)">{{ capitalize(data.status) }}</span>
+                        </template>
+                    </Column>
+                    <Column field="created_at" header="Date" style="width: 160px"
+                        bodyStyle="padding: 10px 16px; text-align:left;"
+                        headerStyle="text-align:left; padding: 10px 16px;">
+                        <template #body="{ data }">
+                            {{ formatDate(data.created_at) }}
+                        </template>
+                    </Column>
+                </DataTable>
             </div>
-            <div class="wallet-data-wrapper">
-                <div class="wallet-item flex justify-between items-center border-b border-b-blue-500 hover:bg-sky-600 px-4 py-2 text-lg text-white pointer"
-                    v-for="deposit in visibleDeposits" :key="deposit.id">
-                    <div class="basis-1/4 min-w-[120px]">
-                        <span class="wallet-label mobile-only">Card:</span>
-                        {{ formatCardNumber(deposit.masked_card_number) }}
+            <!-- Mobile Cards -->
+            <div class="block md:hidden">
+                <div v-for="deposit in visibleDeposits" :key="deposit.id"
+                    class="mobile-wallet-card mb-4 p-3 rounded bg-[#161a23] border border-blue-500 text-white">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold">Card:</span>
+                        <span>{{ formatCardNumber(deposit.masked_card_number) }}</span>
                     </div>
-                    <div class="basis-1/4 min-w-[120px] text-center">
-                        <span class="wallet-label mobile-only">Amount:</span>
-                        ${{ formatAmount(deposit.amount) }}
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold">Amount:</span>
+                        <span>${{ formatAmount(deposit.amount) }}</span>
                     </div>
-                    <div class="basis-1/4 min-w-[120px] text-center">
-                        <span class="wallet-label mobile-only">Status:</span>
-                        <span :class="getStatusClass(deposit.status)">
-                            {{ capitalize(deposit.status) }}
-                        </span>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold">Status:</span>
+                        <span :class="getStatusClass(deposit.status)">{{ capitalize(deposit.status) }}</span>
                     </div>
-                    <div class="basis-1/4 min-w-[120px] text-center">
-                        <span class="wallet-label mobile-only">Date:</span>
-                        {{ formatDate(deposit.created_at) }}
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Date:</span>
+                        <span>{{ formatDate(deposit.created_at) }}</span>
                     </div>
                 </div>
             </div>
             <div class="w-full flex justify-center mt-4" v-if="visibleCount < deposits.length">
                 <div class="flex justify-center">
                     <button @click="loadMore"
-                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition">Load more</button>
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition">Load
+                        more</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-.wallet-filters-wrapper {
-    margin-top: 20px;
-    background-color: #161a23;
-}
-
-.wallet-item {
-    transition: ease-in-out 0.15s;
-}
-
-.wallet-label {
-    display: none;
-    font-size: 0.85em;
-    color: #8ca0b3;
-    font-weight: 500;
-    margin-right: 4px;
-}
-
-/* Mobile Responsive Styles */
-@media screen and (max-width: 768px) {
-    .trading-wallet-wrapper {
-        padding: 15px;
-    }
-
-    .trade-block-title {
-        font-size: 1.2rem !important;
-        margin-bottom: 15px !important;
-    }
-
-    .wallet-filters-wrapper {
-        font-size: 0.9rem !important;
-        padding: 8px 12px !important;
-        display: none !important;
-    }
-
-    .wallet-item {
-        font-size: 0.9rem !important;
-        padding: 8px 12px !important;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .wallet-item>div {
-        min-width: 50% !important;
-        flex: 1 1 50%;
-        text-align: left;
-        margin-bottom: 2px;
-    }
-
-    .wallet-item>div:first-child {
-        flex-basis: 100%;
-        text-align: left;
-        font-weight: bold;
-        margin-bottom: 4px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .trading-wallet-wrapper {
-        padding: 10px;
-    }
-
-    .trade-block-title {
-        font-size: 1.1rem !important;
-        margin-bottom: 12px !important;
-    }
-
-    .wallet-filters-wrapper {
-        font-size: 0.8rem !important;
-        padding: 6px 8px !important;
-    }
-
-    .wallet-item {
-        font-size: 0.8rem !important;
-        padding: 6px 8px !important;
-    }
-}
-</style>
-
 <script setup>
 import apiClient from '@/api/axios';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
 import { computed, onMounted, reactive, ref } from 'vue';
 
 const deposits = reactive([]);
@@ -179,3 +129,100 @@ onMounted(async () => {
     }
 });
 </script>
+
+<style scoped>
+.wallet-table ::v-deep(.p-datatable-thead > tr > th) {
+    background: #161a23;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 2px solid #3b82f6;
+    text-align: left;
+    padding: 10px 16px !important;
+}
+
+.wallet-table ::v-deep(.p-datatable-tbody > tr > td) {
+    padding: 10px 16px !important;
+}
+
+.wallet-table ::v-deep(.p-datatable-tbody > tr) {
+    transition: ease-in-out 0.15s;
+    background: transparent;
+    border-bottom: 1px solid #3b82f6;
+    color: #fff;
+    font-size: 1.125rem;
+}
+
+.wallet-table ::v-deep(.p-datatable-tbody > tr:hover) {
+    background: #0284c7 !important;
+}
+
+.wallet-table ::v-deep(.p-datatable) {
+    background: transparent;
+}
+
+.mobile-wallet-card {
+    box-shadow: 0 2px 8px 0 rgba(30, 64, 175, 0.08);
+    font-size: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+    .trading-wallet-wrapper {
+        padding: 15px;
+    }
+
+    .trade-block-title {
+        font-size: 1.2rem !important;
+        margin-bottom: 15px !important;
+    }
+
+    .wallet-table ::v-deep(.p-datatable-thead > tr > th) {
+        font-size: 0.9rem !important;
+        padding: 8px 12px !important;
+    }
+
+    .wallet-table ::v-deep(.p-datatable-tbody > tr) {
+        font-size: 0.9rem !important;
+        padding: 8px 12px !important;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .wallet-table ::v-deep(.p-datatable-tbody > tr > td) {
+        min-width: auto !important;
+        flex: 1;
+        text-align: left;
+    }
+
+    .mobile-wallet-card {
+        font-size: 0.9rem;
+        padding: 10px 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .trading-wallet-wrapper {
+        padding: 10px;
+    }
+
+    .trade-block-title {
+        font-size: 1.1rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .wallet-table ::v-deep(.p-datatable-thead > tr > th) {
+        font-size: 0.8rem !important;
+        padding: 6px 8px !important;
+    }
+
+    .wallet-table ::v-deep(.p-datatable-tbody > tr) {
+        font-size: 0.8rem !important;
+        padding: 6px 8px !important;
+    }
+
+    .mobile-wallet-card {
+        font-size: 0.8rem;
+        padding: 8px 4px;
+    }
+}
+</style>

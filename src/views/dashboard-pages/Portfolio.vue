@@ -2,23 +2,120 @@
   <div class="portfolio-wrapper">
     <div class="dashboard-title">Portfolio</div>
 
-    <div class="portfolio-charts-wrapper">
+    <!-- Мобильная версия: вертикальный порядок -->
+    <div class="block md:hidden">
+      <!-- 1. Chart -->
+      <div class="portfolio-chart-wrapper mb-6">
+        <div class="flex flex-col items-center bg-none dashboard-tile page-tile">
+          <div class="font-semibold text-xl mb-4 text-left w-full">Portfolio Distribution</div>
+          <div class="flex flex-col items-center dashboard-tile page-tile">
+            <div class="h-[220px]">
+              <Chart type="doughnut" :data="portfolioData" :options="portfolioOptions"
+                style="width: 100%; height: 100%;" />
+            </div>
+            <div class="h-4"></div>
+            <div class="flex flex-wrap justify-center gap-2 mt-2 text-base">
+              <div v-for="(label, index) in portfolioData.labels" :key="label.value"
+                class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full "
+                  :style="{ backgroundColor: portfolioData.datasets[0].backgroundColor[index] }"></span>
+                <div>{{ label.label }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 2. Категории -->
+      <div class="portfolio-summary-wrapper mb-4" v-if="currentPortfolio.length > 0">
+        <div class="font-semibold text-lg mb-2">Portfolio Categories</div>
+        <div class="portfolio-summary">
+          <div v-for="(categoryData, categoryKey) in data" :key="categoryKey"
+            class="category-block p-3 rounded bg-gray-800 mb-2 flex items-center justify-between">
+            <div class="flex flex-col">
+              <div class="text-base font-semibold">{{ formatCategoryName(categoryKey) }}</div>
+              <div class="text-xs text-gray-400">
+                Invested: ${{ parseFloat(categoryData.total_current_value).toFixed(2) }}
+              </div>
+            </div>
+            <div class="text-blue-400 text-base">
+              {{ getCategoryPercent(categoryKey) }}%
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 3. Поиск -->
+      <div class="portfolio-search w-full mb-3">
+        <IconField iconPosition="left" class="w-full" style="min-width: 180px;">
+          <InputIcon class="pi pi-search text-gray-500" />
+          <InputText v-model="search.search" type="text" autocomplete="off" @input="fetchCurrentPortfolio"
+            placeholder="Search Assets..." class="w-full" />
+        </IconField>
+      </div>
+      <!-- 4. Фильтр -->
+      <div class="filter-portfolio mb-5">
+        <IconField iconPosition="left" class="w-full">
+          <InputIcon class="pi pi-filter text-gray-500" />
+          <Dropdown v-model="search.filter" :options="portfolioData.labels" optionLabel="label" optionValue="value"
+            placeholder="Category" class="w-full pl-6" @change="fetchCurrentPortfolio" />
+        </IconField>
+      </div>
+      <!-- 5. Current Holdings (оставляем как есть) -->
+      <div class="current-holding-wrapper page-tile dashboard-tile">
+        <div class="current-holding-title text-xl font-semibold mb-5">Current holding</div>
+        <div v-if="currentPortfolio.length === 0" class="empty-portfolio text-center py-8">
+          <div class="empty-icon mb-4">
+            <i class="pi pi-chart-line text-6xl text-gray-500"></i>
+          </div>
+          <div class="empty-title text-xl font-semibold mb-2">No stocks in your portfolio</div>
+          <div class="empty-description text-gray-400 mb-6">Start building your investment portfolio by purchasing
+            your first stocks</div>
+          <button @click="router.push('/dashboard/trade')"
+            class="start-trading-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+            Start Trading
+          </button>
+        </div>
+        <div v-else>
+          <div class="text-sm text-gray-400 mb-3">Click on any asset to go to trade</div>
+          <div class="holding-assets-wrapper flex flex-col gap-2">
+            <div
+              class="bg-gray-700 holding-asset-item flex px-4 py-2 rounded items-center justify-between cursor-pointer hover:bg-gray-600 transition-colors"
+              v-for="asset in currentPortfolio" @click="goToTrade(asset.symbol, asset.category)">
+              <div class="flex-col flex gap-1">
+                <div class="asset-symbol text-lg font-semibold">{{ asset.symbol }}</div>
+                <div class="asset-name text-gray-400">{{ asset.name }}</div>
+                <div class="asset-quntity text-gray-400">{{ Math.floor(asset.quantity) }} Shares</div>
+              </div>
+              <div class="item-changes flex flex-col text-right">
+                <div class="asset-total text-lg font-semibold">${{ formatValue(asset.total_value) }}</div>
+                <div class="asset-change-percents" :class="{
+                  'text-green-500': Number(asset.change_percent) > 0,
+                  'text-red-500': Number(asset.change_percent) < 0,
+                }">
+                  {{
+                    Number(asset.change_percent) === 0 || isNaN(Number(asset.change_percent))
+                      ? '0.00'
+                      : Number(asset.change_percent).toFixed(2)
+                  }}%
+                </div>
+                <div class="asset-category text-gray-400">{{ formatCategoryName(asset.category) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Десктопная версия: grid -->
+    <div class="portfolio-charts-wrapper hidden md:block">
       <div class="grid grid-cols-2 gap-3" v-if="currentPortfolio.length > 0">
         <div class="flex flex-col items-center bg-none dashboard-tile page-tile">
           <div class="font-semibold text-xl mb-4 text-left w-full">Portfolio Distribution</div>
-
           <div class="flex flex-col items-center dashboard-tile page-tile">
-
-            <!-- Диаграмма -->
             <div class="h-[320px]">
               <Chart type="doughnut" :data="portfolioData" :options="portfolioOptions"
                 style="width: 100%; height: 100%;" />
             </div>
-
-            <!-- Отступ между кругом и легендой -->
-            <div class="h-6"></div> <!-- можно регулировать тут -->
-
-            <!-- Кастомная легенда -->
+            <div class="h-6"></div>
             <div class="flex flex-wrap justify-center gap-4 mt-2 text-xl">
               <div v-for="(label, index) in portfolioData.labels" :key="label.value"
                 class="flex items-center space-x-2">
@@ -29,7 +126,6 @@
             </div>
           </div>
         </div>
-
         <div class="portfolio-summary">
           <div v-for="(categoryData, categoryKey) in data" :key="categoryKey"
             class="category-block p-4 rounded bg-gray-800 mb-2 flex items-center justify-between">
@@ -39,15 +135,12 @@
                 Invested: ${{ parseFloat(categoryData.total_current_value).toFixed(2) }}
               </div>
             </div>
-
             <div class="text-blue-400 text-20 text-base">
               Portfolio Share: {{ getCategoryPercent(categoryKey) }}%
             </div>
           </div>
         </div>
       </div>
-
-
       <div class="portfolio-assets-wrapper mt-6 ">
         <div class="filter-wrapper flex justify-between items-center mb-5 gap-5">
           <div class="portfolio-search w-full">
@@ -57,7 +150,6 @@
                 placeholder="Search Assets..." class="w-full" />
             </IconField>
           </div>
-
           <div class="filter-portfolio">
             <IconField iconPosition="left" class="w-full md:w-56">
               <InputIcon class="pi pi-filter text-gray-500" />
@@ -66,11 +158,8 @@
             </IconField>
           </div>
         </div>
-
         <div class="current-holding-wrapper page-tile dashboard-tile">
           <div class="current-holding-title text-2xl font-semibold mb-5">Current holding</div>
-
-          <!-- Состояние когда нет акций -->
           <div v-if="currentPortfolio.length === 0" class="empty-portfolio text-center py-8">
             <div class="empty-icon mb-4">
               <i class="pi pi-chart-line text-6xl text-gray-500"></i>
@@ -83,11 +172,8 @@
               Start Trading
             </button>
           </div>
-
-          <!-- Состояние когда есть акции -->
           <div v-else>
             <div class="text-sm text-gray-400 mb-3">Click on any asset to go to trade</div>
-
             <div class="holding-assets-wrapper flex flex-col gap-2">
               <div
                 class="bg-gray-700 holding-asset-item flex px-8 py-3 rounded  items-center justify-between cursor-pointer hover:bg-gray-600 transition-colors"
@@ -97,10 +183,8 @@
                   <div class="asset-name text-gray-400">{{ asset.name }}</div>
                   <div class="asset-quntity text-gray-400">{{ Math.floor(asset.quantity) }} Shares</div>
                 </div>
-
                 <div class="item-changes flex flex-col text-right">
                   <div class="asset-total text-xl font-semibold">${{ formatValue(asset.total_value) }}</div>
-
                   <div class="asset-change-percents" :class="{
                     'text-green-500': Number(asset.change_percent) > 0,
                     'text-red-500': Number(asset.change_percent) < 0,
@@ -111,19 +195,13 @@
                         : Number(asset.change_percent).toFixed(2)
                     }}%
                   </div>
-
                   <div class="asset-category text-gray-400">{{ formatCategoryName(asset.category) }}</div>
                 </div>
-
-                <!-- Удалено: стрелка и кнопка Sell -->
-
               </div>
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 </template>
