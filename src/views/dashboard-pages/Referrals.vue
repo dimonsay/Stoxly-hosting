@@ -2,7 +2,7 @@
     <div class="referrals-wrapper flex flex-col gap-8">
         <div class="dashboard-title">Referrals</div>
         <div class="referrals-info-wrapper">
-            <div class="referrals-info flex gap-4">
+            <div class="referrals-info flex gap-4 grid-mobile-referrals">
                 <div class="total-referrals page-tile dashboard-tile w-1/4">
                     <div class="flex items-center">
                         <i class="pi pi-users mr-8 blue icon"></i>
@@ -54,7 +54,8 @@
             <div class="flex align-center gap-3">
                 <div class="referral-link bc-dark-grey padding pointer" :class="{ 'copied': copied }"
                     @click="copyToClipboard(referralLink)" style="width: 100%;">
-                    {{ referralLink }}
+                    <span class="hidden md:inline">{{ referralLink }}</span>
+                    <span class="inline md:hidden">{{ shortReferralLink }}</span>
                 </div>
                 <div class="clipboard text-2xl pointer" @click="copyToClipboard(referralLink)">
                     <i class="pi pi-clone bc-blue text-lg clone-padding rounded-lg"
@@ -139,6 +140,14 @@ const referralLink = computed(() => {
         return `${window.location.origin}/auth/register?ref=${referralData.value.referral_code}`;
     }
     return `${window.location.origin}/auth/register`;
+});
+
+// Короткая ссылка для мобильного отображения
+const shortReferralLink = computed(() => {
+    if (referralData.value.referral_code) {
+        return `${window.location.hostname}/.../${referralData.value.referral_code}`;
+    }
+    return `${window.location.hostname}/auth/register`;
 });
 
 // Функция для загрузки данных рефералов
@@ -241,5 +250,24 @@ onMounted(() => {
 
 .loading-state {
     color: var(--surface-600);
+}
+
+@media (max-width: 768px) {
+    .referrals-info.grid-mobile-referrals {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 12px !important;
+    }
+
+    .referrals-info.grid-mobile-referrals>div {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .referral-link {
+        font-size: 1rem;
+        word-break: break-all;
+        padding: 8px 6px !important;
+    }
 }
 </style>
