@@ -63,16 +63,20 @@
             <div class="customers-reviews flex flex-col gap-3">
                 <div class="customer-review-wrapper flex justify-between bg-gray-700 p-5 rounded-xl"
                     v-for="review in customers.slice(0, loadCustomers)" :key="review.id">
-                    <div class="about-review flex flex-col gap-3 text-xl">
-                        <div class="customer-review-name font-semibold">{{ review.user.first_name + ' ' +
-                            review.user.last_name }}
-                        </div>
-                        <div class="customer-review-stars flex gap-1">
-                            <i class="pi pi-star-fill text-gold" v-for="star in review.rating" :key="star"></i>
+                    <!-- Мобильная версия: имя и оценка в одну строку -->
+                    <div class="about-review flex flex-col gap-3 text-xl w-full">
+                        <div class="flex items-center justify-between w-full mb-1">
+                            <div class="customer-review-name font-semibold">{{ review.user.first_name + ' ' +
+                                review.user.last_name }}</div>
+                            <div class="customer-review-stars flex items-center gap-1 ml-2">
+                                <i class="pi pi-star-fill text-gold"></i>
+                                <span class="ml-1 text-base font-semibold">{{ review.rating }}</span>
+                            </div>
                         </div>
                         <div class="customer-review-text grey">{{ review.text }}</div>
+                        <!-- Дата в самом низу -->
+                        <div class="review-date grey mt-2">{{ formatDate(review.created_at) }}</div>
                     </div>
-                    <div class="review-date grey">{{ formatDate(review.created_at) }}</div>
                 </div>
                 <div class="load-more-btn invest-btn pointer p-3" style="margin: 0 auto;" @click="loadMore()"
                     v-if="loadCustomers < customers.length">Load more
@@ -88,6 +92,55 @@
 .pi-star-fill:hover,
 .text-gold {
     color: gold;
+}
+
+/* Мобильная версия: кнопка на всю ширину и отзыв с переносом */
+@media (max-width: 768px) {
+    .submit-btn.invest-btn {
+        width: 100% !important;
+        display: block;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        text-align: center;
+    }
+
+    .customer-review-text {
+        word-break: break-word;
+        white-space: pre-line;
+        font-size: 1rem;
+        line-height: 1.4;
+        max-width: 100vw;
+    }
+
+    .customers-reviews {
+        gap: 0.5rem !important;
+    }
+
+    .customers-review-wrapper.page-tile,
+    .customer-review-wrapper {
+        padding: 10px !important;
+    }
+
+    .customer-review-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+
+    .review-date {
+        font-size: 0.9rem;
+        margin-top: 0rem !important;
+        text-align: left;
+    }
+
+    .about-review {
+        width: 100%;
+    }
+
+    .customer-review-stars {
+        min-width: 48px;
+        justify-content: flex-end;
+    }
 }
 </style>
 
@@ -107,6 +160,22 @@ const toast = reactive({
 });
 
 const serverError = ref('');
+
+const customers = reactive([])
+const loadCustomers = ref(3);
+
+async function fetchReviews() {
+    try {
+        const reviewsStats = await apiClient.getReviewsStats()
+        platformReview.total = reviewsStats.count;
+        platformReview.average_rating = reviewsStats.average_rating;
+        if (reviewsStats.results) {
+            customers.splice(0, customers.length, ...reviewsStats.results);
+        }
+    } catch (err) {
+        console.warn(err)
+    }
+}
 
 async function sendReview() {
     reviewErrors.text = '';
@@ -137,7 +206,6 @@ async function sendReview() {
             rating: review.mark
         })
 
-
         review.mark = 0;
         review.text = ''
 
@@ -152,6 +220,9 @@ async function sendReview() {
             setTimeout(() => {
                 toast.show = false;
             }, 2000);
+
+            // После успешной отправки — обновить отзывы
+            await fetchReviews();
         } else if (response.data?.error) {
             serverError.value = response.data.error;
         } else if (response.data?.message) {
@@ -169,7 +240,6 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('en-US', options);
 };
 
-
 const platformReview = reactive({
     average_rating: 0,
     total: 0
@@ -179,24 +249,12 @@ function loadMore() {
     loadCustomers.value += 3;
 }
 
-const loadCustomers = ref(3);
-const customers = reactive([])
-
 const review = reactive({
     mark: 0,
     text: '',
 })
 
 onMounted(async () => {
-    try {
-        const reviewsStats = await apiClient.getReviewsStats()
-        platformReview.total = reviewsStats.count;
-        platformReview.average_rating = reviewsStats.average_rating;
-        if (reviewsStats.results) {
-            customers.splice(0, customers.length, ...reviewsStats.results);
-        }
-    } catch (err) {
-        console.warn(err)
-    }
+    await fetchReviews();
 })
 </script>

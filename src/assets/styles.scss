@@ -114,6 +114,12 @@
     transition: ease-in-out 0.3s;
 }
 
+@media (max-width: 768px) {
+    .page-tile {
+        padding: 15px;
+    }
+}
+
 .tile-hover:hover {
     cursor: pointer;
     border: 1px solid #33c3f0;
