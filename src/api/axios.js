@@ -11,11 +11,59 @@ const apiClient = axios.create({
     withCredentials: true
 });
 
+apiClient.changePassword = async (current_password, new_password, new_password2) => {
+    const response = await apiClient.post('/auth/change-password/', {
+        current_password: current_password,
+        new_password: new_password,
+        new_password2: new_password2
+    });
+    return response.data;
+}
+
+apiClient.changeEmailRequest = async (email) => {
+    const response = await apiClient.post('/auth/change-email/', {
+        new_email: email
+    });
+    return response.data;
+}
+
+apiClient.changeEmailConfirm = async (email, code) => {
+    const response = await apiClient.post('/auth/change-email/confirm/', {
+        new_email: email,
+        code: code
+    });
+    return response.data;
+}
+
+apiClient.forgotPassword = async (email) => {
+    const response = await apiClient.post('/auth/forgot-password/', {
+        email: email
+    });
+    return response.data;
+}
+
+apiClient.forgotPasswordConfirm = async (email, code, password, password2) => {
+    const response = await apiClient.post('/auth/forgot-password/confirm/', {
+        email: email,
+        code: code,
+        new_password: password,
+        new_password2: password2
+    });
+    return response.data;
+}
+
+apiClient.changePhone = async (phone) => {
+    const response = await apiClient.post('/auth/change-phone/', {
+        new_phone: phone
+    });
+    return response.data;
+}
+
 apiClient.sendPassportData = async (files, description) => {
     const formData = new FormData();
 
     files.forEach(file => {
-        formData.append('document', file); // 👈 многократно ключ 'document'
+        formData.append('document', file);
     });
 
     formData.append('description', description);

@@ -8,13 +8,13 @@
             </div>
             <div class="wallet-balance-number text-2xl font-semibold"> {{ formatVolume(user?.free_balance) }}</div>
         </div>
-        <div class="wallet-balance-wrapper page-tile " v-if="user?.orders_balance">
+        <div class="wallet-balance-wrapper page-tile " v-if="user?.balance_in_orders">
             <div class="wallet-balance-title mb-2 grey">
                 <i class="pi pi-arrow-right-arrow-left wallet-logo blue"></i>
                 Balance in orders
             </div>
             <div class="wallet-balance-number text-2xl font-semibold">{{
-                formatVolume(user.orders_balance) }}</div>
+                formatVolume(user.balance_in_orders) }}</div>
         </div>
         <div class="wallet-balance-wrapper page-tile ">
             <div class="wallet-balance-title mb-2 grey">
