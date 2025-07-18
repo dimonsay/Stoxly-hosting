@@ -19,6 +19,7 @@ const loginData = reactive({
 const rememberMe = ref(false);
 const serverError = ref('');
 const nonFieldError = ref('');
+const loading = ref(false);
 
 onMounted(() => {
     const storedEmail = sessionStorage.getItem('email');
@@ -56,6 +57,7 @@ function forgotPassword() {
 async function login() {
     serverError.value = '';
     nonFieldError.value = '';
+
     if (loginData.email !== '' && loginData.password !== '') {
         const existingToken = localStorage.getItem('access_token');
 
@@ -63,6 +65,8 @@ async function login() {
             // Уже авторизован — не вызываем login, не запрашиваем OTP
             return router.push({ name: 'dashboard' });
         }
+
+        loading.value = true;
 
         try {
             const response = await apiClient.login(loginData);
@@ -89,6 +93,8 @@ async function login() {
             }
         } catch (e) {
             serverError.value = e.response?.data?.message || e.message || 'Ошибка сети';
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -129,7 +135,7 @@ async function login() {
                                 <InputText id="email" type="email" v-model="loginData.email"
                                     placeholder="Enter your email"
                                     class="w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400"
-                                    required />
+                                    :disabled="loading" required />
                             </IconField>
                         </div>
 
@@ -137,15 +143,15 @@ async function login() {
                         <div class="space-y-2">
                             <label for="password" class="text-sm font-medium text-gray-300">Password</label>
                             <Password id="password" v-model="loginData.password" placeholder="Enter your password"
-                                class="w-full" :feedback="false" toggleMask
+                                class="w-full" :feedback="false" toggleMask :disabled="loading"
                                 inputClass="w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400"
                                 panelClass="bg-gray-700 border-gray-600" />
                         </div>
 
                         <!-- Sign In Button -->
-                        <Button type="submit"
+                        <Button type="submit" :loading="loading" :disabled="loading"
                             class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 transition-all duration-200 transform hover:scale-[1.02]">
-                            Sign In
+                            {{ loading ? 'Signing In...' : 'Sign In' }}
                         </Button>
 
                         <div v-if="nonFieldError" class="text-red-500 text-sm mb-2 text-center">
@@ -224,6 +230,11 @@ async function login() {
     border-color: #3b82f6 !important;
 }
 
+:deep(.p-inputtext:disabled) {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
 :deep(.p-password) {
     width: 100%;
 }
@@ -237,6 +248,11 @@ async function login() {
 :deep(.p-password-input:focus) {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
     border-color: #3b82f6 !important;
+}
+
+:deep(.p-password-input:disabled) {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
 }
 
 :deep(.p-checkbox .p-checkbox-box) {
