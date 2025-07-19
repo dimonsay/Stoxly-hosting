@@ -1,1 +1,0 @@
-.error{animation:shake .5s}@keyframes shake{0%,to{transform:translate(0)}20%,60%{transform:translate(-10px)}40%,80%{transform:translate(10px)}}

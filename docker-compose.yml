@@ -11,4 +11,4 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true # Для горячей перезагрузки в Docker
       - VITE_API_URL=localhost:8000
-    command: npm run dev -- --host 0.0.0.0
+    # Возвращаю к production запуску (убираю command или ставлю npm run build/start)

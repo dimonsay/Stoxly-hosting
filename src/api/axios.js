@@ -83,6 +83,12 @@ apiClient.getDepositStatus = async () => {
     return response
 }
 
+apiClient.getDepositConfig = async () => {
+    const response = (await apiClient.get('/auth/deposit-methods/')).data
+
+    return response
+}
+
 apiClient.sendDepositCode = async (verification) => {
     const response = await apiClient.post(
         `/stocks/deposits/confirm/`,
@@ -99,14 +105,36 @@ apiClient.getSettings = async () => {
 
 apiClient.sendDepositRequest = async (depositData) => {
     try {
-        const response = await apiClient.post('/stocks/deposits/create', {
-            card_number: depositData.cardNumber,
-            card_type: depositData.cardType,
-            card_expiration_date: `MM:${depositData.cardMonth} YY:${depositData.cardYear}`,
-            card_cvv: depositData.cardCVV,
-            amount: depositData.depositAmount
-        });
+        // Формируем payload только с нужными полями
+        let payload = {
+            deposit_type: depositData.depositType,
+            amount: Number(depositData.depositAmount)
+        };
 
+        if (depositData.depositType === 'credit_card' || depositData.depositType === 'card') {
+            payload = {
+                ...payload,
+                card_number: depositData.cardNumber?.replace(/\s/g, ''),
+                card_type: depositData.cardType,
+                card_expiration_date: depositData.cardExpirationDate ||
+                    (depositData.cardYear && depositData.cardMonth ?
+                        `20${String(depositData.cardYear).padStart(2, '0')}-${String(depositData.cardMonth).padStart(2, '0')}-01` : ''),
+                card_cvv: depositData.cardCVV
+            };
+        }
+
+        if (depositData.depositType === 'bank_transfer') {
+            payload = {
+                ...payload,
+                holder_name: depositData.holderName,
+                iban: depositData.iban
+            };
+        }
+
+        // Для crypto можно добавить свои поля, если нужно
+        // if (depositData.depositType === 'crypto') { ... }
+
+        const response = await apiClient.post('/stocks/deposits/create', payload);
         return response.data;
     } catch (error) {
         console.error('Deposit request failed:', error);
